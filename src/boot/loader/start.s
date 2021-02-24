@@ -31,6 +31,12 @@ start:
     mov esp, stack_top ; all too easy :)
     cmp eax, 0x36D76289 ; check for multiboot2
     jne .multiboot_assert_fail
+    call assert_cpuid
+    call assert_pae
+    call init_mem ; #TODO: #2
+    call init_page_tables ; #TODO #2
+    call init_gdt
+    jmp enter ; not re-entering start.
 
 .multiboot_assert_fail:
     mov al, "B" ; b for boot
@@ -45,6 +51,17 @@ error:
 .loop:
     hlt ; halt pauses until next interrupt
     jmp loop
+
+assert_cpuid:
+    ret ; currently returns
+assert_pae:
+    ret ; currently returns
+init_mem:
+    ret ; currently returns
+init_page_tables:
+    ret ; currently returns
+init_gdt:
+    ret ; currently returns
 
 section .data
 
