@@ -21,10 +21,10 @@ That being said, if you want to try it out or contribute something, feel free to
    + elf executable file format (or a modification of that). ELF is simple, fast, and well documented. The only potential reason for a modification on elf is to indicate whether the language expects a D runtime, however, the D runtime automatically starts up in existing ELF binaries, so that is probably unnecessary.
  - See if and where it goes from here.
 
-##Contributions
+## Contributions
 See CONTRIBUTING.md for the latest info.
 
-##Security flaws.
+## Security flaws.
 For the latest info, see SECURITY.md
 
 General disclaimer, repeated once more: I make no warranty on this software, nor do I promise that it will do anything.
