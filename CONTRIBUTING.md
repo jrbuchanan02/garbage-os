@@ -7,6 +7,7 @@ As a general rule, feel free to contribute. Find an issue that you feel capable 
 ### D-lang
 
  - As a general rule, if your code violates the https://dlang.org conventions, you are killing puppies and making people sad.
+ - In addition to compile-time errors, compile-time warnings (and, by extension, code that causes them) are heavily discouraged. The goal of an operating system is not to make "quick and dirty" code or "fast at all costs" code, but to make code that performs its job exactly as it should. 
 
 ### Assembler
 
