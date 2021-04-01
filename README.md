@@ -1,10 +1,10 @@
-# Dlang-os
-Dlang-OS, or DOS for short, is a work-in-progress proof-of-concept Operating System that comes with a built-in garbage collector.
+# Garbage OS
+Garbage OS, or GOS for short, is a work-in-progress proof-of-concept Operating System that comes with a built-in garbage collector.
 
-DOS is not intended to replace any of the existing operating systems, however, it is meant to see what performance boost, if any, arises from consolodating Garbage-Collection 
-services to the max - something achieved with DOS as there is only one Garbage Collector. 
+GOS is not intended to replace any of the existing operating systems, however, it is meant to see what performance boost, if any, arises from consolodating Garbage-Collection 
+services to the max - something achieved with GOS as there is only one Garbage Collector. 
 
-__**I make no warranty with Dlang-OS, nor will I ever.**__
+__**I make no warranty with Garbage OS, nor will I ever.**__
 That being said, if you want to try it out or contribute something, feel free to do so.
 
 
@@ -18,7 +18,7 @@ That being said, if you want to try it out or contribute something, feel free to
    + Keep track of processes that are currently running (although, we have to do that for GC).
  - Implement some Open Source Quality of Life improvements
    + ext-based filesystem. Since there is already an extremely popular implementation on GitHub, I might check how it works - implementing it myself
-   + elf executable file format (or a modification of that). ELF is simple, fast, and well documented. The only potential reason for a modification on elf is to indicate whether the language expects a D runtime, however, the D runtime automatically starts up in existing ELF binaries, so that is probably unnecessary.
+   + elf executable file format (or a modification of that). ELF is simple, fast, and well documented.
  - See if and where it goes from here.
 
 ## Contributions
