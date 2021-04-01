@@ -31,7 +31,7 @@ General disclaimer, repeated once more: I make no warranty on this software, nor
 
 If I am doing anything wrong, please tell me and I will fix it.
 
-As of the current version of Dlang-OS, there is likely not any information to accidently make vulnerable via a security bug. However, if I have messed up a security mechanism beyond what any contributor seems capable of, it is probably a very critical error and needs to be fixed ASAP.
+As of the current version of Garbage OS, there is likely not any information to accidently make vulnerable via a security bug. However, if I have messed up a security mechanism beyond what any contributor seems capable of, it is probably a very critical error and needs to be fixed ASAP.
 
 ### Version Support
 
