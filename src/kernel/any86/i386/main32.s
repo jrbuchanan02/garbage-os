@@ -1,2 +1,0 @@
-global main_asm
-
