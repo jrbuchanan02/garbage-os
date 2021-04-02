@@ -1,4 +1,4 @@
-module kernel.common.kmain;
+module kernel.common.tags;
 
 import std.algorithm.mutation : swap;
 import core.volatile;
