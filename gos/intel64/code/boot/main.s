@@ -1,4 +1,4 @@
-global start
+global start, error
 extern start64, init_ram
 section .text
 bits 32

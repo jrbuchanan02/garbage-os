@@ -22,10 +22,8 @@ init_ram:
     sub ecx, 8
 
 .search_loop:
-    cmp [ebx], 6                ;; check if type is 6 (memory information structure)
-
-    jne .skip                   ;; if not, skip initializing memory
-
+    cmp dword [ebx], 6                ;; check if type is 6 (memory information structure)
+    jne .skip                   ;; if not, skip this entry
 
     mov esi, ebx                ;; point esi to size and entry size of memory information
     add esi, 4                  ;; to reset after loops, we can mov ebx, esi - 4
@@ -36,85 +34,7 @@ init_ram:
     cmp ecx, 0
     je .insane_mbi              ;; no entries!
 
-    ;; each of these entries is a 64-bit address - a bit interesting since we are in 32-bits!
-    ;; thus, we need to enter these into a page table as we get them.
-
-    ;; since we are on an x64 processor, we can safely assume a 4-level page table
-    ;; our first task is to find 4KiB of type 1 ram that is 4KiB aligned for the page table
-
-.find_l4:
-    ;; check if entry type is 1 (RAM)
-
-    cmp [ebx + 16], 1
-    jne .continue_l4_search
-
-    ;; check if entry length >= 0x1000
-
-    mov eax, [ebx + 12]  ;; check lower 32 bits
-    cmp eax, 0x1000
-
-    jg .check_potential_alignment
-
-    mov eax, [ebx + 8]  ;; check upper 32 bits
-    cmp eax, 0x0000
-    jl .continue_l4_search  ;; if not enough room, then don't initialize
-
-.check_potential_alignment:
-    ;; if base address is aligned to 4KiB, then definitely
-
-    mov eax, [ebx + 4]  ;; lower 32 bits of address
-
-    and eax, 0x0fff     ;; mask out all other bits
-
-    jz .init_l4_page    ;; initialize l4 page table if our beginning address is 4 KiB aligned
-
-    ;; if not, we need to load the length and check to see if
-    ;; the next 4 KiB aligned address is, in fact, available for 
-    ;; a page table
-
-    mov edx, 0x1000     ;; move the 4KiB value into edx
-    sub edx, eax        ;; find the amount to add to the start address to give
-                        ;; a 4 KiB aligned address
-
-    mov eax, [ebx + 12]  ;; move the lower 32 bits of the length into eax
-    sub eax, edx
-    cmp eax, 0          ;; check if value < 0
-    jnb .init_l4_page ;; if not below 0, initialize l4 page
-
-    ;; if below 0, check that subtracting 1 from the upper bits of the length gives 0
-    mov eax, [ebx + 8]  ;; move the upper 32 bits of the length into eax
-    dec eax             ;; decrement eax
-    jz .continue_l4_search  ;; no 4 KiB aligned address
-.init_l4_page:
-    ;; get the 4KiB aligned address again
-    mov eax, [ebx + 4]  ;; ensure lower 32 bits in eax
-    mov edx, 0x1000     ;; smallest 4KiB aligned address
-    and eax, 0x0fff     ;; mask out all of the lower bits
-
-    sub edx, eax        ;; get the amount that we have to add
-    
-    mov eax, [ebx + 4]  ;; get the lower 32-bits back
-    add eax, edx        ;; align our address
-
-    mov dword [perm_page_table_addresses.l4 + 4], eax       ;; move eax's address into our l4 page table's permanent address
-
-    mov eax, [ebx + 0]  ;; get the upper 32-bits of address
-    jnc .straight_init_l4_page  ;; if not carry from previous add, just put it in
-    inc eax             ;; add one to the address
-.straight_init_l4_page:
-    mov dword [perm_page_table_addresses.l4 + 0], eax       ;; move the upper 32 bits
-    jmp .initialize_l3_tables                               ;; initialize the l3 page tables
-
-.continue_l4_search:
-    add ebx, [esi + 4]  ;; add entry size to ebx
-    sub ecx, [esi + 4]  ;; subtract entry size from ecx
-    mov eax, esi        ;; move the original address from esi to eax
-    sub eax, 4          ;; adjust
-    mov ebx, edx        ;; copy ebx into edx so that we do not corrupt it
-    sub edx, eax        ;; compare the difference in start and now
-    cmp edx, [esi]      ;; check if it is equal to the total size
-    je .no_room         ;; if they are equal, and no room for l4 page table - end here
-    jne .find_l4        ;; if not, we already point to the next entry
+    jmp init_memory
 
 .skip:
     sub ecx, [ebx + 4]          ;; move ebx, ecx along
@@ -131,32 +51,6 @@ init_ram:
     je .insane_mbi              ;; if no more tags left, insane mbi
     jne .search_loop            ;; if more tags left, keep searching
 
-.initialize_l3_tables:
-    mov dword [l3_page_table_count], 0  ;; our current amount of l3 page tables is 0
-    ;; I want to initialize 4 l3 page tables on all systems:
-    ;; - RAM
-    ;; - ACPI
-    ;; - Preserved
-    ;; - Reserved / Broken
-
-    ;; At the l3 stage, all 4 * k page tables are present
-    ;; however, at the l1 level, Reserved / Broken memory is not present ;)
-    ;; preserved memory will be read-only (for now)
-    ;; ACPI will be read / write, but with systems permissions
-    ;; RAM will be read, write, and global
-
-    ;; first step in finding the l3 page tables, is to find a 4KiB aligned address that is not the l4
-    ;; page table's address
-    mov ebx, esi
-    sub ebx, 4  ;; reset ebx
-    
-    ;; the caveat here is that there may now be multiple page tables where an entry says there is space!
-    ;; we easily know where the l4 page table is (we remember that address)
-    ;; 
-    ;; To find the l3 tables, we need to search the l4 page table
-
-.l3_search_loop:
-    
 
 
 .insane_mbi:
@@ -165,8 +59,200 @@ init_ram:
 .no_room:
     mov al, 'R'                 ;; R for Room
     jmp error
+.partly_initialized:
+    mov al, 'P'                 ;; P for partly
+    jmp error
 
+verify_page_table_location:
+    ;; if upper 32-bits of address are all 0's
+    ;; and memory type is 1
+    ;; and the entry can fit an address aligned to 4 KiB
+    ;; of a size of 4 KiB, then leave 1 in eax
+    ;;
+    ;; if any of these are not true, then leave 0 in eax
+    ;;
+    ;; ebx is presumed to point to the beginning of the entry
+    ;; 
+    ;; eax and edx are clobbered.
+
+    mov eax, dword [ebx]
+
+    ;; entry beyond 32-bit addressing
+    cmp eax, 0x00000000
+    jne .return_false
+
+
+    ;; entry smaller than 4KiB
+    mov eax, dword [ebx + 12]
+    cmp eax, 0x1000
+    jl .return_false
+
+
+    ;; entry is not RAM
+    mov eax, dword [ebx + 16]
+    cmp eax, 1
+    jne .return_false
+
+    ;; entry cannot have a 4 KiB aligned address with a page table
+    mov eax, dword [ebx + 4]
+    and eax, 0x0fff
+    mov edx, 0x1000
+    sub edx, eax            ;; find out what we need to add to eax to get the next 4KiB aligned address
+
+    mov eax, dword [ebx + 12]   ;; check that our size beyond the next 4KiB aligned address
+    sub eax, edx                ;; is greater than 4kiB
+    cmp eax, 0x1000
+    jl .return_false            ;; if less than, return false
+
+    ;; edx still holds amount to add to eax
+    mov eax, dword [ebx + 4 ]   ;; move lower 32-bits
+    add eax, edx                ;; if this operation carries, then, part of 
+    jc .return_false            ;; the page table will be outsize of RAM that
+                                ;; we can address
+
+    jmp .return_true
+
+
+.return_false:
+    mov eax, 0x00000000
+    ret
+.return_true:
+    mov eax, 0x00000001
+    ret
+
+init_memory:
+    ;; when entering:
+    ;; 
+    ;;  ebx points to first entry
+    ;;  ecx holds remaining size in all tags
+    ;;  edi points to start of tags structure
+    ;;  esi points to the size entry of the memory map structure
+    ;;  ebp is still undefined
+    ;;  esp holds stack
+    ;;
+    ;;  registers we can safely edit:
+    ;;      eax
+    ;;      edx
+    ;; 
+
+    ;; each of these entries is a 64-bit address - a bit interesting since we are in 32-bits!
+    ;; thus, we need to enter in only 32-bit addresses for our page tables!
+
+    ;; since we are on an x64 processor, we can safely assume a 4-level page table
+    ;; our first task is to find 4KiB of type 1 ram that is 4KiB aligned for the page table
+
+
+    ;; iterate through all entries until finding one where verify_page_table_location returns true
+
+.l4_loop:
+    ;; ecx already holds the first entry, so we should check that first
+    call verify_page_table_location
+    cmp eax, 1                      ;; if we returned true
+    je .l4_mem_init                 ;; initialize as l4 table
+    ;; otherwise
+    add ebx, dword [esi + 4]        ;; add entry size to ebx
+    sub ecx, dword [esi + 4]        ;; move along
+
+    cmp ecx, 0
+    je init_mem.no_room             ;; if no more tags left, no more room
+
+    jmp .l4_loop
+.l4_mem_init:
+    ;; initialize the value we found into CR3
+
+    mov eax, dword [ecx + 4]        ;; lower 32 bits of memory address -> eax
+    and eax, 0x0fff                 ;; mask out for alignment
+    mov edx, 0x1000
+    sub edx, eax                    ;; get number to add to align eax
+
+    mov eax, dword [ecx + 4]        ;; get address back into eax
+    add eax, edx                    ;; address of our l4 page table
+
+    mov cr3, eax                    ;; put that address as the page table
+    mov word [l3_page_table_count], 0   ;; no l3 page tables (yet)
+    
+    mov ebx, dword [esi]            ;; almost reset value of ebx
+    mov ecx, dword [edi]            ;; almost reset size of ecx
+
+    add ebx, 12                     ;; move ebx to the first entry
+    mov edx, ebx                    ;; copy ebx into edx
+    sub edx, ecx                    ;; find out how much we have moved
+    add ecx, edx                    ;; move ecx along
+
+.l3_loop:
+    ;; find the l3 page table.
+    ;; the caveat here, is that other page tables exist in RAM
+    ;; moreover, their address may not necessarily be the address
+    ;; that is listed in cr3
+
+    ;; at this point here are our important registers:
+    ;;  
+    ;;  eax -> address of l4 page table
+    ;;  ebx -> first memory map entry
+    ;;  ecx -> remaining size in all tags
+    ;;  edx -> difference between tags size and ecx
+    ;;  esi -> points to size of memory map tag
+    ;;  edi -> points to beginning of information structure
+    ;;  esp -> stack
+    ;;  ebp -> undefined
+    ;;  cr3 -> address of l4 page table
+    ;;  
+    ;;  l3_page_table_count -> 0
+    
+    call verify_page_table_location
+    cmp eax, 1                      ;; check if we have a valid position
+
+    je .l3_mem_collision            ;; if valid, ensure that tables do not
+                                    ;; collide
+.l3_otherwise:
+    ;; otherwise
+    add ebx, dword [esi + 4]        ;; add entry size to ebx
+    sub ecx, dowrd [esi + 4]        ;; move along
+
+    cmp ecx, 0
+    je init_mem.partly_initialized  ;; different error, we were able to initialize
+                                    ;; the l4 table.
+    jmp .l3_loop
+.l3_mem_collision:
+    ;; check if the found memory entry is not yet taken
+    ;; if it is taken, go to the otherwise part of the l3_loop
+
+    mov eax, dword [ecx + 4]        ;; lower 32 bits of memory address -> eax
+    and eax, 0x0fff                 ;; mask out for alignment
+    mov edx, 0x1000
+    sub edx, eax                    ;; get number to add to align eax
+
+    mov eax, dword [ecx + 4]        ;; get address back into eax
+    add eax, edx                    ;; address of our page table
+
+    ;; regardless of the value of l3_page_table_count, we want to 
+    ;; ensure that this is not the value of cr3
+    xchg eax, edx
+    mov eax, cr3        ;; address of l4 page table
+    cmp eax, edx        ;; check if equal
+    jne .l3_mem_collision_loop_enter
+    ;; however, if they are equal, we want to see if we can fit both!
+    ;; we can do this by looking at the size of the address when aligned
+    ;; to 4096 bytes
+
+    ;; this code is copy-pase from verify_page_table_location
+    ;; however, we want to check if there is 8 KiB of space.
+    mov eax, dword [ebx + 4]
+    and eax, 0x0fff
+    mov edx, 0x1000
+    sub edx, eax            
+
+    mov eax, dword [ebx + 12]   
+    sub eax, edx                
+    cmp eax, 0x2000     
+    jge .l3_mem_collision_loop_enter  ;; want to make sure that we haven't
+                                ;; already put a l3 page table after the
+                                ;; l4 page table
+.l3_mem_collision_loop_enter:
+    ;; set our "i" to zero
+    mov word [l3_page_table_loop_iterator], 0
+.l3_mem_collision_loop:
+    mov ax, [l3_page_table_count]
 section .bss
 l3_page_table_count: resw 1     ;; reserve 2 bytes for l3 page table index
-perm_page_table_addresses:
-.l4: resb 8
+l3_page_table_loop_iterator: resw 1 ;; reserve 2 bytes for our "i" in the loop
