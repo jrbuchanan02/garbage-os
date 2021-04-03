@@ -1,1 +1,3 @@
-/gos/build/
+/gos/build/intel64/boot/*.o
+/gos/build/intel64/kernel/*.o
+/gos/dist/
