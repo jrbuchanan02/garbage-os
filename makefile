@@ -1,18 +1,18 @@
-kernel_source_files := $(shell find gos/intel64/code/kernel/ -name *.d)
-kernel_object_files := $(patsubst gos/intel64/code/kernel/%.d, gos/build/intel64/kernel/%.o, $(kernel_source_files))
+kernel_source_files := $(shell find gos/code/intel64/kernel/ -name *.d)
+kernel_object_files := $(patsubst gos/code/intel64/kernel/%.d, gos/build/intel64/kernel/%.o, $(kernel_source_files))
 
 
 
-intel64_asm_source_files := $(shell find gos/intel64/code/ -name *.s)
-intel64_asm_object_files := $(patsubst gos/intel64/code/%.s, gos/build/intel64/%.o, $(intel64_asm_source_files))
+intel64_asm_source_files := $(shell find gos/code/intel64/ -name *.s)
+intel64_asm_object_files := $(patsubst gos/code/intel64/%.s, gos/build/intel64/%.o, $(intel64_asm_source_files))
 
-$(kernel_object_files): gos/build/intel64/kernel/%.o :gos/intel64/code/kernel/%.d
+$(kernel_object_files): gos/build/intel64/kernel/%.o :gos/code/intel64/kernel/%.d
 	mkdir -p $(dir $@) && \
-	ldc2 -c --betterC $(patsubst gos/build/intel64/kernel/%.o, gos/intel64/code/kernel/%.d, $@) -od=gos/build/intel64/kernel
+	ldc2 -c --betterC $(patsubst gos/build/intel64/kernel/%.o, gos/code/intel64/kernel/%.d, $@) -od=gos/build/intel64/kernel -m32
 
-$(intel64_asm_object_files): gos/build/intel64/%.o : gos/intel64/code/%.s
+$(intel64_asm_object_files): gos/build/intel64/%.o : gos/code/intel64/%.s
 	mkdir -p $(dir $@) && \
-	nasm -f elf64 $(patsubst gos/build/intel64/%.o, gos/intel64/code/%.s, $@) -o $@
+	nasm -f elf64 $(patsubst gos/build/intel64/%.o, gos/code/intel64/%.s, $@) -o $@
 
 .PHONY: build-x86_64
 build-x86_64: $(intel64_asm_object_files)

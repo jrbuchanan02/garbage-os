@@ -12,5 +12,7 @@ SECTIONS
 	.text :
 	{
 		*(.text)
+		*(.text32)
+		*(.text64)
 	}
 }
