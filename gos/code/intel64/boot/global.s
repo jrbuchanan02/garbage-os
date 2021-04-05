@@ -10,9 +10,6 @@ init_tgdt:
 section .text64
 bits 64
 
-init_gdt:
-    mov al, 0x11 ;; ◄ for "go back!"
-
 section .rodata
 align 0x1000
 
@@ -23,7 +20,3 @@ tgdt:
 .pointer:
     dw $ - tgdt - 1 ;; table's length
     dq tgdt ;; address
-section .bss
-align 0x1000
-gdt:
-    resq 2 << 16

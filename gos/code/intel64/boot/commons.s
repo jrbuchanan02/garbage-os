@@ -1,4 +1,4 @@
-global error, start
+global error, start, long_mode
 extern init_paeging, init_paging, init_tgdt, init_gdt, init_idt, kmain, stack, cpu_assertions
 
 section .text
@@ -23,15 +23,16 @@ start:
     cmp eax, 0x36d76289
     jne .not_mb2
     call cpu_assertions
-    call init_paeging
+    ;;call init_paeging
 
-    call init_tgdt
+    ;;call init_tgdt
     ;;call long_mode
     
     call init_paging
-    
     call init_gdt
     call init_idt
+    call long_mode
+
     
     call kmain
 .not_mb2:
@@ -47,18 +48,23 @@ error:
 	hlt
 
 long_mode:
+
+
     mov eax, cr4
     or eax, 1 << 5
     mov cr4, eax
+
 
     mov ecx, 0xC0000080
     rdmsr
     or eax, 1 << 8
     wrmsr
 
+
     mov eax, cr0
     or eax, 1 << 31
     mov cr0, eax
+
 
     ret
 section .bss

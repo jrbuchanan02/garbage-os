@@ -1,5 +1,5 @@
 global init_paeging, init_paging
-extern error, parseMemmap, alignAddress, pointToMemoryMap
+extern error, assemblePages, long_mode
 section .text32
 bits 32
 
@@ -29,28 +29,17 @@ section .text64
 bits 32
 
 init_paging:
-    ;; parse through the memory map and initialize memory per the mb2info structure
-    ;;
-    ;; 
-    push edi ;; push mb2info
-    call parseMemmap
+    ;; call assemblePages, which will leave return values and such in eax and ebx.
+    ;; if eax == 0, we can load the value in ebx.
+    ;; otherwise, al is a character-error-code
 
-    cmp eax, 0x00f100f1
-    je .no_memmap
-    cmp eax, 0x11E511E5
-    je .no_memmap
-    jne .yes_memmap
-.no_memmap:
-    mov al, 0x7f ;; ⌂, house for "go home, I'm not ready yet!"
-    jmp error
-.yes_memmap:
-    ;; assemble page tables!
+    push edi
+    call assemblePages
     
-    ;; point to (sorted) memory map
-    push edi ;; push edi again
-    call pointToMemoryMap
-    hlt
+    
 
+    mov cr3, edx    ;; lower 32-bits
+    jmp long_mode
 section .bss
 align 0x1000
 temp_pages:

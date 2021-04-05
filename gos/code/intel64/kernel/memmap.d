@@ -1,5 +1,57 @@
 module gos.code.intel64.kernel.memmap;
+/// flags for code-allocated memory               
+enum CodeMemoryFlags = (1 << 0) | 
+    (1L << 1) |
+    (0L << 2) | 
+    (0L << 3) | 
+    (0L << 4) | 
+    (1L << 5) | 
+    (0L << 6) | 
+    (0L << 7) |
+    (0L << 63);
+/// flags for data-allocated memory
+enum DataMemoryFlags = (1 << 0) |
+    (1L << 1) |
+    (0L << 2) |
+    (0L << 3) |
+    (0L << 4) |
+    (1L << 5) |
+    (0L << 6) |
+    (0L << 7) |
+    (1L << 63); // data memory same as code memory, but cannot be run
+/// flags for page allocated memory
+enum PageMemoryFlags = (1 << 0) |
+    (1L << 1) |
+    (0L << 2) |
+    (0L << 3) |  // system level access
+    (0L << 4) |
+    (1L << 5) |
+    (0L << 6) |
+    (0L << 7) |
+    (1L << 63);  // no execution
 
+/// acpi-reclaimable memory (might be used for drivers)
+enum ACPIMemoryFlags = (1 << 0) |
+    (1L << 1) |
+    (0L << 2) |
+    (0L << 3) |  // system level access
+    (1L << 4) |  // no cache (i'm expecting this memory to be mmio)
+    (1L << 5) |
+    (0L << 6) |
+    (0L << 7) |
+    (1L << 63);  // no execution
+/// memory we were told to preserve
+enum PresMemoryFlags = (1 << 0) |
+    (0L << 1) |
+    (0L << 2) |
+    (0L << 3) |
+    (0L << 4) |
+    (1L << 5) |
+    (0L << 6) |
+    (0L << 7) |
+    (1L << 63);
+/// bad memory - not present, don't execute from here.
+enum BrknMemoryFlags = (0 << 0);
 /// swaps the two memory map entries 4 bytes at a time.
 void swap(in MemoryMapInfo* memoryMap, MemoryMapEntry* lhs, MemoryMapEntry* rhs) {
     uint value;
@@ -100,7 +152,7 @@ extern(C) struct MemoryMapInfo {
 
 /// entry within the memory map
 extern(C) struct MemoryMapEntry {
-    const ulong baseAddress;    /// base address of the memory
+    const ulong baseAddress;    /// base flags of the memory
     const ulong length; /// length of the memory
     /// memory type
     /// 1 -> general purpose RAM - mark half as executable, other half as not executable
@@ -118,7 +170,7 @@ extern(C) struct MemoryMapEntry {
 extern(C) struct EndTag {
     mixin MB2TagStart!(0, 8);
 }
-
+/*
 /// parses memory map to help paging.s assemble the page tables and initialize
 /// all of the RAM in an orderly fashion. There are going to be 5 types of memory:
 ///
@@ -259,22 +311,12 @@ extern(C) uint parseMemmap(ref Mb2Info* multiboot2InformationStructure) {
     
     return 0;
 }
-/// aligns address to 4096 bytes, what x64 requires for a page table
-/// entry
-///
+*/
+
+/// assembles pages
 /// Params:
-///     address the address to align
-/// Returns:
-///     the aligned address
-extern(C) ulong alignAddress(inout ulong address) {
-    immutable ulong amount = address & 0x0fff;
-    return address + (0x1000 - amount);
-}
-
-/// points information to memory map
-extern(C) void* pointToMemoryMap(ref Mb2Info* multiboot2InformationStructure) {
-    // iterate through the mb2info structure until finding the memory size
-
+///     multiboot2InformationStructure the mb2info structure
+public extern (C) uint assemblePages(ref Mb2Info* multiboot2InformationStructure) {
     // have pointer in such a way that we can move it along without care for
     // whether we will do the broken to it.
     void* pointer = cast(void*)multiboot2InformationStructure;
@@ -282,8 +324,8 @@ extern(C) void* pointToMemoryMap(ref Mb2Info* multiboot2InformationStructure) {
     uint position = 8;
 
     while (*cast(const uint*)(pointer + position) != 6) {
-        if (*cast(const uint*)(pointer+ position) == 0) {
-            return cast(void*)0x00F1_00F1; // oof! oof!
+        if (*cast(const uint*)(pointer +position) == 0) {
+            return 0;
         }
 
         uint fullSize = *cast(const uint*)(pointer + position);
@@ -297,8 +339,103 @@ extern(C) void* pointToMemoryMap(ref Mb2Info* multiboot2InformationStructure) {
     // ensure that we have the memory map
 
     if (*cast(const uint*)(pointer + position) != 6) {
-        return cast(void*)0x11E5_11E5; // lies lies
+        return 0;
     }
 
-    return pointer;
+    // now that we know we have the memory map, we have to parse it
+    // and do some sorting!
+
+    // we should place viable page-table addresses in the front, the
+    // one's with the most page-table-capacity (aligned 0x1000 addresses)
+    // should be first
+
+    // yet more importantly, we need the entries strictly in the order of 
+    // type 1, type 3, type 4, type 5, type [reserved value].
+
+    MemoryMapInfo* memmap = cast(MemoryMapInfo*) (pointer + position);
+
+    MemoryMapEntry* entries = cast(MemoryMapEntry*) (pointer + position + 16);
+
+    // entry length may not equal the defined entry size (which is why the info 
+    // structure specifies the length). So we need to keep track of that separately
+    // 
+    // note that in D:
+    // ```
+    // int* foo = [1, 2, 3].ptr;
+    //
+    // assert(foo[1] == *(foo + 1)); 
+    // ```
+    // compiles and runs successfully
+    
+    MemoryMapEntry* getEntry(in uint index) {
+        return cast(MemoryMapEntry*)((cast(void*)entries) + (index * (*memmap).entrySize));
+    }
+    // length = size of entries / entry size
+    immutable uint length = ((*memmap).size - 16) / (*memmap).entrySize;
+
+    // make a map of the memory types vs their addresses
+    // we will iterate through these later.
+    ulong*** pageTable;
+    size_t[3] indicies;
+
+    indicies = [0, 0, 0];
+
+    for (uint i = 0; i < length; i++) {
+        // going to be in 64-bit, fortunately, D keeps ulong as 64-bits
+        immutable ushort alignmentValue = cast(ushort)(0x1000 - (*getEntry(i)).baseAddress & 0x0fff);
+
+        immutable ulong alignedBaseAddress = (*getEntry(i)).baseAddress + alignmentValue;
+        immutable ulong alignedEntryLength = (*getEntry(i)).length - alignmentValue;
+
+        ulong flags;
+
+        switch ((*getEntry(i)).type) {
+            case 1:
+                flags = CodeMemoryFlags;
+                break;
+            case 3:
+                flags = ACPIMemoryFlags;
+                break;
+            case 4:
+                flags = PresMemoryFlags;
+                break;
+            default:
+                flags = BrknMemoryFlags;
+                break;
+        }
+
+        // each page is 0x1000 bytes in size
+        // thus, we get alignedEntryLength / 0x1000 pages per entry
+        // UNLESS if the type is not equal to 1, then we allocate the page anyways. 
+        // pages, so long as we force aligning them in this manner, will never overlap.
+        
+
+        for (ulong j = 0; j < alignedEntryLength / 0x1000; j++) {
+            pageTable[indicies[0]][indicies[1]][indicies[2]] = (alignedBaseAddress + j * 0x1000) | flags;
+
+            indicies[2]++;
+            if (indicies[2] >= 512) {
+                indicies[2] = 0;
+                indicies[1]++;
+            }
+            if (indicies[1] >= 512) {
+                indicies[1] = 0;
+                indicies[0]++;
+            }
+            if (indicies[0] >= 512) {
+                // filled up all of our RAM
+                // exit without initializing the rest!
+                uint lowPageTable = cast(uint)pageTable;
+                uint hiPageTable = cast(uint)(cast(ulong)pageTable >> 32);
+
+                asm {
+                    mov ECX, hiPageTable;
+                    mov EDX, lowPageTable;
+                }
+                return 1;
+            }
+        }
+    }
+
+    return 1;
 }
