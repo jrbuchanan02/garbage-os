@@ -1,3 +1,20 @@
-gos/build/
-gos/dist/
 
+gos/code/doc/page/*.html
+gos/code/doc/page/*.png
+gos/code/doc/page/*.css
+gos/code/doc/page/*.js
+gos/code/doc/page/*.dot
+
+gos/code/doc/page/search/*.png
+gos/code/doc/page/search/*.html
+gos/code/doc/page/search/*.css
+gos/code/doc/page/search/*.js
+
+gos/code/doc/latex/*.tex
+gos/code/doc/latex/*.sty
+gos/code/doc/latex/Makefile
+gos/code/doc/doxyfile.bak
+gos/code/doc/doxyfile.cfg
+
+gos/code/doc/json
+.vscode/

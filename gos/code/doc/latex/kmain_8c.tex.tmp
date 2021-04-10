@@ -1,0 +1,86 @@
+\hypertarget{kmain_8c}{}\doxysection{gos/code/impl/kernel/kmain.c File Reference}
+\label{kmain_8c}\index{gos/code/impl/kernel/kmain.c@{gos/code/impl/kernel/kmain.c}}
+{\ttfamily \#include \char`\"{}../../intf/kernel/kmain.\+h\char`\"{}}\newline
+Include dependency graph for kmain.\+c\+:
+% FIG 0
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{kmain_8c_a406c20548822065e144564476378f8a1}{kmain}} (void)
+\begin{DoxyCompactList}\small\item\em kernel main function \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{kmain_8c_a8b67a6ff3f33fae9b3f1b142005c0bc2}{\+\_\+start}} (void)
+\begin{DoxyCompactList}\small\item\em bootboot requires entry point to be called start. On the other hand, I want my entry point to be called kmain. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+B\+O\+O\+T\+B\+O\+OT \mbox{\hyperlink{kmain_8c_a22a9f5bf2bf9cc4f3ddc40833c1813b9}{bootboot}}
+\begin{DoxyCompactList}\small\item\em bootboot structure \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{kmain_8c_a95610653efb3a313d63860e9eb64718b}\label{kmain_8c_a95610653efb3a313d63860e9eb64718b}} 
+unsigned char \mbox{\hyperlink{kmain_8c_a95610653efb3a313d63860e9eb64718b}{environment}} \mbox{[}4096\mbox{]}
+\begin{DoxyCompactList}\small\item\em environment, from the environment file specified by the configuration file passed to mkbootimg \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{kmain_8c_a836199dba53ee6b8de6b7790ab78ed5d}\label{kmain_8c_a836199dba53ee6b8de6b7790ab78ed5d}} 
+uint8\+\_\+t \mbox{\hyperlink{kmain_8c_a836199dba53ee6b8de6b7790ab78ed5d}{framebuffer}}
+\begin{DoxyCompactList}\small\item\em framebuffer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Joshua Buchanan (\href{mailto:joshuarobertbuchanan@gmail.com}{\texttt{ joshuarobertbuchanan@gmail.\+com}}) (github\+: @natara1939344) 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+0.\+1 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2021-\/04-\/10
+\end{DoxyDate}
+\begin{DoxyCopyright}{Copyright}
+Copyright (C) 2021 under the L\+G\+PL version 2.\+1 
+\end{DoxyCopyright}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{kmain_8c_a8b67a6ff3f33fae9b3f1b142005c0bc2}\label{kmain_8c_a8b67a6ff3f33fae9b3f1b142005c0bc2}} 
+\index{kmain.c@{kmain.c}!\_start@{\_start}}
+\index{\_start@{\_start}!kmain.c@{kmain.c}}
+\doxysubsubsection{\texorpdfstring{\_start()}{\_start()}}
+{\footnotesize\ttfamily void \+\_\+start (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+bootboot requires entry point to be called start. On the other hand, I want my entry point to be called kmain. 
+
+\begin{DoxyAuthor}{Author}
+Joshua Buchannan (\href{mailto:joshuarobertbuchanan@gmail.com}{\texttt{ joshuarobertbuchanan@gmail.\+com}}) (github\+: @natara1939344) 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2021-\/04-\/10 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+0.\+1 
+\end{DoxyVersion}
+\mbox{\Hypertarget{kmain_8c_a406c20548822065e144564476378f8a1}\label{kmain_8c_a406c20548822065e144564476378f8a1}} 
+\index{kmain.c@{kmain.c}!kmain@{kmain}}
+\index{kmain@{kmain}!kmain.c@{kmain.c}}
+\doxysubsubsection{\texorpdfstring{kmain()}{kmain()}}
+{\footnotesize\ttfamily void kmain (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+kernel main function 
+
+\begin{DoxyDate}{Date}
+2021-\/04-\/10 
+\end{DoxyDate}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{kmain_8c_a22a9f5bf2bf9cc4f3ddc40833c1813b9}\label{kmain_8c_a22a9f5bf2bf9cc4f3ddc40833c1813b9}} 
+\index{kmain.c@{kmain.c}!bootboot@{bootboot}}
+\index{bootboot@{bootboot}!kmain.c@{kmain.c}}
+\doxysubsubsection{\texorpdfstring{bootboot}{bootboot}}
+{\footnotesize\ttfamily B\+O\+O\+T\+B\+O\+OT bootboot}
+
+
+
+bootboot structure 
+
