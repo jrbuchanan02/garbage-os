@@ -30,13 +30,12 @@ void kmain(void)
         for(y=0;y<20;y++) { for(x=0;x<20;x++) { *((uint32_t*)(&framebuffer + s*(y+20) + (x+80)*4))=0x000000FF; } }
 
         // say hello
-        puts("Hello from a simple BOOTBOOT kernel");
+        //puts("Hello from a simple BOOTBOOT kernel");
     }
     // hang for now
     while(1);
 
 }
-
 /**
  * @brief bootboot requires entry point to be called start.
  * On the other hand, I want my entry point to be called kmain.
