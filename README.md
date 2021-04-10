@@ -4,15 +4,17 @@ Garbage OS, or GOS for short, is a work-in-progress proof-of-concept Operating S
 GOS is not intended to replace any of the existing operating systems, however, it is meant to see what performance boost, if any, arises from consolodating Garbage-Collection 
 services to the max - something achieved with GOS as there is only one Garbage Collector. 
 
+GOS is also a BOOTBOOT compliant Operating System, you can find the source code for BOOTBOOT here: https://gitlab.com/bztsrc/bootboot/-/tree/master.
+What complying with BOOTBOOT means for an end-user is that one can directly boot GOS or chainload it from GRUB. GOS is set up to use BOOTBOOT as an efi loader (meaning it works with UEFI).
+
 __**I make no warranty with Garbage OS, nor will I ever.**__
 That being said, if you want to try it out or contribute something, feel free to do so.
 
 
 ## Roadmap
- - Boot in a stable manner that accounts for the unique differences in every computer. 
-   + Initialize memory, i.e., the page table around MMIO devices and "dead memory"
+ - Boot in a stable manner that accounts for the unique differences in every computer. (✔)
+   + Initialize memory, i.e., the page table around MMIO devices and "dead memory" - handled by BOOTBOOT
    + Setup IDT (and test)
-   + run all static constructors within the operating system - D has these, so it must be done
  - Implement preemptive multitasking - this algorithm absolutely needs to be **superfast**.
    + After around 20 min research on OSDev wiki, I am leaning towards implementing a priority based Round Robin.
    + Keep track of processes that are currently running (although, we have to do that for GC).
