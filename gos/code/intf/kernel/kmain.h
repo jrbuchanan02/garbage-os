@@ -6,7 +6,6 @@
 
 #include "bootboot.h"
 
-
 #ifndef KMAIN_H
 #define KMAIN_H 1
 
@@ -48,6 +47,7 @@ extern unsigned char environment[4096];
  * @brief framebuffer.
  */
 extern uint8_t framebuffer;
+
 
 
 #ifdef __cplusplus

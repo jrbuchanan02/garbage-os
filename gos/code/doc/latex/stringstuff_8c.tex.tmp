@@ -1,0 +1,63 @@
+\hypertarget{stringstuff_8c}{}\doxysection{gos/code/impl/crt/stringstuff.c File Reference}
+\label{stringstuff_8c}\index{gos/code/impl/crt/stringstuff.c@{gos/code/impl/crt/stringstuff.c}}
+
+
+Implementation of all things string!  
+
+
+{\ttfamily \#include \char`\"{}../../intf/crt/stringstuff.\+h\char`\"{}}\newline
+Include dependency graph for stringstuff.\+c\+:
+% FIG 0
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+boolean \mbox{\hyperlink{stringstuff_8c_a6ecd08e5731586648323fb417eca80a0}{str\+\_\+eq}} (char lhs\mbox{[}$\,$\mbox{]}, char rhs\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em indicates whether two strings are equal \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{stringstuff_8c_a29cd1a5ad810a1686cbd71fd0f3a2812}\label{stringstuff_8c_a29cd1a5ad810a1686cbd71fd0f3a2812}} 
+uint64\+\_\+t {\bfseries strlen} (char string\mbox{[}$\,$\mbox{]})
+\item 
+\mbox{\Hypertarget{stringstuff_8c_a381102fc2847c354bc17884c5b7e268c}\label{stringstuff_8c_a381102fc2847c354bc17884c5b7e268c}} 
+char $\ast$ {\bfseries append} (char string\mbox{[}$\,$\mbox{]}, char append\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementation of all things string! 
+
+\begin{DoxyAuthor}{Author}
+Joshua Buchanan (\href{mailto:joshuarobertbuchanan@gmail.com}{\texttt{ joshuarobertbuchanan@gmail.\+com}}) (github\+: @natara1939344) 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+0.\+1 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2021-\/04-\/10
+\end{DoxyDate}
+\begin{DoxyCopyright}{Copyright}
+Copyright (C) 2021 under the L\+G\+PL version 2.\+1 
+\end{DoxyCopyright}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{stringstuff_8c_a6ecd08e5731586648323fb417eca80a0}\label{stringstuff_8c_a6ecd08e5731586648323fb417eca80a0}} 
+\index{stringstuff.c@{stringstuff.c}!str\_eq@{str\_eq}}
+\index{str\_eq@{str\_eq}!stringstuff.c@{stringstuff.c}}
+\doxysubsubsection{\texorpdfstring{str\_eq()}{str\_eq()}}
+{\footnotesize\ttfamily boolean str\+\_\+eq (\begin{DoxyParamCaption}\item[{char}]{lhs\mbox{[}$\,$\mbox{]},  }\item[{char}]{rhs\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+indicates whether two strings are equal 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lhs} & left hand side \\
+\hline
+{\em rhs} & right hand side \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+T\+R\+UE when lhs and rhs are idendical 
+
+F\+A\+L\+SE when lhs and rhs are not identical. 
+\end{DoxyReturn}
