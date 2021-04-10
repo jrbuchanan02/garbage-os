@@ -18,3 +18,5 @@ gos/code/doc/doxyfile.cfg
 
 gos/code/doc/json
 .vscode/
+gos/disk/gos.img
+gos/disk/BOOT/KERN/output.bin

@@ -1,8 +1,10 @@
 kernel_sources := $(shell find gos/code/impl/kernel/ -name *.c)
 kernel_objects := $(patsubst gos/code/impl/kernel/%.c, gos/build/impl/kernel/%.o, $(kernel_sources))
 
+crt_sources := $(shell find gos/code/impl/crt/ -name *.c)
+crt_objects := $(patsubst gos/code/impl/crt/%.c, gos/build/impl/crt/%.o, $(crt_objects))
 
-all_objects := $(kernel_objects) 
+all_objects := $(kernel_objects) $(crt_objects)
 mkbootimg := $(shell find mkbootimg/mkbootimg)
 
 define losetup_limits
@@ -13,10 +15,13 @@ define losetup_offset
 1048576
 endef
 
-$(kernel_objects): $(kernel_sources)
-	gcc -ffreestanding -mno-red-zone -O3 -c -o $@ $(patsubst gos/build/impl/kernel/%.o, gos/code/impl/kernel/%.c, $@)
+	
 all: preclean build_kernel document clean
 
+$(kernel_objects) : $(kernel_sources)
+	gcc -ffreestanding -mno-red-zone -Wall -Wextra -Werror -Wpedantic -O3 -c -o $@ $(patsubst gos/build/impl/kernel/%.o, gos/code/impl/kernel/%.c, $@)
+$(crt_objects) : $(crt_sources)
+	gcc -ffreestanding -mno-red-zone -Wall -Wextra -Werror -Wpedantic -O3 -c -o $@ $(patsubst gos/build/impl/crt/%.o, gos/code/impl/kernel/%.c, $@)
 preclean:
 	rm -rf gos/dist/output.bin
 	rm -rf gos/disk/*.*

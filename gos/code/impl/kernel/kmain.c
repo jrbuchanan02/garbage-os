@@ -18,8 +18,13 @@
 void kmain(void)
 {
     int x, y, s=bootboot.fb_scanline, w=bootboot.fb_width, h=bootboot.fb_height;
-
     if(s) {
+        for (x = 0; x < w; x++) {
+            for (y = 0; y < h; y++) {
+                *((uint32_t*)(&framebuffer + s * y + x * 4)) = 0xFFffFFff;
+            }
+        }
+
         // cross-hair to see screen dimension detected correctly
         for(y=0;y<h;y++) { *((uint32_t*)(&framebuffer + s*y + (w*2)))=0x00FFFFFF; }
         for(x=0;x<w;x++) { *((uint32_t*)(&framebuffer + s*(h/2)+x*4))=0x00FFFFFF; }
@@ -30,13 +35,12 @@ void kmain(void)
         for(y=0;y<20;y++) { for(x=0;x<20;x++) { *((uint32_t*)(&framebuffer + s*(y+20) + (x+80)*4))=0x000000FF; } }
 
         // say hello
-        puts("Hello from a simple BOOTBOOT kernel");
+        //puts("Hello from a simple BOOTBOOT kernel");
     }
     // hang for now
     while(1);
 
 }
-
 /**
  * @brief bootboot requires entry point to be called start.
  * On the other hand, I want my entry point to be called kmain.
@@ -47,3 +51,5 @@ void kmain(void)
 void _start(void) {
     kmain();
 }
+
+
