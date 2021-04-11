@@ -15,12 +15,14 @@ That being said, if you want to try it out or contribute something, feel free to
  - Boot in a stable manner that accounts for the unique differences in every computer. (✔)
    + Initialize memory, i.e., the page table around MMIO devices and "dead memory" - handled by BOOTBOOT
    + Setup IDT (and test)
+ - Implement a Garbage Collector service, kind of obvious since that's the entire point of this project.
  - Implement preemptive multitasking - this algorithm absolutely needs to be **superfast**.
    + After around 20 min research on OSDev wiki, I am leaning towards implementing a priority based Round Robin.
    + Keep track of processes that are currently running (although, we have to do that for GC).
  - Implement some Open Source Quality of Life improvements
    + ext-based filesystem. Since there is already an extremely popular implementation on GitHub, I might check how it works - implementing it myself
    + elf executable file format (or a modification of that). ELF is simple, fast, and well documented.
+ - Implement GUI (BOOTBOOT sets up graphical framebuffer, so GUI becomes a *task*).
  - See if and where it goes from here.
 
 ## Contributions
