@@ -1,7 +1,12 @@
 /**
- * \file kmain.h
- * \author Joshua Buchanan
- * \brief stuff for the kmain.c file.
+ * @file kmain.h
+ * @author Joshua Buchanan (joshuarobertbuchanan@gmail.com) (github: @natara1939344)
+ * @brief 
+ * @version 0.1
+ * @date 2021-04-11
+ * 
+ * @copyright Copyright (C) 2021 under the LGPL version 2.1
+ * 
  */
 
 #include "bootboot.h"

@@ -19,4 +19,10 @@ gos/code/doc/doxyfile.cfg
 gos/code/doc/json
 .vscode/
 gos/disk/gos.img
-gos/disk/BOOT/KERN/output.bin
+gos/dist/boot/kern/output.bin
+gos/dist/usr/crt/crt.bin
+gos/dist/usr/os/*.elf
+
+gos/build/impl/crt/*.o
+gos/build/impl/os/*.o
+gos/build/impl/kernel/*.o

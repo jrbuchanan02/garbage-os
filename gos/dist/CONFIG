@@ -1,4 +1,4 @@
-kernel=KERN/output.bin
+kernel=kern/output.bin
 
 major_version=0
 minor_version=0
