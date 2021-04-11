@@ -13,12 +13,8 @@ Include dependency graph for stringstuff.\+c\+:
 \item 
 boolean \mbox{\hyperlink{stringstuff_8c_a6ecd08e5731586648323fb417eca80a0}{str\+\_\+eq}} (char lhs\mbox{[}$\,$\mbox{]}, char rhs\mbox{[}$\,$\mbox{]})
 \begin{DoxyCompactList}\small\item\em indicates whether two strings are equal \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{stringstuff_8c_a29cd1a5ad810a1686cbd71fd0f3a2812}\label{stringstuff_8c_a29cd1a5ad810a1686cbd71fd0f3a2812}} 
-uint64\+\_\+t {\bfseries strlen} (char string\mbox{[}$\,$\mbox{]})
-\item 
-\mbox{\Hypertarget{stringstuff_8c_a381102fc2847c354bc17884c5b7e268c}\label{stringstuff_8c_a381102fc2847c354bc17884c5b7e268c}} 
-char $\ast$ {\bfseries append} (char string\mbox{[}$\,$\mbox{]}, char append\mbox{[}$\,$\mbox{]})
-\end{DoxyCompactItemize}
+uint64\+\_\+t \mbox{\hyperlink{stringstuff_8c_a29cd1a5ad810a1686cbd71fd0f3a2812}{strlen}} (char string\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Parses string until finding a null character. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -60,4 +56,22 @@ indicates whether two strings are equal
 T\+R\+UE when lhs and rhs are idendical 
 
 F\+A\+L\+SE when lhs and rhs are not identical. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{stringstuff_8c_a29cd1a5ad810a1686cbd71fd0f3a2812}\label{stringstuff_8c_a29cd1a5ad810a1686cbd71fd0f3a2812}} 
+\index{stringstuff.c@{stringstuff.c}!strlen@{strlen}}
+\index{strlen@{strlen}!stringstuff.c@{stringstuff.c}}
+\doxysubsubsection{\texorpdfstring{strlen()}{strlen()}}
+{\footnotesize\ttfamily uint64\+\_\+t strlen (\begin{DoxyParamCaption}\item[{char}]{string\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Parses string until finding a null character. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em string} & the string to parse -\/ literally a character array \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+uint64\+\_\+t the length of string 
 \end{DoxyReturn}

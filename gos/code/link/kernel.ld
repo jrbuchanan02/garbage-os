@@ -1,4 +1,7 @@
-initstack = 0x4000;
+initstack = 0x4000; /* 16KiB stack per core. Generally, systems have much more RAM than that
+                     * The Idea here is that more stack, 16KiB is not that much, will help out
+                     * algorithms that rely on recursion, such as the Euclidiean Algorithm. 
+                     */
 PHDRS
 {
   boot PT_LOAD;                                /* one single loadable segment */

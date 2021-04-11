@@ -32,25 +32,15 @@ boolean str_eq(char lhs[], char rhs[]) {
         return FALSE;
 }
 
+/**
+ * @brief Parses string until finding a null character
+ * 
+ * @param string the string to parse - literally a character array
+ * @return uint64_t the length of string
+ */
 uint64_t strlen(char string[]) {
     uint64_t output = 0;
     for (;string[output]; output++);
     return output;
-}
-
-char* append(char string[], char append[]) {
-    char* out = malloc(strlen(string) + strlen(append) - 1);
-
-    uint64_t outlen = 0;
-    uint64_t index;
-    for (index = 0; string[index]; index++) {
-        out[index] = string[index];
-        outlen++;
-    }
-    // also grab the null terminator
-    for (index = 0; append[index - 1]; index++) {
-        out[index + outlen] = append[index];
-    }
-    return out;
 }
 

@@ -1,7 +1,7 @@
 {
-    "config" : "gos/dist/CONFIG",
+    "config" : "gos/dist/config",
     "iso9660" : true,
-    "initrd" : {"gzip" : true, "type" : "tar", "directory" : "gos/dist/BOOT"},
+    "initrd" : {"gzip" : true, "type" : "tar", "directory" : "gos/dist/boot"},
     "partitions" : [
         {"type" : "boot", "size" : 128}
     ]

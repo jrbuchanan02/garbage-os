@@ -36,25 +36,6 @@ boolean str_eq(char lhs[], char rhs[]);
 
 uint64_t strlen(char string[]);
 
-char* append(char string[], char append[]);
-
-split_result_t split_along(
-    char string[], 
-    char delim, 
-    delimiter_behavior_t behavior);
-
-split_result_t split_along(
-    char string[],
-    char delims[],
-    delimiter_behavior_t behavior);
-
-split_result_t split_along(
-    char string[],
-    char delim);
-
-split_result_t split_along(
-    char string[],
-    char delim[]);
 
 #if defined (__cplusplus)
 }
