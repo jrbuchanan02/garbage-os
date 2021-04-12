@@ -1,0 +1,11 @@
+digraph "gos/code/impl/os" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_28806fa30cdad83a5289b6599f371a19 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="impl" fontname="Helvetica", fontsize="10", URL="dir_28806fa30cdad83a5289b6599f371a19.html"]
+  dir_40aa71ba007aa4ec93ad0ab21b18f7f5 [shape=box, label="os", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_40aa71ba007aa4ec93ad0ab21b18f7f5.html"];
+  }
+  dir_7cfd3f5206138927fc05cd40aea58664 [shape=box label="intf" fillcolor="white" style="filled" color="red" URL="dir_7cfd3f5206138927fc05cd40aea58664.html"];
+  dir_40aa71ba007aa4ec93ad0ab21b18f7f5->dir_7cfd3f5206138927fc05cd40aea58664 [headlabel="1", labeldistance=1.5 headhref="dir_000005_000006.html"];
+}

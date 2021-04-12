@@ -1,18 +1,30 @@
 var indexSectionsWithContent =
 {
-  0: "cgs",
-  1: "cgs"
+  0: "_begikpst",
+  1: "_eips",
+  2: "egikpst",
+  3: "_ks",
+  4: "be",
+  5: "i"
 };
 
 var indexSectionNames =
 {
   0: "all",
-  1: "pages"
+  1: "classes",
+  2: "files",
+  3: "functions",
+  4: "variables",
+  5: "typedefs"
 };
 
 var indexSectionLabels =
 {
   0: "All",
-  1: "Pages"
+  1: "Classes",
+  2: "Files",
+  3: "Functions",
+  4: "Variables",
+  5: "Typedefs"
 };
 
