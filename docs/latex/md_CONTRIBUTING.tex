@@ -1,0 +1,13 @@
+As a general rule, feel free to contribute. Find an issue that you feel capable of addressing under issues, and, well, address it.\hypertarget{md_CONTRIBUTING_autotoc_md8}{}\doxysection{Code Conventions}\label{md_CONTRIBUTING_autotoc_md8}
+\hypertarget{md_CONTRIBUTING_autotoc_md9}{}\doxysubsection{D-\/lang}\label{md_CONTRIBUTING_autotoc_md9}
+
+\begin{DoxyItemize}
+\item As a general rule, if your code violates the \href{https://dlang.org}{\texttt{ https\+://dlang.\+org}} conventions, you are killing puppies and making people sad.
+\item In addition to compile-\/time errors, compile-\/time warnings (and, by extension, code that causes them) are heavily discouraged. The goal of an operating system is not to make \char`\"{}quick and dirty\char`\"{} code or \char`\"{}fast at all costs\char`\"{} code, but to make code that performs its job exactly as it should.
+\end{DoxyItemize}\hypertarget{md_CONTRIBUTING_autotoc_md10}{}\doxysubsection{Assembler}\label{md_CONTRIBUTING_autotoc_md10}
+\hypertarget{md_CONTRIBUTING_autotoc_md11}{}\doxysubsubsection{When should I use the inline assember?}\label{md_CONTRIBUTING_autotoc_md11}
+
+\begin{DoxyItemize}
+\item If your code {\itshape must} use assembly opcodes, use D\textquotesingle{}s built-\/in inline assembler -\/ if the version is, say, A\+A\+R\+C\+H64 (which is not yet implemented), then you should also include code within a .s file in the appropriate location.
+\item If your code {\itshape requires an op-\/code not allowed in the inline-\/assembler}, place the function in an assembler file. 
+\end{DoxyItemize}

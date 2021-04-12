@@ -92,8 +92,8 @@ build_kernel: $(all_objects) $(gos_binary)
 	sudo umount gos/dist
 	./mkbootimg/mkbootimg gos/code/bootboot/configuration.json gos/disk/gos.img
 document:
-	doxygen gos/code/doc/doxyfile.cfg gos/code/doc/
-	cp -r gos/code/doc/page/ doc/
+	rm -rf docs/*.*
+	doxygen Doxyfile.cfg
 clean:
 	rm -rf gos/build/impl/crt/*.o
 	rm -rf gos/build/impl/kernel/*.o
