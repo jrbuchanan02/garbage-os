@@ -10,6 +10,8 @@ What complying with BOOTBOOT means for an end-user is that one can directly boot
 __**I make no warranty with Garbage OS, nor will I ever.**__
 That being said, if you want to try it out or contribute something, feel free to do so.
 
+## Documentation
+Almost everything in Garbage OS is documented [here](./docs/index.html)
 
 ## Roadmap
  - Boot in a stable manner that accounts for the unique differences in every computer. (✔)
