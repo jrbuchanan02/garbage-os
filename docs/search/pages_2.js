@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['security_20policy_7',['Security Policy',['../md_SECURITY.html',1,'']]]
+  ['garbage_20os_58',['Garbage OS',['../index.html',1,'']]]
 ];

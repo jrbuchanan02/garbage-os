@@ -13,6 +13,9 @@ That being said, if you want to try it out or contribute something, feel free to
 ## Documentation
 Almost everything in Garbage OS is documented [here](./docs/index.html)
 
+## BOOTBOOT loader, standard, and image creator.
+You can find the README.md for mkbootimg, part of the BOOTBOOT repository and the program that assembles the final disk image for GOS, [here](./mkbootimg/README.md)
+
 ## Roadmap
  - Boot in a stable manner that accounts for the unique differences in every computer. (✔)
    + Initialize memory, i.e., the page table around MMIO devices and "dead memory" - handled by BOOTBOOT

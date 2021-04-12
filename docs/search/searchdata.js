@@ -1,11 +1,12 @@
 var indexSectionsWithContent =
 {
-  0: "_begikpst",
+  0: "_bcegikpst",
   1: "_eips",
   2: "egikpst",
   3: "_ks",
   4: "be",
-  5: "i"
+  5: "i",
+  6: "bcgs"
 };
 
 var indexSectionNames =
@@ -15,7 +16,8 @@ var indexSectionNames =
   2: "files",
   3: "functions",
   4: "variables",
-  5: "typedefs"
+  5: "typedefs",
+  6: "pages"
 };
 
 var indexSectionLabels =
@@ -25,6 +27,7 @@ var indexSectionLabels =
   2: "Files",
   3: "Functions",
   4: "Variables",
-  5: "Typedefs"
+  5: "Typedefs",
+  6: "Pages"
 };
 

@@ -13,7 +13,7 @@
 
 /**
  * @brief kernel main function
- * FIXME #25 - this issue seems to be quite perplexing.
+ * @bug FIXME #25 - this issue seems to be quite perplexing.
  * @date 2021-04-10
  */
 void kmain(void)

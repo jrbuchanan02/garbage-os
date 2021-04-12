@@ -10,7 +10,6 @@
  */
 
 #include "../../intf/os/gc.h"
-#include "../../intf/crt/error_codes.h"
 
 int main(void) {
     return ERROR_CODE_NOT_IMPLEMENTED;
