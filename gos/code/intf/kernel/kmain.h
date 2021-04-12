@@ -1,7 +1,7 @@
 /**
  * @file kmain.h
  * @author Joshua Buchanan (joshuarobertbuchanan@gmail.com) (github: @natara1939344)
- * @brief 
+ * @brief File for what we include in the kmain.c file
  * @version 0.1
  * @date 2021-04-11
  * 

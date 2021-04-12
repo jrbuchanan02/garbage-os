@@ -1,7 +1,7 @@
 /**
  * @file kmain.c
  * @author Joshua Buchanan (joshuarobertbuchanan@gmail.com) (github: @natara1939344)
- * @brief 
+ * @brief entry point for the operating system.
  * @version 0.1
  * @date 2021-04-10
  * 
