@@ -42,16 +42,13 @@ environment_t parse_configuration_file(unsigned char env[4096]);
  * @brief bootboot structure
  * 
  */
-extern BOOTBOOT bootboot;
+extern volatile BOOTBOOT bootboot;
 /**
  * @brief environment, from the environment file specified by the configuration file
  * passed to mkbootimg
  */
 extern unsigned char environment[4096];
-/**
- * @brief framebuffer.
- */
-extern uint8_t framebuffer;
+
 
 
 

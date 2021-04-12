@@ -1,5 +1,4 @@
 kernel=kern/output.bin
-
 major_version=0
 minor_version=0
 fixed_version=0

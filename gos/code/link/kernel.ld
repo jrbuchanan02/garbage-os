@@ -9,15 +9,19 @@ PHDRS
 SECTIONS
 {
     . = 0xffffffffffe02000;
+    . = ALIGN(0x1000);
+    . += 0x1000;
     mmio = .;
     . = ALIGN(0x1000);
-    
-    bootboot = .;
-    . += 0x1000;
-    environment = .;
-    . += 0x1000;
     framebuffer = .;
     . += 0x1000;
+    . = ALIGN(0x1000);
+    bootboot = .;
+    . += 0x1000;
+    . = ALIGN(0x1000);
+    environment = .;
+    . += 0x1000;
+    . = ALIGN(0x1000);
 
     .text : {
         KEEP(*(.text.boot)) *(.text .text.*)   /* code */

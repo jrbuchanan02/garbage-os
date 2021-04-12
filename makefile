@@ -14,7 +14,7 @@ os_sources := $(shell find gos/code/impl/os/ -name *.c)
 os_objects := $(patsubst gos/code/impl/os/%.c, gos/build/impl/os/%.o, $(os_sources))
 
 gos_binary := $(patsubst gos/code/impl/os/%.c, gos/dist/usr/os/%.elf, $(os_sources))
-C_FLAGS := -ffreestanding -mno-red-zone -Wall -Wextra -Wpedantic -Werror -O3 -c
+C_FLAGS := -ffreestanding -mno-red-zone -Wall -Wextra -Wpedantic -Werror -O0 -g -c
 LDFLAGS := -nostdlib -nostartfiles -b elf64-x86-64
 
 all_objects := $(kernel_objects) $(crt_objects) $(os_objects)
@@ -93,6 +93,7 @@ build_kernel: $(all_objects) $(gos_binary)
 	./mkbootimg/mkbootimg gos/code/bootboot/configuration.json gos/disk/gos.img
 document:
 	doxygen gos/code/doc/doxyfile.cfg gos/code/doc/
+	cp -r gos/code/doc/page/ doc/
 clean:
 	rm -rf gos/build/impl/crt/*.o
 	rm -rf gos/build/impl/kernel/*.o
