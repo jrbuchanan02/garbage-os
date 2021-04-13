@@ -10,7 +10,8 @@
  */
 
 #include "bootboot.h"
-
+#include "immintrin.h"
+#include "stddef.h"
 #ifndef KMAIN_H
 #define KMAIN_H 1
 
@@ -49,8 +50,7 @@ extern volatile BOOTBOOT bootboot;
  */
 extern unsigned char environment[4096];
 
-
-
+extern uint8_t fb;
 
 #ifdef __cplusplus
 }

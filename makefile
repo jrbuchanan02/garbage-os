@@ -14,7 +14,7 @@ os_sources := $(shell find gos/code/impl/os/ -name *.c)
 os_objects := $(patsubst gos/code/impl/os/%.c, gos/build/impl/os/%.o, $(os_sources))
 
 gos_binary := $(patsubst gos/code/impl/os/%.c, gos/dist/usr/os/%.elf, $(os_sources))
-C_FLAGS := -ffreestanding -mno-red-zone -Wall -Wextra -Wpedantic -Werror -O0 -g -c
+C_FLAGS := -ffreestanding -mno-red-zone -Wall -Wextra -Wpedantic -Werror -O0 -g -c -mrdrnd
 LDFLAGS := -nostdlib -nostartfiles -b elf64-x86-64
 
 all_objects := $(kernel_objects) $(crt_objects) $(os_objects)

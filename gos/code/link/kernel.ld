@@ -8,17 +8,15 @@ PHDRS
 }
 SECTIONS
 {
-    . = 0xffffffffffe02000;
+    . = 0xffffffffffe00000;
+    fb = .;
     . = ALIGN(0x1000);
-    . += 0x1000;
     mmio = .;
     . = ALIGN(0x1000);
-    framebuffer = .;
     . += 0x1000;
-    . = ALIGN(0x1000);
     bootboot = .;
-    . += 0x1000;
     . = ALIGN(0x1000);
+    . += 0x1000;
     environment = .;
     . += 0x1000;
     . = ALIGN(0x1000);
@@ -28,7 +26,7 @@ SECTIONS
         *(.rodata .rodata.*)                   /* data */
         *(.data .data.*)
     } :boot
-    .bss (NOLOAD) : {                          /* bss */
+    .bss : {                          /* bss */
         . = ALIGN(16);
         *(.bss .bss.*)
         *(COMMON)

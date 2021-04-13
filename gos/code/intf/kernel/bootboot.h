@@ -1,4 +1,4 @@
-/*
+/**
  * bootboot.h
  * https://gitlab.com/bztsrc/bootboot
  *

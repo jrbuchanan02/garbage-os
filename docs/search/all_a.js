@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['welcome_20to_20the_20garbage_20os_20documentation_20landing_20page_29',['Welcome to the Garbage OS Documentation Landing Page',['../md_docs_index.html',1,'']]]
+  ['tables_2ec_29',['tables.c',['../tables_8c.html',1,'']]],
+  ['tables_2eh_30',['tables.h',['../tables_8h.html',1,'']]]
 ];
