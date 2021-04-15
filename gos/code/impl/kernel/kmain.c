@@ -34,9 +34,34 @@ void _start(void) {
         for(y=0;y<20;y++) { for(x=0;x<20;x++) { *((uint32_t*)(&fb + s*(y+20) + (x+80)*4))=0x000000FF; } }
 
         // say hello
-        //puts("Hello from a simple BOOTBOOT kernel");
+        //put_string("Hello from a simple BOOTBOOT kernel");
     }
-    // hang for now
-    while(1);
+    // fill screen with color changing square
+    rectangle_t rectangle = {0x00, 0x00, 0x00, 0x00, 0LLU, 0LLU, bootboot.fb_width, bootboot.fb_height};
+    while (1) {
+        if (rectangle.fill_b == 0xff) {
+            if (rectangle.fill_g == 0xff) {
+                rectangle.fill_r++;
+            }
+            rectangle.fill_g++;
+        }
+        rectangle.fill_b++;
+
+        draw(&rectangle);
+    }
 }
 
+void draw(rectangle_t* rectangle) {
+    uint64_t cursor_y;
+    uint64_t cursor_x;
+
+    uint64_t y_offset = bootboot.fb_height - 1 - rectangle->y_position;
+    uint64_t x_offset = bootboot.fb_scanline + 4;
+
+    for (cursor_y = 0; cursor_y < rectangle->height; cursor_y++) {
+        for (cursor_x = 0; cursor_x < rectangle->width; cursor_x++) {
+            uint64_t offset = (y_offset - cursor_y) * (x_offset * rectangle->y_position * cursor_x);
+            (*(uint32_t*)(fb + offset)) = *(uint32_t*)(rectangle); // probably puppy killing hack, fix later.
+        }
+    }
+}

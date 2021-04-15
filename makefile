@@ -3,6 +3,9 @@ kernel_sources := $(shell find gos/code/impl/kernel/ -name *.c)
 # change the source file names to what they will be after compilation
 kernel_objects := $(patsubst gos/code/impl/kernel/%.c, gos/build/impl/kernel/%.o, $(kernel_sources))
 
+font_sources := $(shell find gos/code/impl/fonts/ -name *.psf)
+font_objects := $(patsubst gos/code/impl/fonts/%.psf, gos/build/impl/fonts/%.o, $(font_objects))
+
 # find all the source files within the CRT
 crt_sources := $(shell find gos/code/impl/crt/ -name *.c)
 # change the source file names to what they will be after compilation
@@ -72,6 +75,9 @@ $(os_objects) : $(os_sources)
 	gcc $(C_FLAGS) -c -o $@ $(patsubst gos/build/impl/os/%.o, gos/code/impl/os/%.c, $@)
 $(gos_binary) : $(os_objects)
 	ld $(LDFLAGS) -T gos/code/link/os.ld -o $@ $(patsubst gos/dist/usr/os/%.elf, gos/build/impl/os/%.o, $@)
+
+$(font_objects) : $(font_sources)
+	ld -r -b binary -o $@ $(patsubst gos/build/impl/fonts/%.o, gos/code/impl/fonts/%.psf, $@)
 # Ensure that the disk is empty before building - removed files and name changes may occur.
 preclean:
 	rm -rf gos/dist/*.bin
@@ -79,7 +85,7 @@ preclean:
 	rm -rf gos/disk/*.*
 #build everything
 build_kernel: $(all_objects) $(gos_binary)
-	ld $(LDFLAGS) -T gos/code/link/kernel.ld -o gos/dist/boot/kern/output.bin $(kernel_objects)
+	ld $(LDFLAGS) -T gos/code/link/kernel.ld -o gos/dist/boot/kern/output.bin $(kernel_objects) $(font_objects)
 	ld $(LDFLAGS) -T gos/code/link/crt.ld -o gos/dist/usr/crt/crt.bin $(crt_objects)
 	$(mkbootimg) check gos/dist/boot/kern/output.bin
 # create the disk image

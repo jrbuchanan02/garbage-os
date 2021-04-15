@@ -19,7 +19,7 @@ SECTIONS
         *(.rodata .rodata.*)                   /* data */
         *(.data .data.*)
     } :boot
-    .bss : {                          /* bss */
+    .bss (NOLOAD) : {                          /* bss */
         . = ALIGN(16);
         *(.bss .bss.*)
         *(COMMON)

@@ -15,6 +15,8 @@
 #ifndef KMAIN_H
 #define KMAIN_H 1
 
+#include "image.h"
+
 #define TRUE 1
 #define FALSE 0
 
@@ -53,6 +55,19 @@ extern volatile unsigned char environment[4096];
 extern volatile uint8_t fb;
 
 extern volatile uint8_t mmio;
+
+typedef struct {
+    uint8_t fill_a; // unused
+    uint8_t fill_r;
+    uint8_t fill_g;
+    uint8_t fill_b;
+    int64_t x_position; // left
+    int64_t y_position; // top
+    uint64_t width;
+    uint64_t height;
+} rectangle_t;
+
+void draw(rectangle_t *rectangle);
 
 #ifdef __cplusplus
 }

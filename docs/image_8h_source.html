@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Garbage OS: gos/code/intf/kernel Directory Reference</title>
+<title>Garbage OS: gos/code/intf/kernel/image.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -67,31 +67,30 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">kernel Directory Reference</div>  </div>
+<div class="title">image.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="dynheader">
-Directory dependency graph for kernel:</div>
-<div class="dyncontent">
-<div class="center"><img src="dir_0233dff05e1f363759454728986c035f_dep.png" border="0" usemap="#dir__0233dff05e1f363759454728986c035f__dep" alt="gos/code/intf/kernel"/></div>
-</div>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
-Files</h2></td></tr>
-<tr class="memitem:image_8h"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="image_8h.html">image.h</a> <a href="image_8h_source.html">[code]</a></td></tr>
-<tr class="memdesc:image_8h"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws images and stuff. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:kmain_8h"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="kmain_8h.html">kmain.h</a> <a href="kmain_8h_source.html">[code]</a></td></tr>
-<tr class="memdesc:kmain_8h"><td class="mdescLeft">&#160;</td><td class="mdescRight">File for what we include in the <a class="el" href="kmain_8c.html" title="entry point for the operating system.">kmain.c</a> file. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:process_8h"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="process_8h.html">process.h</a> <a href="process_8h_source.html">[code]</a></td></tr>
-<tr class="memdesc:process_8h"><td class="mdescLeft">&#160;</td><td class="mdescRight">This file will help manage processes and task switching. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:tables_8h"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tables_8h.html">tables.h</a> <a href="tables_8h_source.html">[code]</a></td></tr>
-<tr class="memdesc:tables_8h"><td class="mdescLeft">&#160;</td><td class="mdescRight">This file will contain the definition and methods to load / create / read the tables that the processor uses internally: IDT, GDT, and LDT. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-</div><!-- contents -->
+<a href="image_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;bootboot.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#ifndef IMAGE_H</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#define IMAGE_H 1</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">extern</span> <span class="keyword">volatile</span> BOOTBOOT <a class="code" href="kmain_8h.html#aa222782ad3772839280c00a29b4bc6fd">bootboot</a>;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">extern</span> <span class="keyword">volatile</span> uint8_t fb;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#endif</span></div>
+</div><!-- fragment --></div><!-- contents -->
+<div class="ttc" id="akmain_8h_html_aa222782ad3772839280c00a29b4bc6fd"><div class="ttname"><a href="kmain_8h.html#aa222782ad3772839280c00a29b4bc6fd">bootboot</a></div><div class="ttdeci">volatile BOOTBOOT bootboot</div><div class="ttdoc">bootboot structure</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

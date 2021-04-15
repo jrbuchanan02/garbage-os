@@ -1,7 +1,7 @@
 var indexSectionsWithContent =
 {
-  0: "_bcegikpst",
-  1: "_eips",
+  0: "_bcegikprst",
+  1: "_eiprs",
   2: "egikpst",
   3: "_s",
   4: "be",
