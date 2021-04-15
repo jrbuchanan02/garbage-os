@@ -11,18 +11,10 @@
 #include "../../intf/kernel/kmain.h"
 
 
-/**
- * @brief kernel main function
- * @bug FIXME #25 - this issue seems to be quite perplexing.
- * @date 2021-04-10
- */
-void kmain(void)
-{
-    while (1);
-}
+
 /**
  * @brief bootboot requires entry point to be called start.
- * On the other hand, I want my entry point to be called kmain.
+ * On the other hand, I want my entry point to be called kmain. Which is sad.
  * @author Joshua Buchannan (joshuarobertbuchanan@gmail.com) (github: @natara1939344)
  * @date 2021-04-10
  * @version 0.1
@@ -46,7 +38,5 @@ void _start(void) {
     }
     // hang for now
     while(1);
-
-    kmain();
 }
 

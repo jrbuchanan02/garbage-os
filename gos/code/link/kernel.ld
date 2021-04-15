@@ -8,19 +8,12 @@ PHDRS
 }
 SECTIONS
 {
-    . = 0xffffffffffe00000;
-    fb = .;
-    . = ALIGN(0x1000);
-    mmio = .;
-    . = ALIGN(0x1000);
-    . += 0x1000;
-    bootboot = .;
-    . = ALIGN(0x1000);
-    . += 0x1000;
-    environment = .;
-    . += 0x1000;
-    . = ALIGN(0x1000);
-
+    fb =            0xffffFFFFfc000000;
+    mmio =          0xffffFFFFf8000000;
+    bootboot =      0xffffFFFFffe00000;
+    environment =   0xffffFFFFffe01000;
+    . =             0xffffffffffe02000;
+    
     .text : {
         KEEP(*(.text.boot)) *(.text .text.*)   /* code */
         *(.rodata .rodata.*)                   /* data */

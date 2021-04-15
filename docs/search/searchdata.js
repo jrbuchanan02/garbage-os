@@ -3,7 +3,7 @@ var indexSectionsWithContent =
   0: "_bcegikpst",
   1: "_eips",
   2: "egikpst",
-  3: "_ks",
+  3: "_s",
   4: "be",
   5: "i",
   6: "bcgs"

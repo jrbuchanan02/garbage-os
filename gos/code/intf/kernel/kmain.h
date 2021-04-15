@@ -48,9 +48,11 @@ extern volatile BOOTBOOT bootboot;
  * @brief environment, from the environment file specified by the configuration file
  * passed to mkbootimg
  */
-extern unsigned char environment[4096];
+extern volatile unsigned char environment[4096];
 
-extern uint8_t fb;
+extern volatile uint8_t fb;
+
+extern volatile uint8_t mmio;
 
 #ifdef __cplusplus
 }
