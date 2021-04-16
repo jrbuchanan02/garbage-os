@@ -9,16 +9,13 @@
  * 
  */
 
-#include "bootboot.h"
-#include "immintrin.h"
-#include "stddef.h"
+#include "global.h"
+#include "serialwrite.h"
 #ifndef KMAIN_H
 #define KMAIN_H 1
 
-#include "image.h"
-
-#define TRUE 1
-#define FALSE 0
+//#define TRUE 1
+//#define FALSE 0
 
 typedef uint8_t boolean;
 
@@ -26,48 +23,7 @@ typedef uint8_t boolean;
 extern "C" {
 #endif
 
-/**
- * @brief Information about the current environment
- * @note version type is changed to become null-terminated
- */
-typedef struct {
-    uint8_t debug_mode;
-    uint64_t major_version;
-    uint64_t minor_version;
-    uint64_t fixed_version;
-    uint64_t build_version;
-    unsigned char version_type[];
-} environment_t;
 
-environment_t parse_configuration_file(unsigned char env[4096]);
-
-/**
- * @brief bootboot structure
- * 
- */
-extern volatile BOOTBOOT bootboot;
-/**
- * @brief environment, from the environment file specified by the configuration file
- * passed to mkbootimg
- */
-extern volatile unsigned char environment[4096];
-
-extern volatile uint8_t fb;
-
-extern volatile uint8_t mmio;
-
-typedef struct {
-    uint8_t fill_a; // unused
-    uint8_t fill_r;
-    uint8_t fill_g;
-    uint8_t fill_b;
-    int64_t x_position; // left
-    int64_t y_position; // top
-    uint64_t width;
-    uint64_t height;
-} rectangle_t;
-
-void draw(rectangle_t *rectangle);
 
 #ifdef __cplusplus
 }

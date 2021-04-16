@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Garbage OS: gos/code/intf/kernel/process.h File Reference</title>
+<title>Garbage OS: gos/code/intf/kernel/global.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -67,54 +67,51 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
-<div class="title">process.h File Reference</div>  </div>
+<div class="title">global.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This file will help manage processes and task switching.  
+<p>contains the virtual addresses that the linker passes to the kernel's binary  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;stdint.h&quot;</code><br />
+<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
+<code>#include &lt;efi.h&gt;</code><br />
+<code>#include &quot;bootboot.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
-Include dependency graph for process.h:</div>
+Include dependency graph for global.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="process_8h__incl.png" border="0" usemap="#gos_2code_2intf_2kernel_2process_8h" alt=""/></div>
+<div class="center"><img src="global_8h__incl.png" border="0" usemap="#gos_2code_2intf_2kernel_2global_8h" alt=""/></div>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="global_8h__dep__incl.png" border="0" usemap="#gos_2code_2intf_2kernel_2global_8hdep" alt=""/></div>
 </div>
 </div>
-<p><a href="process_8h_source.html">Go to the source code of this file.</a></p>
+<p><a href="global_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structprocess__t.html">process_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic information about processes.  <a href="structprocess__t.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:aa0fc1b8e9d00b9bd19585e20e2ce7704"><td class="memItemLeft" align="right" valign="top"><a id="aa0fc1b8e9d00b9bd19585e20e2ce7704"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>ULTIMATE_TASK_PRIORITY</b>&#160;&#160;&#160;0</td></tr>
-<tr class="separator:aa0fc1b8e9d00b9bd19585e20e2ce7704"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0116208f2d1a5c12b63a39becc90d55"><td class="memItemLeft" align="right" valign="top"><a id="ad0116208f2d1a5c12b63a39becc90d55"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>KERNEL_TASK_RIORITY</b>&#160;&#160;&#160;1</td></tr>
-<tr class="separator:ad0116208f2d1a5c12b63a39becc90d55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25ac2ecb7ffdc6d1f600e764b6f0c926"><td class="memItemLeft" align="right" valign="top"><a id="a25ac2ecb7ffdc6d1f600e764b6f0c926"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>HIGH_TASK_PRIORITY</b>&#160;&#160;&#160;2</td></tr>
-<tr class="separator:a25ac2ecb7ffdc6d1f600e764b6f0c926"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef3596d2d75d8d91b0a88035d8483610"><td class="memItemLeft" align="right" valign="top"><a id="aef3596d2d75d8d91b0a88035d8483610"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>DEFAULT_TASK_PRIORITY</b>&#160;&#160;&#160;3</td></tr>
-<tr class="separator:aef3596d2d75d8d91b0a88035d8483610"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0370585203c7c7f1961917f06b4fff61"><td class="memItemLeft" align="right" valign="top"><a id="a0370585203c7c7f1961917f06b4fff61"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>LOW_TASK_PRIORITY</b>&#160;&#160;&#160;4</td></tr>
-<tr class="separator:a0370585203c7c7f1961917f06b4fff61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:aa222782ad3772839280c00a29b4bc6fd"><td class="memItemLeft" align="right" valign="top"><a id="aa222782ad3772839280c00a29b4bc6fd"></a>
+volatile BOOTBOOT&#160;</td><td class="memItemRight" valign="bottom"><b>bootboot</b></td></tr>
+<tr class="separator:aa222782ad3772839280c00a29b4bc6fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1441dcd80729507e5746e1379c88a72"><td class="memItemLeft" align="right" valign="top"><a id="aa1441dcd80729507e5746e1379c88a72"></a>
+volatile unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>environment</b> [4096]</td></tr>
+<tr class="separator:aa1441dcd80729507e5746e1379c88a72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1ffc8db0b0c5211c81b261295d0bb36"><td class="memItemLeft" align="right" valign="top"><a id="ad1ffc8db0b0c5211c81b261295d0bb36"></a>
+volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>fb</b></td></tr>
+<tr class="separator:ad1ffc8db0b0c5211c81b261295d0bb36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37bab08db8ef885c2045abe0c92321d4"><td class="memItemLeft" align="right" valign="top"><a id="a37bab08db8ef885c2045abe0c92321d4"></a>
+volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>mmio</b></td></tr>
+<tr class="separator:a37bab08db8ef885c2045abe0c92321d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This file will help manage processes and task switching. </p>
+<div class="textblock"><p>contains the virtual addresses that the linker passes to the kernel's binary </p>
 <dl class="section author"><dt>Author</dt><dd>Joshua Buchanan (<a href="#" onclick="location.href='mai'+'lto:'+'jos'+'hu'+'aro'+'be'+'rtb'+'uc'+'han'+'an'+'@gm'+'ai'+'l.c'+'om'; return false;">joshu<span style="display: none;">.nosp@m.</span>arob<span style="display: none;">.nosp@m.</span>ertbu<span style="display: none;">.nosp@m.</span>chan<span style="display: none;">.nosp@m.</span>an@gm<span style="display: none;">.nosp@m.</span>ail.<span style="display: none;">.nosp@m.</span>com</a>) (github: @natara1939344) </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>0.1 </dd></dl>
-<dl class="section date"><dt>Date</dt><dd>2021-04-11</dd></dl>
-<dl class="section copyright"><dt>Copyright</dt><dd>Copyright (C) 2021 under the LGPL version 2.1 </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>2021-04-15</dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>Copyright (C) 2021 under the </dd></dl>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

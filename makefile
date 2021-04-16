@@ -17,8 +17,16 @@ os_sources := $(shell find gos/code/impl/os/ -name *.c)
 os_objects := $(patsubst gos/code/impl/os/%.c, gos/build/impl/os/%.o, $(os_sources))
 
 gos_binary := $(patsubst gos/code/impl/os/%.c, gos/dist/usr/os/%.elf, $(os_sources))
-C_FLAGS := -ffreestanding -mno-red-zone -Wall -Wextra -Wpedantic -Werror -O0 -g -c -mrdrnd
+C_FLAGS := -ffreestanding -mno-red-zone -Wall -Wextra -Wpedantic -Werror -O3 -g -c -I /usr/include/efi -I /usr/include/efi/x86_64/ -I /usr/include/efi/protocol -mtune=generic
 LDFLAGS := -nostdlib -nostartfiles -b elf64-x86-64
+## comment out the below line if you are not on VS Code running on windows w/o gcc
+VSC_MACRO := -D___VSCODE___=1
+
+#if you are not running vscode on windows, this line ensures that that define is undefined.
+VSC_MACRO ?= -U___VSCODE___
+
+C_FLAGS = $(C_FLAGS) $(VSC_MACRO)
+
 
 all_objects := $(kernel_objects) $(crt_objects) $(os_objects)
 # find the mkbootimg file

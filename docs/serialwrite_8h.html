@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Garbage OS: gos/code/intf/kernel/tables.h File Reference</title>
+<title>Garbage OS: gos/code/intf/kernel/serialwrite.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -67,69 +67,48 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">tables.h File Reference</div>  </div>
+<div class="title">serialwrite.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This file will contain the definition and methods to load / create / read the tables that the processor uses internally: IDT, GDT, and LDT.  
+<p>contains declarations for writing to our debug port! (which will be com1?)  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="interrupt_8h_source.html">../crt/interrupt.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="global_8h_source.html">global.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
-Include dependency graph for tables.h:</div>
+Include dependency graph for serialwrite.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="tables_8h__incl.png" border="0" usemap="#gos_2code_2intf_2kernel_2tables_8h" alt=""/></div>
+<div class="center"><img src="serialwrite_8h__incl.png" border="0" usemap="#gos_2code_2intf_2kernel_2serialwrite_8h" alt=""/></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="tables_8h__dep__incl.png" border="0" usemap="#gos_2code_2intf_2kernel_2tables_8hdep" alt=""/></div>
+<div class="center"><img src="serialwrite_8h__dep__incl.png" border="0" usemap="#gos_2code_2intf_2kernel_2serialwrite_8hdep" alt=""/></div>
 </div>
 </div>
-<p><a href="tables_8h_source.html">Go to the source code of this file.</a></p>
+<p><a href="serialwrite_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinterrupt__t.html">interrupt_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An interrupt.  <a href="structinterrupt__t.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structprocessor__table__t.html">processor_table_t</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a26b8e0d368aab31b3e1d34a57ce0c7cd"><td class="memItemLeft" align="right" valign="top"><a id="a26b8e0d368aab31b3e1d34a57ce0c7cd"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SERiALWRITE_H</b>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:a26b8e0d368aab31b3e1d34a57ce0c7cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:afc296ee4a538f69b253a2adf1027669b"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tables_8h.html#afc296ee4a538f69b253a2adf1027669b">interrupt_function</a>) ()</td></tr>
-<tr class="memdesc:afc296ee4a538f69b253a2adf1027669b"><td class="mdescLeft">&#160;</td><td class="mdescRight">An interrupt function.  <a href="tables_8h.html#afc296ee4a538f69b253a2adf1027669b">More...</a><br /></td></tr>
-<tr class="separator:afc296ee4a538f69b253a2adf1027669b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a81b0c22178a8ecfc31d175a63d5426ea"><td class="memItemLeft" align="right" valign="top"><a id="a81b0c22178a8ecfc31d175a63d5426ea"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>startup_service</b> ()</td></tr>
+<tr class="separator:a81b0c22178a8ecfc31d175a63d5426ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This file will contain the definition and methods to load / create / read the tables that the processor uses internally: IDT, GDT, and LDT. </p>
+<div class="textblock"><p>contains declarations for writing to our debug port! (which will be com1?) </p>
 <dl class="section author"><dt>Author</dt><dd>Joshua Buchanan (<a href="#" onclick="location.href='mai'+'lto:'+'jos'+'hu'+'aro'+'be'+'rtb'+'uc'+'han'+'an'+'@gm'+'ai'+'l.c'+'om'; return false;">joshu<span style="display: none;">.nosp@m.</span>arob<span style="display: none;">.nosp@m.</span>ertbu<span style="display: none;">.nosp@m.</span>chan<span style="display: none;">.nosp@m.</span>an@gm<span style="display: none;">.nosp@m.</span>ail.<span style="display: none;">.nosp@m.</span>com</a>) (github: @natara1939344) </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>0.1 </dd></dl>
-<dl class="section date"><dt>Date</dt><dd>2021-04-11</dd></dl>
-<dl class="section copyright"><dt>Copyright</dt><dd>Copyright (C) 2021 under the LGPL version 2.1 </dd></dl>
-</div><h2 class="groupheader">Typedef Documentation</h2>
-<a id="afc296ee4a538f69b253a2adf1027669b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc296ee4a538f69b253a2adf1027669b">&#9670;&nbsp;</a></span>interrupt_function</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef void(* interrupt_function) ()</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>An interrupt function. </p>
-<dl class="section note"><dt>Note</dt><dd>Must end with the iret opcode! </dd></dl>
-
-</div>
-</div>
-</div><!-- contents -->
+<dl class="section date"><dt>Date</dt><dd>2021-04-15</dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>Copyright (C) 2021 under the </dd></dl>
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

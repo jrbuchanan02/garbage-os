@@ -67,11 +67,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
 <div class="title">kmain.h File Reference</div>  </div>
 </div><!--header-->
@@ -79,10 +75,8 @@ $(function() {
 
 <p>File for what we include in the <a class="el" href="kmain_8c.html" title="entry point for the operating system.">kmain.c</a> file.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;bootboot.h&quot;</code><br />
-<code>#include &quot;immintrin.h&quot;</code><br />
-<code>#include &quot;stddef.h&quot;</code><br />
-<code>#include &quot;<a class="el" href="image_8h_source.html">image.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="global_8h_source.html">global.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="serialwrite_8h_source.html">serialwrite.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for kmain.h:</div>
 <div class="dyncontent">
@@ -96,53 +90,11 @@ This graph shows which files directly or indirectly include this file:</div>
 </div>
 <p><a href="kmain_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structenvironment__t.html">environment_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information about the current environment.  <a href="structenvironment__t.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structrectangle__t.html">rectangle_t</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:aa8cecfc5c5c054d2875c03e77b7be15d"><td class="memItemLeft" align="right" valign="top"><a id="aa8cecfc5c5c054d2875c03e77b7be15d"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>TRUE</b>&#160;&#160;&#160;1</td></tr>
-<tr class="separator:aa8cecfc5c5c054d2875c03e77b7be15d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa93f0eb578d23995850d61f7d61c55c1"><td class="memItemLeft" align="right" valign="top"><a id="aa93f0eb578d23995850d61f7d61c55c1"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>FALSE</b>&#160;&#160;&#160;0</td></tr>
-<tr class="separator:aa93f0eb578d23995850d61f7d61c55c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a9c639bd343606632b938f16f4adf516a"><td class="memItemLeft" align="right" valign="top"><a id="a9c639bd343606632b938f16f4adf516a"></a>
 typedef uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>boolean</b></td></tr>
 <tr class="separator:a9c639bd343606632b938f16f4adf516a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:adc4808ad1091b34ad89123635f2ecee8"><td class="memItemLeft" align="right" valign="top"><a id="adc4808ad1091b34ad89123635f2ecee8"></a>
-<a class="el" href="structenvironment__t.html">environment_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>parse_configuration_file</b> (unsigned char env[4096])</td></tr>
-<tr class="separator:adc4808ad1091b34ad89123635f2ecee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0142b9f0dbab74106896891d9dc4b096"><td class="memItemLeft" align="right" valign="top"><a id="a0142b9f0dbab74106896891d9dc4b096"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>draw</b> (<a class="el" href="structrectangle__t.html">rectangle_t</a> *rectangle)</td></tr>
-<tr class="separator:a0142b9f0dbab74106896891d9dc4b096"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:aa222782ad3772839280c00a29b4bc6fd"><td class="memItemLeft" align="right" valign="top">volatile BOOTBOOT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="kmain_8h.html#aa222782ad3772839280c00a29b4bc6fd">bootboot</a></td></tr>
-<tr class="memdesc:aa222782ad3772839280c00a29b4bc6fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">bootboot structure  <a href="kmain_8h.html#aa222782ad3772839280c00a29b4bc6fd">More...</a><br /></td></tr>
-<tr class="separator:aa222782ad3772839280c00a29b4bc6fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1441dcd80729507e5746e1379c88a72"><td class="memItemLeft" align="right" valign="top"><a id="aa1441dcd80729507e5746e1379c88a72"></a>
-volatile unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="kmain_8h.html#aa1441dcd80729507e5746e1379c88a72">environment</a> [4096]</td></tr>
-<tr class="memdesc:aa1441dcd80729507e5746e1379c88a72"><td class="mdescLeft">&#160;</td><td class="mdescRight">environment, from the environment file specified by the configuration file passed to mkbootimg <br /></td></tr>
-<tr class="separator:aa1441dcd80729507e5746e1379c88a72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1ffc8db0b0c5211c81b261295d0bb36"><td class="memItemLeft" align="right" valign="top"><a id="ad1ffc8db0b0c5211c81b261295d0bb36"></a>
-volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>fb</b></td></tr>
-<tr class="separator:ad1ffc8db0b0c5211c81b261295d0bb36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37bab08db8ef885c2045abe0c92321d4"><td class="memItemLeft" align="right" valign="top"><a id="a37bab08db8ef885c2045abe0c92321d4"></a>
-volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>mmio</b></td></tr>
-<tr class="separator:a37bab08db8ef885c2045abe0c92321d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>File for what we include in the <a class="el" href="kmain_8c.html" title="entry point for the operating system.">kmain.c</a> file. </p>
@@ -150,24 +102,7 @@ volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>mmio</b><
 <dl class="section version"><dt>Version</dt><dd>0.1 </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>2021-04-11</dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>Copyright (C) 2021 under the LGPL version 2.1 </dd></dl>
-</div><h2 class="groupheader">Variable Documentation</h2>
-<a id="aa222782ad3772839280c00a29b4bc6fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa222782ad3772839280c00a29b4bc6fd">&#9670;&nbsp;</a></span>bootboot</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">volatile BOOTBOOT bootboot</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>bootboot structure </p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -1,7 +1,7 @@
 /**
- * @file image.h
+ * @file serialwrite.h
  * @author Joshua Buchanan (joshuarobertbuchanan@gmail.com) (github: @natara1939344)
- * @brief Draws images and stuff
+ * @brief contains declarations for writing to our debug port! (which will be com1?)
  * @version 0.1
  * @date 2021-04-15
  * 
@@ -9,17 +9,15 @@
  * 
  */
 
-#include <stdint.h>
-#include "bootboot.h"
-#ifndef IMAGE_H
-#define IMAGE_H 1
+#include "global.h"
+
+#ifndef SERIALWRITE_H
+#define SERiALWRITE_H 1
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern volatile BOOTBOOT bootboot;
-extern volatile uint8_t fb;
-
+void startup_service();
 
 
 
