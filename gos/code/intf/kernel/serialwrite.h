@@ -5,7 +5,7 @@
  * @version 0.1
  * @date 2021-04-15
  * 
- * @copyright Copyright (C) 2021 under the 
+ * @copyright Copyright (C) 2021 under the LGPL 2.1
  * 
  */
 

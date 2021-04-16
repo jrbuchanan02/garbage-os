@@ -11,7 +11,7 @@ __**I make no warranty with Garbage OS, nor will I ever.**__
 That being said, if you want to try it out or contribute something, feel free to do so.
 
 ## Documentation
-Almost everything in Garbage OS is documented [here](./docs/index.html)
+Almost everything in Garbage OS is documented [here](https://natara1939344.github.io/garbage-os/)
 
 ## Compiling yourself.
 

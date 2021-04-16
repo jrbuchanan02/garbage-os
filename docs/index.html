@@ -72,11 +72,28 @@ $(function() {
 <p><b><b>I make no warranty with Garbage OS, nor will I ever.</b></b> That being said, if you want to try it out or contribute something, feel free to do so.</p>
 <h1><a class="anchor" id="autotoc_md30"></a>
 Documentation</h1>
-<p>Almost everything in Garbage OS is documented <a href="./docs/index.html">here</a></p>
+<p>Almost everything in Garbage OS is documented <a href="https://natara1939344.github.io/garbage-os/">here</a></p>
 <h1><a class="anchor" id="autotoc_md31"></a>
+Compiling yourself.</h1>
+<h2><a class="anchor" id="autotoc_md32"></a>
+Prerequisites:</h2>
+<ul>
+<li>GCC, Make, LD, and other generic C toolchain programs. I am 75% certain that the code will not compile on msvc. I have not tested CLANG.</li>
+<li>gnuefi / some replacement for efi.h and its dependencies.</li>
+<li>the password. For some reason (at least on wsl2), using losetup (how the makefile creates the image) requires root permissions. If you feel uncomfortable allowing some program from the internet access to root, you can look at the make file yourself or edit the makefile on your end.</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md33"></a>
+The build process</h2>
+<ol type="1">
+<li>Ensure that no loop devices are in use. You can perform this check with the command <code>losetup -a</code> or by running <code>make looplist</code>. If there are no open loop devices, <code>losetup -a</code> will exit without any output.</li>
+<li>Run the command <code>make all -B</code>. <code>-B</code> ensures that all files are remade - even if up to date. Alternatively you could run <code>make preclean build_kernel clean -B</code> if you want to skip the documentation-building step. If you are building for the first time after cloning the repository, <code>-B</code> should not be required.</li>
+<li>The output will be in gos/disk/gos.img. You can run this output in Qemu (I have not gotten it to work in VirtualBox yet), or, theoretically, on real hardware. Currently, GOS only supports x64-based UEFI machines. However, only slight configuration changes are required to support aarch64-based UEFI or BIOS-based x64.</li>
+<li>GOS does not currently support chainloading via grub, however, BOOTBOOT has information on how to load a BOOTBOOT-Compliant OS through Multiboot.</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md34"></a>
 BOOTBOOT loader, standard, and image creator.</h1>
 <p>You can find the README.md for mkbootimg, part of the BOOTBOOT repository and the program that assembles the final disk image for GOS, <a class="el" href="md_mkbootimg_README.html">here</a></p>
-<h1><a class="anchor" id="autotoc_md32"></a>
+<h1><a class="anchor" id="autotoc_md35"></a>
 Roadmap</h1>
 <ul>
 <li>Boot in a stable manner that accounts for the unique differences in every computer. (✔)<ul>
@@ -98,16 +115,16 @@ Roadmap</h1>
 <li>Implement GUI (BOOTBOOT sets up graphical framebuffer, so GUI becomes a <em>task</em>).</li>
 <li>See if and where it goes from here.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md33"></a>
+<h1><a class="anchor" id="autotoc_md36"></a>
 Contributions</h1>
 <p>See CONTRIBUTING.md for the latest info.</p>
-<h1><a class="anchor" id="autotoc_md34"></a>
+<h1><a class="anchor" id="autotoc_md37"></a>
 Security flaws.</h1>
 <p>For the latest info, see SECURITY.md</p>
 <p>General disclaimer, repeated once more: I make no warranty on this software, nor do I promise that it will do anything.</p>
 <p>If I am doing anything wrong, please tell me and I will fix it.</p>
 <p>As of the current version of Garbage OS, there is likely not any information to accidently make vulnerable via a security bug. However, if I have messed up a security mechanism beyond what any contributor seems capable of, it is probably a very critical error and needs to be fixed ASAP.</p>
-<h2><a class="anchor" id="autotoc_md35"></a>
+<h2><a class="anchor" id="autotoc_md38"></a>
 Version Support</h2>
 <p>Here is a neat little placeholder-table.</p>
 <table class="markdownTable">
@@ -116,6 +133,23 @@ Version Support</h2>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">all versions </td><td class="markdownTableBodyNone">N/A </td><td class="markdownTableBodyNone">N/A  </td></tr>
 </table>
+<h1><a class="anchor" id="autotoc_md39"></a>
+History</h1>
+<h2><a class="anchor" id="autotoc_md40"></a>
+Version 0.0.0.0-SNAPSHOT</h2>
+<ul>
+<li>Operating System spins endlessly, but fails to draw to framebuffer </li>
+</ul>
+<h2><a class="anchor" id="autotoc_md41"></a>
+Version 0.0.0.1-SNAPSHOT</h2>
+<ul>
+<li>Operating System spins endlessly, and successfully draws to framebuffer </li>
+</ul>
+<h2><a class="anchor" id="autotoc_md42"></a>
+Version 0.0.0.2-SNAPSHOT</h2>
+<ul>
+<li>Operating System halts processor after successfully drawing to framebuffer. </li>
+</ul>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
