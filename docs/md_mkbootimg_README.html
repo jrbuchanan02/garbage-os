@@ -94,7 +94,7 @@ $(function() {
 </table>
 <p>The code is written in a way that it is easily expandable.</p>
 <p>The generated image was tested with fdisk, and with the verify function of gdisk. The FAT partition was tested with fsck.vfat and with TianoCore UEFI firmware and on Raspberry Pi. The ISO9660 part tested with iat (ISO9660 Analyzer Tool) and Linux mount.</p>
-<h1><a class="anchor" id="autotoc_md22"></a>
+<h1><a class="anchor" id="autotoc_md24"></a>
 Operating Modes</h1>
 <div class="fragment"><div class="line">$ ./mkbootimg</div>
 <div class="line">BOOTBOOT mkbootimg utility - bztsrc@gitlab</div>
@@ -119,10 +119,10 @@ Operating Modes</h1>
 </div><!-- fragment --><p>If the first argument is <code>check</code>, then it's followed by a kernel filename. The utility will check the executable for BOOTBOOT compliance, and it will report all errors and if passed, which BOOTBOOT Protocol level it conforms to.</p>
 <p>Otherwise the first argument is the configuration JSON file. If the second argument is <code>initrd.rom</code>, then it will generate a BIOS Option ROM image from the initrd directory. If that is <code>bootpart.bin</code>, then it saves the boot partition image (and only the partition image). Every other filename will make it generate a whole disk image with GPT.</p>
 <p>The tool is multilingual. It will detect your operating system's language and if it has a dictionary for it, it will use that. You can override the autodetection from the command line by using the <code>-l &lt;lang&gt;</code> flag as the first argument (available for all operating modes). Language is given in two characters long code and fallbacks to <code>en</code>.</p>
-<h1><a class="anchor" id="autotoc_md23"></a>
+<h1><a class="anchor" id="autotoc_md25"></a>
 Configuration</h1>
 <p>The JSON is simple and flexible, accepts many variations. At the top level, you can define the output disk parameters.</p>
-<h2><a class="anchor" id="autotoc_md24"></a>
+<h2><a class="anchor" id="autotoc_md26"></a>
 Top Level</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -157,7 +157,7 @@ Top Level</h2>
 <div class="line">        { &quot;type&quot;: &quot;00000000-0000-0000-0000-000000000000&quot;, &quot;size&quot;: 32, &quot;name&quot;: &quot;MyOS var&quot;, &quot;file&quot;: &quot;varpart.bin&quot; }</div>
 <div class="line">    ]</div>
 <div class="line">}</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md25"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md27"></a>
 Initrd</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -180,7 +180,7 @@ Initrd</h2>
 <div class="line">&quot;initrd&quot;: { &quot;type&quot;: &quot;tar&quot;, &quot;gzip&quot;: 0, &quot;directory&quot;: &quot;boot&quot; },</div>
 <div class="line">&quot;initrd&quot;: { &quot;gzip&quot;: true, &quot;file&quot;: [ &quot;initrd-x86.bin&quot;, &quot;initrd-arm.bin&quot;, &quot;initrd-rv64.bin&quot; ] },</div>
 <div class="line">&quot;initrd&quot;: { &quot;type&quot;: &quot;cpio&quot;, &quot;gzip&quot;: true, &quot;directory&quot;: [ &quot;boot/arm&quot;, &quot;boot/x86&quot;, &quot;boot/riscv64&quot; ] },</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md26"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md28"></a>
 Partitions</h2>
 <p>It is somewhat unusual, as the first array element is different than the rest. It specifies the boot partition, therefore it has different types, and <code>file</code> / <code>directory</code> and <code>name</code> are not interpreted because that partition image is always dinamically generated with the implicit name of "EFI System Partition". For the same reason, <code>size</code> is mandatory for the first (boot) partition.</p>
 <table class="markdownTable">
@@ -224,7 +224,7 @@ Partitions</h2>
 <div class="line">{ &quot;type&quot;: &quot;Linux home&quot;,                           &quot;driver&quot;: &quot;minix&quot;, &quot;size&quot;: 32, &quot;name&quot;: &quot;home&quot;, &quot;directory&quot;: &quot;myhome&quot; },</div>
 <div class="line">{ &quot;type&quot;: &quot;Microsoft basic data&quot;,                 &quot;driver&quot;: &quot;fat&quot;,   &quot;size&quot;: 32, &quot;name&quot;: &quot;data&quot;, &quot;directory&quot;: &quot;mydata&quot; },</div>
 </div><!-- fragment --><p>Finally, <code>name</code> is just an UTF-8 string, name of the partition. Maximum length is 35 characters. Not valid for the first entry.</p>
-<h1><a class="anchor" id="autotoc_md27"></a>
+<h1><a class="anchor" id="autotoc_md29"></a>
 Adding More File Systems</h1>
 <p>Types are listed in the fs registry, in the file <code>fs.h</code>. You can freely add new file system types. For file systems that you want to use for generating partition images or initrd as well, you must implement three functions, like:</p>
 <div class="fragment"><div class="line">void somefs_open(gpt_t *gpt_entry);</div>
@@ -233,7 +233,7 @@ Adding More File Systems</h1>
 </div><!-- fragment --><p>The first, the "open" is called whenever a new file system is to be created. The <code>gpt_entry</code> is NULL when called for initrd creation. As the given directory is recursively parsed, for each directory entry an "add" call is made. This should add the file or directory to the file system image. Here <code>st</code> is the stat struct for the file, <code>name</code> is the filename with full path, <code>content</code> and <code>size</code> are the file's content, or in case of a symbolic link, the pointed path. Finally when the parsing is done, the "close" function is called to finalize the image. Only the "add" function is mandatory, the other two are optional.</p>
 <p>These functions can use two global variables, <code>fs_base</code> and <code>fs_len</code> which holds the buffer for the filesystem image in memory (this implies that partitions are limited to few gigabytes, depending how much RAM you have). In case they want to report error, <code>fs_no</code> is the number of the partition the driver is generating for.</p>
 <p>In lack of these functions, the file system still can be used in the partition's <code>type</code> field, but then only the GPT entry will be created, not the content of the partition. The <code>driver</code> field only accepts file system types which have these functions.</p>
-<h1><a class="anchor" id="autotoc_md28"></a>
+<h1><a class="anchor" id="autotoc_md30"></a>
 Keeping the built-in binaries up-to-date</h1>
 <p>To avoid dependencies, the image creator includes all the necessary binaries. If these are updated, then delete data.c and run <code>make</code> which will regenerate it. If there are missing files, then in the <code>aarch64-rpi</code> directory run <code>make getfw</code>, that will download the latest Raspberry Pi firmware files. Then <code>make</code> in this directory should run without problems. </p>
 </div></div><!-- contents -->

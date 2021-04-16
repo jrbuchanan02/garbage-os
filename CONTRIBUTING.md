@@ -2,7 +2,20 @@
 
 As a general rule, feel free to contribute. Find an issue that you feel capable of addressing under issues, and, well, address it.
 
+## What is there to do? 
+
+You can find the list of bugs [here] and the list of general to-do's [here]. Anything not yet listed on those links will be at the issues page [here](https://github.com/Natara1939344/garbage-os/issues). As long as you follow the [Code Conventions](#code-conventions), your changes may be accepted.
+
 ## Code Conventions
+
+### Generally Speaking...
+
+This section will sound overly pedantic, but, that's because this entire file is overly pedantic.
+
+ - Make your code compile without warnings - from personal experience, if you have a warning in your code, it's either a bug or puppy-killing hack.
+ - Keep your code clean - from personal experience, clean code runs faster and is easier to debug. Even if the enhanced speed is a fallacy, the ease of debugging much better suits the exigence of an operating system (to be a stable platform on which code can run without worrying about the intricacies of each individual machine). 
+ - If it's not your code, don't copyright it. 
+
 
 ### C
 C files are split into sources and into headers. Here are the naming conventions that GOS follows:

@@ -40,6 +40,7 @@ uint64_t strlen(char *s) {
  * @brief Grabs a handle to the serial io port. Praying that boto services have
  * not been terminated yet.
  * @return TRUE (1) on successful exit, FALSE (0) on failure
+ * @todo implement the code.
  */
 BOOLEAN startup_service()
 {

@@ -71,6 +71,9 @@ extern "C" {
 #define FB_ABGR   2
 #define FB_BGRA   3
 
+
+// ifndef from Joshua Buchanan - eliminating red squiggles.
+#ifndef MSVC
 /* mmap entry, type is stored in least significant tetrad (half byte) of size
  * this means size described in 16 byte units (not a problem, most modern
  * firmware report memory in pages, 4096 byte units anyway). */
@@ -78,6 +81,8 @@ typedef struct {
   uint64_t   ptr;
   uint64_t   size;
 } __attribute__((packed)) MMapEnt;
+#endif
+
 #define MMapEnt_Ptr(a)  (a->ptr)
 #define MMapEnt_Size(a) (a->size & 0xFFFFFFFFFFFFFFF0)
 #define MMapEnt_Type(a) (a->size & 0xF)
@@ -90,6 +95,8 @@ typedef struct {
 
 #define INITRD_MAXSIZE 16 /* Mb */
 
+// ifndef from Joshua Buchanan - eliminating red squiggles.
+#ifndef MSVC
 typedef struct {
   /* first 64 bytes is platform independent */
   uint8_t    magic[4];    /* 'BOOT' magic */
@@ -138,7 +145,7 @@ typedef struct {
    * MMapEnt *mmap_ent = &bootboot.mmap; mmap_ent++;
    * until you reach bootboot->size */
 } __attribute__((packed)) BOOTBOOT;
-
+#endif
 
 #ifdef  __cplusplus
 }

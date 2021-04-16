@@ -23,6 +23,9 @@ gos/dist/boot/kern/output.bin
 gos/dist/usr/crt/crt.bin
 gos/dist/usr/os/*.elf
 
+gos/dist/BOOT/KERN/output.bin
+gos/dist/USR/CRT/crt.bin
+
 gos/build/impl/crt/*.o
 gos/build/impl/os/*.o
 gos/build/impl/kernel/*.o
