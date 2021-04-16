@@ -13,6 +13,20 @@ That being said, if you want to try it out or contribute something, feel free to
 ## Documentation
 Almost everything in Garbage OS is documented [here](./docs/index.html)
 
+## Compiling yourself.
+
+### Prerequisites:
+
+ - GCC, Make, LD, and other generic C toolchain programs. I am 75% certain that the code will not compile on msvc. I have not tested CLANG.
+ - gnuefi / some replacement for efi.h and its dependencies. 
+ - the password. For some reason (at least on wsl2), using losetup (how the makefile creates the image) requires root permissions. If you feel uncomfortable allowing some program from the internet access to root, you can look at the make file yourself or edit the makefile on your end. 
+
+### The build process
+1. Ensure that no loop devices are in use. You can perform this check with the command `losetup -a` or by running `make looplist`. If there are no open loop devices, `losetup -a` will exit without any output. 
+2. Run the command `make all -B`. `-B` ensures that all files are remade - even if up to date. Alternatively you could run `make preclean build_kernel clean -B` if you want to skip the documentation-building step. If you are building for the first time after cloning the repository, `-B` should not be required.
+3. The output will be in gos/disk/gos.img. You can run this output in Qemu (I have not gotten it to work in VirtualBox yet), or, theoretically, on real hardware. Currently, GOS only supports x64-based UEFI machines. However, only slight configuration changes are required to support aarch64-based UEFI or BIOS-based x64. 
+4. GOS does not currently support chainloading via grub, however, BOOTBOOT has information on how to load a BOOTBOOT-Compliant OS through Multiboot.
+
 ## BOOTBOOT loader, standard, and image creator.
 You can find the README.md for mkbootimg, part of the BOOTBOOT repository and the program that assembles the final disk image for GOS, [here](./mkbootimg/README.md)
 
@@ -50,3 +64,11 @@ Here is a neat little placeholder-table.
 | -------------- | ------------- | ----------------------- |
 | all versions   |      N/A      |           N/A           |
 
+## History
+
+### Version 0.0.0.0-SNAPSHOT
+ - Operating System spins endlessly, but fails to draw to framebuffer
+### Version 0.0.0.1-SNAPSHOT
+ - Operating System spins endlessly, and successfully draws to framebuffer
+### Version 0.0.0.2-SNAPSHOT
+ - Operating System halts processor after successfully drawing to framebuffer.

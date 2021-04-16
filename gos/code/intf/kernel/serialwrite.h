@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-void startup_service();
+BOOLEAN startup_service();
 
 
 

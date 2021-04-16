@@ -37,7 +37,6 @@ void _start(void) {
         //put_string("Hello from a simple BOOTBOOT kernel");
     }
 
-    //put_string("Hello, World!\n\0");
-    // sit here.
+    startup_service();
     __asm__ ("hlt");
 }

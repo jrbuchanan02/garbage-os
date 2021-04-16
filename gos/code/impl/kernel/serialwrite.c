@@ -11,16 +11,38 @@
 
 #include "../../intf/kernel/serialwrite.h"
 
+#ifndef EFI_API
+// do something!
+#pragma message "You messed up includes"
+#endif
+
+
+
 EFI_SYSTEM_TABLE *efi_table;
+EFI_RUNTIME_SERVICES *runtime_table;
+EFI_BOOT_SERVICES *boot_table; // I think those may have ended already tho.
+EFI_SERIAL_IO_PROTOCOL *serial_thingy;
+EFI_GUID serial_io_guid = SERIAL_IO_PROTOCOL;
 
-void startup_service()
-{
-    efi_table = (EFI_SYSTEM_TABLE*)bootboot.arch.x86_64.efi_ptr;
-
-    EFI_BOOT_SERVICES *boot_services = efi_table->BootServices;
-    EFI_HANDLE *debug_port_handle = (EFI_HANDLE*)NULL;
-    uint64_t buffer_size = sizeof(EFI_HANDLE);
-    EFI_GUID serial_port_guid = SERIAL_IO_PROTOCOL;
-    boot_services->LocateHandle(2, &serial_port_guid, NULL, &buffer_size, debug_port_handle);    
-
+/**
+ * @brief see stringstuff.c
+ * @see stringstuff.c's strlen function
+ * @param s the string
+ * @return uint64_t the length
+ */
+uint64_t strlen(char *s) {
+    uint64_t ret = 0LLU;
+    for (; s[ret]; ret++);
+    return ret;
 }
+
+/**
+ * @brief Grabs a handle to the serial io port. Praying that boto services have
+ * not been terminated yet.
+ * @return TRUE (1) on successful exit, FALSE (0) on failure
+ */
+BOOLEAN startup_service()
+{
+    return FALSE;
+}
+

@@ -19,10 +19,11 @@
 #endif
 // recreate the definitions in the efi-libraries to make the scary red squiggily lines go away!
 #if defined(___VSCODE___) && defined(MSVC)
-typedef EFI_BOOT_SERVICES* (*BOOT_SERVICES)();
+
 typedef uint32_t (*LOCATE_HANDLE)(uint32_t, EFI_GUID*, void**, size_t*, void**);
 typedef struct {
-    BOOT_SERVICES BootServices;
+    EFI_BOOT_SERVICES *BootServices;
+    EFI_RUNTIME_SERVICES *RuntimeServices;
 } EFI_SYSTEM_TABLE;
 typedef struct {
     LOCATE_HANDLE LocateHandle;
@@ -34,10 +35,14 @@ typedef struct {
 
 typedef struct {
     uint32_t one;
-    uint32_t two;
-    uint32_t tre;
-    uint32_t fur;
+    
 } EFI_GUID;
+
+typedef struct {
+    uint8_t some_byte;
+} EFI_RUNTIME_SERVICES;
+
+
 
 #define SERIAL_IO_PROTOCOL {0, 0, 0, 0}
 
