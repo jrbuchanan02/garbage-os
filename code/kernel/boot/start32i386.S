@@ -1,16 +1,21 @@
 .global _start32
+
+//.extern foo
+//.extern get_memory_map
+
 #define EAX_MAGIC 0x36D76289
 
-#define NOT_MB2_PANIC           $0x01 // ☺
-#define NO_CPUID_PANIC          $0x02 // ☻
-#define NO_LONG_MODE_PANIC      $0x03 // ♥
-#define THE_PROGRAMMER_PANICS   $0x04 // ♦
-#define NO_MEM_MAP_PANIC        $0x05 // ♣
-#define INSANE_MBI_PANIC        $0x06 // ♠
+#define NOT_MB2_PANIC                       $0x01 // ☺
+#define NO_CPUID_PANIC                      $0x02 // ☻
+#define NO_LONG_MODE_PANIC                  $0x03 // ♥
+#define THE_PROGRAMMER_PANICS               $0x04 // ♦
+#define NO_MEM_MAP_PANIC                    $0x05 // ♣
+#define INSANE_MBI_PANIC                    $0x06 // ♠
+#define C_PROGRAMS_NOT_ACCESSABLE_PANIC     $0x07 // •
 
 .equ CPUID_BIT, 1 << 21
 .equ EXTENDED_CPUINFO, 0x80000000
-
+.equ FOO_RESPONSE, 42
 #ifdef __LONG_MODE__
 .extern _start64
 #else
@@ -70,14 +75,54 @@ _start32:
 
     mov %edi, %ecx // prepare to perform a C-style call
 
-    call find_memory_map
+    call .find_memory_map
 
-    mov (%eax, 1), %bl
-
-    add '0', %al
-    jmp panic
 
     hlt // for now.
+.find_memory_map:
+    // mb2 info
+
+    // (size)
+    // (reserved)
+    // 
+    // tag -> (type, size) [padding]
+    // tag -> (type, size) [padding]
+    // ... 
+    // tag -> 0, 8
+
+    mov %ecx, %esi
+    mov $8, %edi
+
+..loop:
+    jmp ..get_tag_type
+...gotten_tag_type:
+    cmp $0, %eax
+    je .insane_mbi_panic
+
+    cmp $6, %eax
+    je ..found_it
+
+    // todo: add more?
+
+    jmp ..go_to_next
+...went_to_next:
+    jmp ..loop
+..get_tag_type:
+    mov (%esi, %edi, 1), %eax
+    jmp ...gotten_tag_type
+..go_to_next:
+    mov %edi, %ebx
+    add $4, %ebx
+    mov (%ebx), %ebx
+    add %ebx, %edi
+    and $7, %ebx
+    add %ebx, %edi
+    jmp ...went_to_next
+..found_it:
+    mov %edi, %eax
+    add %esi, %eax
+    mov %esi, %ecx
+    ret
 .not_multiboot2:
     mov NOT_MB2_PANIC, %ax
     jmp panic
@@ -93,8 +138,11 @@ _start32:
 .no_memory_map_panic:
     mov NO_MEM_MAP_PANIC, %ax
     jmp panic
-_insane_mbi_panic:
+.insane_mbi_panic:
     mov INSANE_MBI_PANIC, %ax
+    jmp panic
+.no_c_programming_language_panic:
+    mov C_PROGRAMS_NOT_ACCESSABLE_PANIC, %ax
     jmp panic
 panic:
     movl $0x4F524f45, 0xb8000 // red background -> 4, white foreground -> F
@@ -103,48 +151,6 @@ panic:
     movb %al, 0xb800a
     cli // ensure interrupts disabled
     hlt // halt cpu
-
-find_memory_map:
-    mov %ecx, %esi // make esi the list
-    mov $0, %edi
-
-    cmp $0, (%esi, %edi, 1)
-    je _insane_mbi_panic
-
-    add $8, %edi // move edi along to first entry.
-
-.loop:
-    cmp $0, (%esi, %edi, 1)
-    je ..is_end_of_list
-..is_not_end_of_list:
-    cmp $6, (%esi, %edi, 1)
-    je .break
-    jne .continue
-
-..is_end_of_list:
-    add $4, %edi
-    cmp $8, (%esi, %edi, 1)
-    je _insane_mbi_panic
-    sub $4, %edi
-    jmp ..is_end_of_list
-.continue:
-    call .go_to_next_entry
-    jmp .loop
-.break:
-    mov %esi, %ecx // restore %ecx
-    mov (%esi, %edi, 1), %eax // return the address of the memory map.
-    ret
-.go_to_next_entry:
-    add $4, %edi
-    mov (%esi, %edi, 1), %eax
-    mov %eax, %ebx
-    and $7, %ebx
-    sub $4, %edi
-
-    add %eax, %edi
-    add %ebx, %edi
-
-    ret
 .section .data
 
 stack_top:

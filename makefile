@@ -9,7 +9,7 @@ initializer_object = $(patsubst code/kernel/boot/%.c, comp/kernel/boot/%.o, $(in
 all: preclean link clean
 
 preclean:
-	rm -r -f comp/*.o
+	rm -r -f disk/result/*.bin disk/result/*.iso disk/iso/boot/*.bin
 
 link: $(loader_object) $(initializer_object)
 
@@ -18,7 +18,7 @@ link: $(loader_object) $(initializer_object)
 	grub-mkrescue /usr/lib/grub/i386-pc -o disk/result/gosx64.iso disk/iso
 
 clean:
-
+	rm -r -f comp/*.o
 $(loader_object) : $(loader_source)
 	gcc $(GLOBAL_C_FLAGS) -O0 -D__LONG_MODE__=1 -m32 -o $@ $(patsubst comp/kernel/boot/%.o, code/kernel/boot/%.S, $@)
 
