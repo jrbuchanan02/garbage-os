@@ -52,17 +52,7 @@ multiboot2architecture      equ 0
 multiboot2headerlength      equ header.end - header
 multiboot2checksum          equ -(multiboot2magicnumber+multiboot2architecture+multiboot2headerlength)
 
-gdtpresent equ 1 << 7
-gdtkernel  equ 0b00 << 5
-gdtsystem  equ 1 << 4
-gdtexecut  equ 1 << 3
-gdtdirect  equ 1 << 2
-gdtreadwr  equ 1 << 1
-gdtaccess  equ 1 << 0 ;; accesed is never set
-gdtgran    equ 1 << 7
-gdtsize    equ 1 << 6
-gdtlong    equ 1 << 5 ;; not used in this file
-
+;; can be moved to another file and (possibly?) made MIPS32 compatible
 section .hdr
 align 8
 header:
@@ -85,6 +75,7 @@ header:
 section .text
 global _start32
 global setgdt
+global hascpuid
 extern kmain
 bits 32
 
@@ -129,6 +120,22 @@ setgdt:
 .gdtr:
     dw 0 ;; limit storage
     dd 0 ;; base storage
+
+hascpuid:
+    enter 0, 0
+    pushf
+    pop eax
+    mov edx, eax
+    xor eax, 1<<21
+    push eax
+    popf
+    pushf
+    pop eax
+    push edx
+    popf
+    xor eax, edx ;; only bit set should be cpuid
+    sar eax, 21 ;; (1<<21)>>21 = 1
+    ret
 section .bss
 align 0x1000
 stack: resb 0x1000 * 4 ;; 4096 possible stack entries
