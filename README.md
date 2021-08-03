@@ -47,5 +47,6 @@ Y - All Garbage OS features are supported on this combination of architecture an
 | RISCV128| X    | X           | N    |
 
 \* Marked both M and Y because GOS currently has no features :/
+
 \*\* TBH, I'm not sure if Itanium is fully backwards compatible with i386. Amd64 is not so marked because all x64 processors still put themselves into 
 real mode after reset - then go to 32-bit protected mode when CR0.PE is set.
