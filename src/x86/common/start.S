@@ -52,6 +52,17 @@ multiboot2architecture      equ 0
 multiboot2headerlength      equ header.end - header
 multiboot2checksum          equ -(multiboot2magicnumber+multiboot2architecture+multiboot2headerlength)
 
+gdtpresent equ 1 << 7
+gdtkernel  equ 0b00 << 5
+gdtsystem  equ 1 << 4
+gdtexecut  equ 1 << 3
+gdtdirect  equ 1 << 2
+gdtreadwr  equ 1 << 1
+gdtaccess  equ 1 << 0 ;; accesed is never set
+gdtgran    equ 1 << 7
+gdtsize    equ 1 << 6
+gdtlong    equ 1 << 5 ;; not used in this file
+
 section .hdr
 align 8
 header:
@@ -61,34 +72,66 @@ header:
     dd multiboot2checksum
 
 
-    dw MULTIBOOT_HEADER_TAG_ENTRY_ADDRESS
-    dw MULTIBOOT_HEADER_TAG_OPTIONAL
-    dd 12
+    ;;dw MULTIBOOT_HEADER_TAG_ENTRY_ADDRESS
+    ;;dw MULTIBOOT_HEADER_TAG_OPTIONAL
+    ;;dd 12
+    ;;dd 0 ;; for alignment?
+
+    dd 0 ;; end tag
+    dd 8
+
     dd _start32
 .end:
 section .text
+global _start32
+global setgdt
+extern kmain
 bits 32
 
 _start32: ;; information for linker
-    mov byte [0xb8000], 0x2f
-    mov byte [0xb8001], "X"
+    mov byte [0xb8001], 0x2f
+    mov byte [0xb8000], "X"
 %ifdef ___X64___
-    mov byte [0xb8002], 0x2f
-    mov byte [0xb8003], "6"
-    mov byte [0xb8004], 0x2f
-    mov byte [0xb8005], "4"
+    mov byte [0xb8003], 0x2f
+    mov byte [0xb8002], "6"
+    mov byte [0xb8005], 0x2f
+    mov byte [0xb8004], "4"
 %elifdef ___X86___
-    mov byte [0xb8002], 0x2f
-    mov byte [0xb8003], "8"
-    mov byte [0xb8004], 0x2f
-    mov byte [0xb8005], "6"
+    mov byte [0xb8003], 0x2f
+    mov byte [0xb8002], "8"
+    mov byte [0xb8005], 0x2f
+    mov byte [0xb8004], "6"
 %else
 %error "AHHHHHHHHHHH!"
-
 %endif
+    mov byte [0xb8006], '?'
+    mov byte [0xb8007], 0x2f
+    mov esp, stack.end
+    mov ecx, eax
+    mov edx, ebx
+    call kmain
     hlt
-
+setgdt:
+    mov eax, [esp+4]
+    mov [.gdtr+2], eax
+    mov ax, [esp+8]
+    mov [.gdtr], ax
+    lgdt [.gdtr]
+    jmp 0x08:.reloadcs ;; load code segment
+.reloadcs:
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    ret
+.gdtr:
+    dw 0 ;; limit storage
+    dd 0 ;; base storage
 section .bss
-
-
+align 0x1000
+stack: resb 0x1000 * 4 ;; 4096 possible stack entries
+.end:
 section .data
+align 0x1000
