@@ -107,7 +107,7 @@ setgdt:
     mov [.gdtr+2], eax
     mov ax, [esp+8]
     mov [.gdtr], ax
-    lgdt [.gdtr]
+    sgdt [.gdtr]
     jmp 0x08:.reloadcs ;; load code segment
 .reloadcs:
     mov ax, 0x10
