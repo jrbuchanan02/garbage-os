@@ -79,7 +79,8 @@ global hascpuid
 extern kmain
 bits 32
 
-_start32: ;; information for linker
+_start32:
+    cli ;; clear interrupts?
     mov byte [0xb8001], 0x2f
     mov byte [0xb8000], "X"
 %ifdef ___X64___
