@@ -1,38 +1,36 @@
-GLOBAL_C_FLAGS := -c -Werror -Wall -Wextra -Wpedantic -ffreestanding -mno-red-zone -mtune=generic
-GLOBAL_S_FLAGS := 
+C__FLAG := -c -fno-stack-protector -fpic -fshort-wchar -ffreestanding -mno-red-zone -maccumulate-outgoing-args -I/usr/include/efi -I/usr/include/efi/x86_64 -DEFI_FUNCTION_WRAPPER
 
-MB2X86COMDIR := ./src/x86/common
+C__CODE := $(wildcard ./src/*.c) $(wildcard ./src/boot/*.c)
 
-MB2X86COMNASMDEF := -D___X86___
-MB2X86COMGCCARGS := -D___X86___ -m32 -march=i386
+C__OBJS := $(patsubst ./src/%.c, ./obj/%.o, $(C__CODE))
 
-MB2X86COMLINKERF := ./linkx86com.ld
+OS__EFI := bin/gos.elf
+OS__BIN := ./bin/gos.efi
+OS__ISO := bin/gos.iso
 
-x86com_asm := $(wildcard $(MB2X86COMDIR)/*.S)
-x86com_src := $(wildcard $(MB2X86COMDIR)/*.c) # srC for source C
+OS__TMP := /tmp/gos.iso
 
-x86com_asmobj := $(patsubst ./src/%.S, ./obj/%.o, $(x86com_asm))
-x86com_srcobj := $(patsubst ./src/%.c, ./obj/%.o, $(x86com_src))
-
-$(x86com_asmobj) : $(x86com_asm)
-#permissively ensure that we have our directory
+$(C__OBJS) : $(C__CODE)
 	mkdir -p $(dir $@)
-	nasm -f elf32 $(MB2X86COMNASMDEF) $(patsubst obj/%.o, src/%.S, $@) -o $@
-$(x86com_srcobj) : $(x86com_src)
-	mkdir -p $(dir $@)
-	gcc $(GLOBAL_C_FLAGS) $(MB2X86COMGCCARGS) $(patsubst obj/%.o, src/%.c, $@) -o $@
-
-mb2linkx86com: $(x86com_asmobj) $(x86com_srcobj)
-	ld -A i386 -m elf_i386 $(x86com_asmobj) $(x86com_srcobj) -T $(MB2X86COMLINKERF) -obin/x86/common/mb2.bin
-
-mb2makex8664: mb2linkx86com
-	cp ./bin/x86/common/mb2.bin ./dst/x86/x64/iso/boot/mb2.bin
-	grub-mkrescue /usr/lib/grub/i386-pc -o dst/gosmb2x64.iso dst/x86/x64/iso
-
-all: mb2makex8664
+	gcc $(patsubst obj/%.o, src/%.c, $@) $(C__FLAG) -o $@
 
 
-clean:
-# remove all object files from the toolchain
-# TODO: fix
-	rm -rf ./obj/*.o
+all : $(C__OBJS)
+	mkdir -p $(dir $(OS__EFI))
+	mkdir -p $(dir $(OS__BIN))
+	ld -shared -Bsymbolic -L/usr/lib -T/usr/lib/elf_x86_64_efi.lds /usr/lib/crt0-efi-x86_64.o $(C__OBJS) -o $(OS__EFI) -lgnuefi -lefi
+	objcopy -j .text -j .sdata -j .data -j .dynamic -j .dynsym  -j .rel -j .rela -j .rel.* -j .rela.* -j .reloc --target efi-app-x86_64 --subsystem=10 $(OS__EFI) $(OS__BIN)
+	parted $(OS__ISO) -s -a minimal mklabel gpt
+	parted $(OS__ISO) -s -a minimal mkpart EFI FAT16 2048s 93716s
+	parted $(OS__ISO) -s -a minimal toggle 1 boot
+	dd if=/dev/zero of=$(OS__TMP) bs=512 count=91669
+	mformat -i $(OS__TMP) -h 32 -t 32 -n 64 -c 1
+	rm -f gos.efi
+	mcopy -i $(OS__TMP) $(OS__BIN)
+	cp -f gos.efi bin/gos.efi
+	rm -f gos.efi
+# ---- other applications go here ----
+	dd if=$(OS__TMP) of=$(OS__ISO) bs=512 count=91669 seek=2048 conv=notrunc
+
+run: all
+	~/.cargo/bin/uefi-run -b /usr/share/qemu/OVMF.fd -q /usr/bin/qemu-system-x86_64 ./bin/gos.efi -- -cpu qemu64
