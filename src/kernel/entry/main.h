@@ -1,24 +1,16 @@
 /**
  * @file main.h
  * @author Joshua Buchanan (joshuarobertbuchanan@gmail.com)
- * @brief Main header file. Contains the declaration of the kernel entry point.
+ * @brief Contains enough information for the loaders to call kmain.
  * @version 1
- * @date 2022-03-21
- *
+ * @date 2022-03-23
+ * 
  * @copyright Copyright (C) 2022. Intellectual property of the author(s) listed above.
- *
- */
-#ifndef SRC_KERNEL_ENTRY_MAIN_H
-#define SRC_KERNEL_ENTRY_MAIN_H
-
-#include <efi/efi.h>
-#include <efi/efiapi.h>
-
-/**
- * @brief The entry point for the entire operating system. A union between the
- * different architectures' setup routines. Literal poetry in motion.
  * 
  */
-void kmain();
+#ifndef KERNEL_ENTRY_MAIN_H
+#define KERNEL_ENTRY_MAIN_H
 
-#endif // ifndef SRC_KERNEL_ENTRY_MAIN_H
+void kmain(void *const mmap, void *const magic);
+
+#endif // ifndef KERNEL_ENTRY_MAIN_H
