@@ -5,7 +5,8 @@
  * @version 1
  * @date 2022-03-25
  *
- * @copyright Copyright (C) 2022. Intellectual property of the author(s) listed above.
+ * @copyright Copyright (C) 2022. Intellectual property of the author(s) listed
+ * above.
  *
  */
 #ifndef SOURCE_KERNEL_LOADERS_EFI_INTERNAL_EFIDEF_H
@@ -16,21 +17,21 @@
 #include <stdint.h>
 
 #define BOOLEAN UINT8
-#define TRUE 1
-#define FALSE 0
+#define TRUE    1
+#define FALSE   0
 
-#define __INTDEF(N)            \
-    typedef int##N##_t INT##N; \
+#define __INTDEF(N)                                                            \
+    typedef int##N##_t  INT##N;                                                \
     typedef uint##N##_t UINT##N;
 
-#define __INTREF(N) INT##N
+#define __INTREF(N)  INT##N
 #define __UINTREF(N) UINT##N
 
 __INTDEF(8)
 __INTDEF(16)
 __INTDEF(32)
 __INTDEF(64)
-typedef __int128 INT128;
+typedef __int128          INT128;
 typedef unsigned __int128 UINT128;
 
 #if SIZE_BITS == 128
@@ -49,16 +50,23 @@ typedef __UINTREF(16) UINTN;
 typedef __INTREF(8) INTN;
 typedef __UINTREF(8) UINTN;
 #else
-#error "Bad size bits value!"
+    #error "Bad size bits value!"
 #endif // if SIZE_BITS == 128
 
 typedef void VOID;
 
-typedef char CHAR8;
+typedef char  CHAR8;
 typedef short CHAR16;
 
 typedef VOID *EFI_HANDLE;
 
 typedef UINTN EFI_STATUS;
+
+typedef VOID *EFI_EVENT;
+
+typedef UINTN EFI_TPL;
+
+typedef UINT64 EFI_PHYSICAL_ADDRESS;
+typedef UINT64 EFI_VIRTUAL_ADDRESS;
 
 #endif // ifndef SOURCE_KERNEL_LOADERS_EFI_INTERNAL_EFIDEF_H

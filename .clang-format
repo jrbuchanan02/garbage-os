@@ -1,0 +1,148 @@
+Language: Cpp
+AccessModifierOffset: -4
+AlignAfterOpenBracket: true
+AlignArrayOfStructures: Right
+AlignConsecutiveAssignments: AcrossComments
+AlignConsecutiveMacros: AcrossComments
+AlignConsecutiveBitFields: AcrossComments
+AlignConsecutiveDeclarations: AcrossComments
+AlignConsecutiveMacros: AcrossComments
+AlignEscapedNewlines: Right
+AlignOperands: AlignAfterOperator
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: MultiLine
+AttributeMacros:
+  - 'EFIAPI'
+BinPackArguments: false
+BinPackParameters: false
+BitFieldColonSpacing: Both
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterObjCDeclaration: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Custom
+BreakBeforeConceptDeclarations: false
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterComma
+BreakStringLiterals: true
+ColumnLimit: 80
+CompactNamespaces: false
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 8
+Cpp11BracedListStyle: true
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: Never
+FixNamespaceComments: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^kernel/entry/.*'
+    Priority: 10
+    CaseSensitive: false
+  - Regex: '^kernel/machine/'
+    Priority: 9
+    CaseSensitive: false
+  - Regex: '^kernel/loaders/.*/'
+    Priority: 8
+    CaseSensitive: false
+  - Regex: '^kernel/loaders/.*/internal'
+    Priority: 11
+    CaseSensitive: false
+  # Any standard library stuff.
+  - Regex: '<([:alnum:].*|^metaarch.h)>'
+    Priority: 7
+    CaseSensitive: false
+IncludeIsMainRegex: '$'
+IndentAccessModifiers: false
+IndentCaseBlocks: false
+IndentCaseLabels: true
+IndentExternBlock: Indent
+IndentGotoLabels: false
+IndentPPDirectives: BeforeHash
+IndentWidth: 4
+IndentWrappedFunctionNames: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+LambdaBodyIndentation: Signature
+MacroBlockBegin: "^.*_PROLOGUE(.*)$"
+MacroBlockEnd: "^.*_EPILOGUE(.*)$"
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: All
+PPIndentWidth: 2
+# PenaltyBreakAssignment: 20
+# PenaltyBreakBeforeFirstCallParameter: 20
+# PenaltyBreakComment: 10
+# PenaltyBreakFirstLessLess: 20 
+# PenaltyBreakString: 10
+# PenaltyBreakTemplateDeclaration: 20
+PenaltyExcessCharacter: 100
+# PenaltyIndentedWhitespace: 20
+PenaltyReturnTypeOnItsOwnLine: 100
+PointerAlignment: Right
+ReferenceAlignment: Pointer
+ReflowComments: true
+ShortNamespaceLines: 0
+SortIncludes: CaseInsensitive
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: true
+SpaceAfterTemplateKeyword: true
+# use the spacing indicated by the pointer alignment
+SpaceAroundPointerQualifiers: Default
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: Always
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: true
+SpaceInEmptyBlock: true
+SpaceInEmptyParentheses: true
+SpacesBeforeTrailingComments: 4
+SpacesInCStyleCastParentheses: true
+SpacesInConditionalStatement: true
+SpacesInContainerLiterals: true
+SpacesInLineCommentPrefix:
+  Minimum: 2
+  Maximum: -1
+SpacesInParentheses: true
+SpacesInSquareBrackets: true
+Standard: 'c++20'
+StatementAttributeLikeMacros:
+  - IN
+  - OUT
+  - OPTIONAL
+StatementMacros: []
+TabWidth: 4
+TypenameMacros:
+  - EFI_STRUCT
+  - EFI_ENUM
+  - EFI_CALLBACK
+UseTab: Never

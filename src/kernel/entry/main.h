@@ -4,9 +4,10 @@
  * @brief Contains enough information for the loaders to call kmain.
  * @version 1
  * @date 2022-03-23
- * 
- * @copyright Copyright (C) 2022. Intellectual property of the author(s) listed above.
- * 
+ *
+ * @copyright Copyright (C) 2022. Intellectual property of the author(s) listed
+ * above.
+ *
  */
 #ifndef KERNEL_ENTRY_MAIN_H
 #define KERNEL_ENTRY_MAIN_H
