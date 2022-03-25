@@ -1,37 +1,22 @@
-## Welcome to GitHub Pages
+# Garbage Operating System
+Garbage OS is an open source operating system created to document in detail the methods to create a modern operating system that runs on multiple platfoms.
+Garbage OS has these planned features:
+1. A centralized Garbage Collection service (hence the name) which:
+  - collects leaked resources
+  - defragments the heap
+2. Its own executable filetype
+3. Its own disk formatting scheme
+4. Support for:
+  - EFI
+  - BIOS
+  - GRUB
+  <br>And all the ISAs supported by the above bootloaders / firmwares.
+Garbage OS lists its documentation here. It also lists any and all security alerts on this website.[^1]
 
-You can use the [editor on GitHub](https://github.com/jrbuchanan02/garbage-os/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
+Garbage OS published under the LGPL v2.1. Garbage OS is open source software and the source code, even for derivative projects, should always be available. But, 
+you can develop closed source applications that use Garbage OS, if you do not wish to produce open-source software.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Feel free to contribute to the main repository and view the source code here: [https://github.com/jrbuchanan02/garbage-os]
 
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/jrbuchanan02/garbage-os/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+[^1]: As of the current version of Garbage OS, there is no real operating system. Once there is one, there will be a page dedicated to any and all security
+alerts.
