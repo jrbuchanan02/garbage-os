@@ -10,6 +10,15 @@ Some rules to remember about how to contribute to Garbage OS:
 3. Fix the issue and make a pull request
 
 ## Some notes on contributing:
-1. If the code you are writing is specific to a type of processor, (for example, code that halts the processor), make a header file with the function name and have an
-assembly file named \[function name\]\[architecture name\].S for each architecture GOS compiles for. If there is an architecture that cannot perform whatever operation
-you're implementing, make the assembly code return -1.
+Keep in mind (my) second law of computing[^1]:
+> The effort it takes to change something scales exponentially with the amount of times you wrote it.
+
+In other words, try to keep items that should be identical aliased to the same value, a good example of
+this is the efi.h file [here](./source/kernel/loaders/efi/efi.h) which aliases the beginning of
+each structure in the (U)EFI standard with the same attributes -- even same beginning
+and ending. If the attributes of each of the countless UEFI structures need to be changed, it
+is changing only one line in a 1000 line file (versus many lines in that same file).
+
+[^1]: The "first" law is: every digital logic circuit is writable as a two-stage circuit; the "third" law
+is "cost decreases with the decrease in chip count". The three come from general observations
+on computers (I am a Computer Engineering major), but have no "real" proof.
