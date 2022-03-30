@@ -1,7 +1,8 @@
 /**
  * @file efi.h
  * @author Joshua Buchanan (joshuarobertbuchanan@gmail.com)
- * @brief defines the things for EFI
+ * @brief defines the things for EFI. EFI is an extensive standard, so this is
+ * an extensive file.
  * @version 1
  * @date 2022-03-23
  * @note complies (or will comply) with the UEFI standard version 2.9
@@ -9,15 +10,18 @@
  * above.
  *
  */
-#ifndef SOURCE_LOADERS_EFI_H
-#define SOURCE_LOADERS_EFI_H
+#ifndef KERNEL_LOADERS_EFI_H
+#define KERNEL_LOADERS_EFI_H
+
+#include <metaarch.h>
+EFI_FILE_PROLOGUE
 
 #include <kernel/loaders/efi/internal/eficonst.h>
 #include <kernel/loaders/efi/internal/efidecl.h>
 #include <kernel/loaders/efi/internal/efidef.h>
 
 #define EFI_STRUCT( NAME, EFI )                                                \
-  struct _##NAME;                                                              \
+  struct __attribute__ ( ( packed ) ) _##NAME;                                 \
   typedef struct _##NAME EFI;
 
 #define EFI_ENUM( NAME, EFI )                                                  \
@@ -29,7 +33,7 @@
   typedef NAME EFI;
 
 // clang-format off
-#define STRUCT_PROLOGUE(NAME) typedef struct _##NAME {
+#define STRUCT_PROLOGUE(NAME) typedef struct __attribute__ ( ( packed ) ) _##NAME {
 #define STRUCT_EPILOGUE(NAME) } NAME;
 #define ENUM_PROLOGUE(NAME) typedef enum _##NAME { 
 #define ENUM_EPILOGUE(NAME) } NAME;
@@ -64,6 +68,7 @@ EFI_STRUCT ( EFIVariableAuthentication3CertID,
              EFI_VARIABLE_AUTHENTICATION_3_CERT_ID )
 
 EFI_STRUCT ( EFIVariableAuthentication, EFI_VARIBLE_AUTHENTICATION )
+EFI_STRUCT ( WinCertificate, WIN_CERTIFICATE )
 EFI_STRUCT ( WinCertificateUEFIGUID, WIN_CERTIFICATE_UEFI_GUID )
 EFI_STRUCT ( EFIVariableAuthentication2, EFI_VARIABLE_AUTHENTICATION_2 )
 EFI_STRUCT ( EFIVariableAuthentication3, EFI_VARIABLE_AUTHENTICATION_3 )
@@ -71,6 +76,33 @@ EFI_STRUCT ( EFIVariableAuthentication3Nonce,
              EFI_VARIABLE_AUTHENTICATION_3_NONCE )
 
 EFI_STRUCT ( EFITime, EFI_TIME )
+
+EFI_STRUCT ( EFITimeCapabilities, EFI_TIME_CAPABILITIES )
+
+EFI_STRUCT ( EFICapsuleBlockDescriptor, EFI_CAPSULE_BLOCK_DESCRIPTOR )
+
+EFI_STRUCT ( EFICapsuleHeader, EFI_CAPSULE_HEADER )
+
+EFI_STRUCT ( EFICapsuleTable, EFI_CAPSULE_TABLE )
+
+EFI_STRUCT ( EFIMemoryRange, EFI_MEMORY_RANGE )
+EFI_STRUCT ( EFIMemoryRangeCapsule, EFI_MEMORY_RANGE_CAPSULE )
+
+EFI_STRUCT ( EFIMemoryRangeCapsuleResult, EFI_MEMORY_RANGE_CAPSULE_RESULT )
+
+EFI_STRUCT ( EFICapsuleResultVariableHeader,
+             EFI_CAPSULE_RESULT_VARIABLE_HEADER )
+
+EFI_STRUCT ( EFICapsuleResultVariableFMP, EFI_CAPSULE_RESULT_VARIABLE_FMP )
+
+EFI_STRUCT ( EFICapsuleResultVariableJSON, EFI_CAPSULE_RESULT_VARIABLE_JSON )
+
+EFI_STRUCT ( EFILoadedImageProtocol, EFI_LOADED_IMAGE_PROTOCOL )
+EFI_STRUCT ( EFIDevicePathProtocol, EFI_DEVICE_PATH_PROTOCOL )
+EFI_STRUCT ( EFIDevicePathUtilitiesProtocol,
+             EFI_DEVICE_PATH_UTILITIES_PROTOCOL )
+EFI_STRUCT ( EFIDevicePathToTextProtocol, EFI_DEVICE_PATH_TO_TEXT_PROTOCOL )
+EFI_STRUCT ( EFIDevicePathFromTextProtoco, EFI_DEVICE_PATH_FROM_TEXT_PROTOCOL )
 
 EFI_ENUM ( EFITimerDelay, EFI_TIMER_DELAY )
 
@@ -80,6 +112,8 @@ EFI_ENUM ( EFIMemoryType, EFI_MEMORY_TYPE )
 EFI_ENUM ( EFIInterfaceType, EFI_INTERFACE_TYPE )
 
 EFI_ENUM ( EFILocateSearchType, EFI_LOCATE_SEARCH_TYPE )
+
+EFI_ENUM ( EFIResetType, EFI_RESET_TYPE )
 
 STRUCT_PROLOGUE ( EFIMemoryDescriptor )
     UINT32               Type;
@@ -91,8 +125,8 @@ STRUCT_EPILOGUE ( EFIMemoryDescriptor )
 
 /**
  * @brief Globally Unique Identifer.
- * @note What happens when we have to describe something with more than 2^128
- * possible interpretations?
+ * @note What happens when we have to describe something with more than
+ * 2^128 possible interpretations?
  */
 STRUCT_PROLOGUE ( EFIGuid )
     UINT32 Data1;
@@ -115,9 +149,81 @@ STRUCT_PROLOGUE ( EFITime )
     UINT8  Pad2;
 STRUCT_EPILOGUE ( EFITime )
 
+STRUCT_PROLOGUE ( EFITimeCapabilities )
+    UINT32  Resolution;
+    UINT32  Accuracy;
+    BOOLEAN SetsToZero;
+STRUCT_EPILOGUE ( EFI_TIME_CAPABILITIES )
+
+STRUCT_PROLOGUE ( EFICapsuleBlockDescriptor )
+    UINT64 Length;
+    union
+    {
+        EFI_PHYSICAL_ADDRESS DataBlock;
+        EFI_PHYSICAL_ADDRESS ContinuationPointer;
+    } Union;
+STRUCT_EPILOGUE ( EFICapsuleBlockDescriptor )
+
+STRUCT_PROLOGUE ( EFICapsuleHeader )
+    EFI_GUID CapsuleGuid;
+    UINT32   HeaderSize;
+    UINT32   Flag;
+    UINT32   CapsuleImageSize;
+STRUCT_EPILOGUE ( EFICapsuleHeader )
+
+STRUCT_PROLOGUE ( EFICapsuleTable )
+    UINT32 CapsuleArrayNumber;
+    VOID  *CapsulePtr [];    //  note UEFI defines this as CapsulePtr[1], but
+                             //  also as a variable length array
+STRUCT_EPILOGUE ( EFICapsuleTable )
+
+STRUCT_PROLOGUE ( EFIMemoryRange )
+    EFI_PHYSICAL_ADDRESS Address;
+    UINT64               Length;
+STRUCT_EPILOGUE ( EFIMemoryRange )
+
+STRUCT_PROLOGUE ( EFIMemoryRangeCapsule )
+    EFI_CAPSULE_HEADER Header;
+    UINT32             OsRequestedMemoryType;
+    UINT64             NumberOfMemoryRanges;
+    EFI_MEMORY_RANGE   MemoryRanges [];
+STRUCT_EPILOGUE ( EFIMemoryRangeCapsule )
+
+STRUCT_PROLOGUE ( EFIMemoryRangeCapsuleResult )
+    UINT64 FirmwareMemoryRequirement;
+    UINT64 NumberOfMemoryRanges;
+STRUCT_EPILOGUE ( EFIMemoryRangeCapsuleResult )
+
+STRUCT_PROLOGUE ( EFICapsuleResultVariableHeader )
+    UINT32     VariableTotalSize;
+    UINT32     Reserved;    //  UEFI says this is for alignment.
+    EFI_GUID   CapsuleGuid;
+    EFI_TIME   CapsuleProcessed;
+    EFI_STATUS CapsuleStatus;
+STRUCT_EPILOGUE ( EFICapsuleResultVariableHeader )
+
+STRUCT_PROLOGUE ( EFICapsuleResultVariableFMP )
+    UINT16   Version;
+    UINT8    PayloadIndex;
+    UINT8    UpdateImageIndex;
+    EFI_GUID UpdateImageTypeId;
+    CHAR16   CapsuleFileName [];
+    //  While EFI has both commented out, gcc gives up after the second
+    //  variable- length array. Remember that both strings are null terminated.
+    //  CHAR16   CapsuleTarget [];
+STRUCT_EPILOGUE ( EFICapsuleResultVariableFMP )
+
+STRUCT_PROLOGUE ( EFICapsuleResultVariableJSON )
+    UINT32 Version;
+    UINT32 CapsuleId;
+    UINT32 RespLength;
+    UINT8  Resp [];
+STRUCT_EPILOGUE ( EFICapsuleResultVariableJSON )
+
 /**
- * @brief A table header in the EFI standard. Each header has enough information
- * to tell us if the data structure is valid and where the data starts.
+ * @brief A table header in the EFI standard. Each header has enough
+ * information to tell us if the data structure is valid and where the data
+ * starts.
  *
  */
 STRUCT_PROLOGUE ( EFITableHeader )
@@ -230,8 +336,8 @@ EFI_CALLBACK ( EFI_UNINSTALL_PROTOCOL_INTERFACE,
                IN EFI_HANDLE,
                IN EFI_GUID *,
                IN VOID * )
-//  NOTE: should probably be called "HandlesProtocol" since it asks the handle
-//  if it supports the protocol.
+//  NOTE: should probably be called "HandlesProtocol" since it asks the
+//  handle if it supports the protocol.
 EFI_CALLBACK ( EFI_HANDLE_PROTOCOL,
                EFI_STATUS,
                EFIHandleProtocol,
@@ -395,55 +501,56 @@ EFI_CALLBACK ( EFI_CREATE_EVENT_EX,
  *
  */
 STRUCT_PROLOGUE ( EFIBootServices )
-    EFI_TABLE_HEADER                         Hdr;
+    EFI_TABLE_HEADER                 Hdr;
     //  Task Priority Services (SINCE 1.0)
-    EFI_RAISE_TPL                            RaiseTPL;
-    EFI_RESTORE_TPL                          RestoreTPL;
+    EFI_RAISE_TPL                    RaiseTPL;
+    EFI_RESTORE_TPL                  RestoreTPL;
     //  Memory Services (SINCE 1.0)
-    EFI_ALLOCATE_PAGES                       AllocatePages;
-    EFI_FREE_PAGES                           FreePages;
-    EFI_GET_MEMORY_MAP                       GetMemoryMap;
-    EFI_ALLOCATE_POOL                        AllocatePool;
-    EFI_FREE_POOL                            FreePool;
+    EFI_ALLOCATE_PAGES               AllocatePages;
+    EFI_FREE_PAGES                   FreePages;
+    EFI_GET_MEMORY_MAP               GetMemoryMap;
+    EFI_ALLOCATE_POOL                AllocatePool;
+    EFI_FREE_POOL                    FreePool;
     //  Event & Timer Services (SINCE 1.0)
-    EFI_CREATE_EVENT                         CreateEvent;
-    EFI_SET_TIMER                            SetTimer;
-    EFI_WAIT_FOR_EVENT                       WaitForEvent;
-    EFI_SIGNAL_EVENT                         SignalEvent;
-    EFI_CLOSE_EVENT                          CloseEvent;
-    EFI_CHECK_EVENT                          CheckEvent;
+    EFI_CREATE_EVENT                 CreateEvent;
+    EFI_SET_TIMER                    SetTimer;
+    EFI_WAIT_FOR_EVENT               WaitForEvent;
+    EFI_SIGNAL_EVENT                 SignalEvent;
+    EFI_CLOSE_EVENT                  CloseEvent;
+    EFI_CHECK_EVENT                  CheckEvent;
     //  protocol handler services (SINCE 1.0)
-    EFI_INSTALL_PROTOCOL_INTERFACE           InstallProtocolInterface;
-    EFI_REINSTALL_PROTOCOL_INTERFACE         ReinstallProtocolInterface;
-    EFI_UNINSTALL_PROTOCOL_INTERFACE         UninstallProtocolInterface;
-    EFI_HANDLE_PROTOCOL                      HandleProtocol;
-    VOID                                    *Reserved;
-    EFI_REGISTER_PROTOCOL_NOTIFY             RegisterProtocoLNotify;
-    EFI_LOCATE_HANDLE                        LocateHandle;
-    EFI_LOCATE_DEVICE_PATH                   LocateDevicePath;
-    EFI_INSTALL_CONFIGURATION_TABLE          InstallConfigurationTable;
+    EFI_INSTALL_PROTOCOL_INTERFACE   InstallProtocolInterface;
+    EFI_REINSTALL_PROTOCOL_INTERFACE ReinstallProtocolInterface;
+    EFI_UNINSTALL_PROTOCOL_INTERFACE UninstallProtocolInterface;
+    EFI_HANDLE_PROTOCOL              HandleProtocol;
+    VOID                            *Reserved;
+    EFI_REGISTER_PROTOCOL_NOTIFY     RegisterProtocoLNotify;
+    EFI_LOCATE_HANDLE                LocateHandle;
+    EFI_LOCATE_DEVICE_PATH           LocateDevicePath;
+    EFI_INSTALL_CONFIGURATION_TABLE  InstallConfigurationTable;
     //  Image Services (SINCE 1.0)
-    EFI_IMAGE_LOAD                           LoadImage;
-    EFI_IMAGE_START                          StartImage;
-    EFI_EXIT                                 Exit;
-    EFI_IMAGE_UNLOAD                         UnloadImage;
-    EFI_EXIT_BOOT_SERVICES                   ExitBootServices;
+    EFI_IMAGE_LOAD                   LoadImage;
+    EFI_IMAGE_START                  StartImage;
+    EFI_EXIT                         Exit;
+    EFI_IMAGE_UNLOAD                 UnloadImage;
+    EFI_EXIT_BOOT_SERVICES           ExitBootServices;
     //  EFI Miscellaneous Services (SINCE 1.0)
-    EFI_GET_NEXT_MONOTONIC_COUNT             GetNextMonotonicCount;
-    EFI_STALL                                Stall;
-    EFI_SET_WATCHDOG_TIMER                   SetWatchdogTimer;
+    EFI_GET_NEXT_MONOTONIC_COUNT     GetNextMonotonicCount;
+    EFI_STALL                        Stall;
+    EFI_SET_WATCHDOG_TIMER           SetWatchdogTimer;
     //  DriverSupport Services (SINCE 1.1)
-    EFI_CONNECT_CONTROLLER                   ConnectController;
-    EFI_DISCONNECT_CONTROLLER                DisconnectController;
+    EFI_CONNECT_CONTROLLER           ConnectController;
+    EFI_DISCONNECT_CONTROLLER        DisconnectController;
     //  Open and Close Protocol Services (SINCE 1.1)
-    EFI_OPEN_PROTOCOL                        OpenProtocol;
-    EFI_CLOSE_PROTOCOL                       CloseProtocol;
-    EFI_OPEN_PROTOCOL_INFORMATION            OpenProtocolInformation;
+    EFI_OPEN_PROTOCOL                OpenProtocol;
+    EFI_CLOSE_PROTOCOL               CloseProtocol;
+    EFI_OPEN_PROTOCOL_INFORMATION    OpenProtocolInformation;
     //  Library Services (SINCE 1.1)
-    EFI_PROTOCOLS_PER_HANDLE                 ProtocolsPerHandle;
-    EFI_LOCATE_HANDLE_BUFFER                 LocateHandleBuffer;
-    EFI_LOCATE_PROTOCOL                      LocateProtocol;
-    EFI_INSTALL_MULTIPLE_PROTOCOL_INTERFACES InstallMultipleProtocolInterfaces;
+    EFI_PROTOCOLS_PER_HANDLE         ProtocolsPerHandle;
+    EFI_LOCATE_HANDLE_BUFFER         LocateHandleBuffer;
+    EFI_LOCATE_PROTOCOL              LocateProtocol;
+    EFI_INSTALL_MULTIPLE_PROTOCOL_INTERFACES
+    InstallMultipleProtocolInterfaces;
     EFI_UNINSTALL_MULTIPLE_PROTOCOL_INTERFACES
     UninstallMultipleProtocolInterfaces;
     //  32-Bit CRC Services (SINCE 1.1)
@@ -456,13 +563,36 @@ STRUCT_PROLOGUE ( EFIBootServices )
 STRUCT_EPILOGUE ( EFIBootServices )
 
 //  callbacks for the runtime services structure
-EFI_CALLBACK ( EFI_GET_TIME, VOID, EFIGetTime )
-EFI_CALLBACK ( EFI_SET_TIME, VOID, EFISetTime )
-EFI_CALLBACK ( EFI_GET_WAKEUP_TIME, VOID, EFIGetWakeupTime )
-EFI_CALLBACK ( EFI_SET_WAKEUP_TIME, VOID, EFISetWakeupTime )
+EFI_CALLBACK ( EFI_GET_TIME,
+               EFI_STATUS,
+               EFIGetTime,
+               OUT EFI_TIME *,
+               OUT EFI_TIME_CAPABILITIES *OPTIONAL )
+EFI_CALLBACK ( EFI_SET_TIME, EFI_STATUS, EFISetTime, IN EFI_TIME * )
+EFI_CALLBACK ( EFI_GET_WAKEUP_TIME,
+               EFI_STATUS,
+               EFIGetWakeupTime,
+               OUT BOOLEAN *,
+               OUT BOOLEAN *,
+               OUT EFI_TIME * )
+EFI_CALLBACK ( EFI_SET_WAKEUP_TIME,
+               EFI_STATUS,
+               EFISetWakeupTime,
+               IN BOOLEAN,
+               IN EFI_TIME *OPTIONAL )
 
-EFI_CALLBACK ( EFI_SET_VIRTUAL_ADDRESS_MAP, VOID, EFISetVirtualAddressMap )
-EFI_CALLBACK ( EFI_CONVERT_POINTER, VOID, EFIConvertPointer )
+EFI_CALLBACK ( EFI_SET_VIRTUAL_ADDRESS_MAP,
+               EFI_STATUS,
+               EFISetVirtualAddressMap,
+               IN UINTN,
+               IN UINTN,
+               IN UINT32,
+               IN EFI_MEMORY_DESCRIPTOR * )
+EFI_CALLBACK ( EFI_CONVERT_POINTER,
+               EFI_STATUS,
+               EFIConvertPointer,
+               IN UINTN,
+               IN VOID ** )
 
 EFI_CALLBACK ( EFI_GET_VARIABLE,
                EFI_STATUS,
@@ -488,14 +618,30 @@ EFI_CALLBACK ( EFI_SET_VARIABLE,
                IN VOID * )
 
 EFI_CALLBACK ( EFI_GET_NEXT_HIGH_MONO_COUNT,
+               EFI_STATUS,
+               EFIGetNextHighMonotonicCount,
+               OUT UINT32 * )
+EFI_CALLBACK ( EFI_RESET_SYSTEM,
                VOID,
-               EFIGetNextHighMonotonicCount )
-EFI_CALLBACK ( EFI_RESET_SYSTEM, VOID, EFIResetSystem )
+               EFIResetSystem,
+               IN EFI_RESET_TYPE,
+               IN EFI_STATUS,
+               IN UINTN,
+               IN VOID *OPTIONAL )
 
-EFI_CALLBACK ( EFI_UPDATE_CAPSULE, VOID, EFIUpdateCapsule )
+EFI_CALLBACK ( EFI_UPDATE_CAPSULE,
+               EFI_STATUS,
+               EFIUpdateCapsule,
+               IN EFI_CAPSULE_HEADER **,
+               IN UINTN,
+               IN EFI_PHYSICAL_ADDRESS OPTIONAL )
 EFI_CALLBACK ( EFI_QUERY_CAPSULE_CAPABILITIES,
-               VOID,
-               EFIQueryCapsuleCapabilities )
+               EFI_STATUS,
+               EFIQueryCapsuleCapabilities,
+               IN EFI_CAPSULE_HEADER **,
+               IN UINTN,
+               OUT UINT64 *,
+               OUT EFI_RESET_TYPE * )
 
 EFI_CALLBACK ( EFI_QUERY_VARIABLE_INFO,
                EFI_STATUS,
@@ -507,9 +653,9 @@ EFI_CALLBACK ( EFI_QUERY_VARIABLE_INFO,
 
 /**
  * @brief The Runtime Services
- * @warning Not all runtime services are available after exiting boot services.
- * The information on which services are unavailable after exiting boot is
- * stored within one of the configuration tables.
+ * @warning Not all runtime services are available after exiting boot
+ * services. The information on which services are unavailable after exiting
+ * boot is stored within one of the configuration tables.
  */
 STRUCT_PROLOGUE ( EFIRuntimeServices )
     EFI_TABLE_HEADER               Hdr;
@@ -544,6 +690,120 @@ STRUCT_PROLOGUE ( EFIConfigurationTable )
     VOID    *VendorTable;
 STRUCT_EPILOGUE ( EFIConfigurationTable )
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+///  Protocol Interfaces begin here!!
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+STRUCT_PROLOGUE ( EFILoadedImageProtocol )
+    UINT32                    Revision;
+    EFI_HANDLE                ParentHandle;
+    EFI_SYSTEM_TABLE         *SystemTable;
+    //  source location
+    EFI_HANDLE                DeviceHandle;
+    EFI_DEVICE_PATH_PROTOCOL *FilePath;
+    VOID                     *Reserved;
+    //  load options
+    UINT32                    LoadOptionsSize;
+    VOID                     *LoadOptions;
+    //  Location where image is loaded
+    VOID                     *ImageBase;
+    UINT64                    ImageSize;
+    EFI_MEMORY_TYPE           ImageCodeType;
+    EFI_MEMORY_TYPE           ImageDataType;
+    EFI_IMAGE_UNLOAD          Unload;
+STRUCT_EPILOGUE ( EFILoadedImageProtocol )
+
+STRUCT_PROLOGUE ( EFIDevicePathProtocol )
+    UINT8 Type;
+    UINT8 SubType;
+    UINT8 Length [ 2 ];
+    UINT8 Bytes [];    //  amount of bytes with length specified in Length
+STRUCT_EPILOGUE ( EFIDevicePathPtorocol )
+
+EFI_CALLBACK ( EFI_DEVICE_PATH_UTILS_GET_DEVICE_PATH_SIZE,
+               UINTN,
+               EFIDevicePathUtilsGetDevicePathSize,
+               IN EFI_DEVICE_PATH_PROTOCOL CONST * )
+EFI_CALLBACK ( EFI_DEVICE_PATH_UTILS_DUP_DEVICE_PATH,
+               EFI_DEVICE_PATH_PROTOCOL *,
+               EFIDevicePathUtilsDuplicateDevicePath,
+               IN EFI_DEVICE_PATH_PROTOCOL CONST * )
+EFI_CALLBACK ( EFI_DEVICE_PATH_UTILS_APPEND_PATH,
+               EFI_DEVICE_PATH_PROTOCOL *,
+               EFIDevicePathUtilsAppendDevicePath,
+               IN EFI_DEVICE_PATH_PROTOCOL CONST *,
+               IN EFI_DEVICE_PATH_PROTOCOL CONST * )
+EFI_CALLBACK ( EFI_DEVICE_PATH_UTILS_APPEND_NODE,
+               EFI_DEVICE_PATH_PROTOCOL *,
+               EFIDevicePathUtilsAppendDeviceNode,
+               IN EFI_DEVICE_PATH_PROTOCOL CONST *,
+               IN EFI_DEVICE_PATH_PROTOCOL CONST * )
+EFI_CALLBACK ( EFI_DEVICE_PATH_UTILS_APPEND_INSTANCE,
+               EFI_DEVICE_PATH_PROTOCOL *,
+               EFIDevicePathUtilsAppendDevicePathInstance,
+               IN EFI_DEVICE_PATH_PROTOCOL CONST *,
+               IN EFI_DEVICE_PATH_PROTOCOL CONST * )
+EFI_CALLBACK ( EFI_DEVICE_PATH_UTILS_GET_NEXT_INSTANCE,
+               EFI_DEVICE_PATH_PROTOCOL *,
+               EFIDevicePathUtilsGetNextDevicePathInstance,
+               IN OUT EFI_DEVICE_PATH_PROTOCOL **,
+               OUT UINTN *OPTIONAL )
+EFI_CALLBACK ( EFI_DEVICE_PATH_UTILS_IS_MULTI_INSTANCE,
+               BOOLEAN,
+               EFIDevicePathUtilsIsDevicePathMultiInstance,
+               IN EFI_DEVICE_PATH_PROTOCOL CONST * )
+EFI_CALLBACK ( EFI_DEVICE_PATH_UTILS_CREATE_NODE,
+               EFI_DEVICE_PATH_PROTOCOL *,
+               EFIDevicePathUtilsCreateDeviceNode,
+               IN UINT8,
+               IN UINT8,
+               IN UINT16 )
+
+STRUCT_PROLOGUE ( EFIDevicePathUtilitiesProtocol )
+    EFI_DEVICE_PATH_UTILS_GET_DEVICE_PATH_SIZE GetDevicePathSize;
+    EFI_DEVICE_PATH_UTILS_DUP_DEVICE_PATH      DuplicateDevicePath;
+    EFI_DEVICE_PATH_UTILS_APPEND_PATH          AppendDevicePath;
+    EFI_DEVICE_PATH_UTILS_APPEND_NODE          AppendDeviceNode;
+    EFI_DEVICE_PATH_UTILS_APPEND_INSTANCE      AppendDevicePathInstance;
+    EFI_DEVICE_PATH_UTILS_GET_NEXT_INSTANCE    GetNextDevicePathInstance;
+    EFI_DEVICE_PATH_UTILS_IS_MULTI_INSTANCE    IsDevicePathMultiInstance;
+    EFI_DEVICE_PATH_UTILS_CREATE_NODE          CreateDeviceNode;
+STRUCT_EPILOGUE ( EFIDevicePathUtilitiesProtocol )
+
+EFI_CALLBACK ( EFI_DEVICE_PATH_TO_TEXT_NODE,
+               CHAR16 *,
+               EFIDevicePathToTextNode,
+               IN EFI_DEVICE_PATH_PROTOCOL CONST *,
+               IN BOOLEAN,
+               IN BOOLEAN )
+EFI_CALLBACK ( EFI_DEVICE_PATH_TO_TEXT_PATH,
+               CHAR16 *,
+               EFIDevicePathToTextPath,
+               IN EFI_DEVICE_PATH_PROTOCOL CONST *,
+               IN BOOLEAN,
+               IN BOOLEAN )
+
+STRUCT_PROLOGUE ( EFIDevicePathToTextProtocol )
+    EFI_DEVICE_PATH_TO_TEXT_NODE ConvertDeviceNodeToText;
+    EFI_DEVICE_PATH_TO_TEXT_PATH ConvertDevicePathToText;
+STRUCT_EPILOGUE ( EFIDevicePathToTextProtocol )
+
+EFI_CALLBACK ( EFI_DEVICE_PATH_FROM_TEXT_NODE,
+               EFI_DEVICE_PATH_PROTOCOL *,
+               EFIDevicePathFromTextNode,
+               IN CHAR16 CONST * )
+EFI_CALLBACK ( EFI_DEVICE_PATH_FROM_TEXT_PATH,
+               EFI_DEVICE_PATH_PROTOCOL *,
+               EFIDevicePathFromTextPath,
+               IN CHAR16 CONST * )
+
+STRUCT_PROLOGUE ( EFIDevicePathFomTextProtocol )
+    EFI_DEVICE_PATH_FROM_TEXT_NODE ConvertTextToDeviceNode;
+    EFI_DEVICE_PATH_FROM_TEXT_PATH ConvertTextToDevicePath;
+STRUCT_EPILOGUE ( EFIDevicePathFomTextProtocol )
+
 /**
  * @brief A protocol for simply reading in text.
  *
@@ -561,7 +821,8 @@ STRUCT_EPILOGUE ( EFISimpleTextOutputProtocol )
 /**
  * @brief Runtime properties table. Describes what runtime services are
  * suddenly unavailable when we exit boot services. If the service is
- * unsupported and we call it, the service simply returns EFI_UNSUPPORTED.
+ * unsupported and we call it, the service simply returns
+ * EFI_UNSUPPORTED.
  *
  */
 STRUCT_PROLOGUE ( EFIRTPropertiesTable )
@@ -570,12 +831,12 @@ STRUCT_PROLOGUE ( EFIRTPropertiesTable )
     UINT32 RuntimeServicesSupported;
 STRUCT_EPILOGUE ( EFIRTPropertiesTable )
 /**
- * @brief EFIProperties table is a structure that is deprecated and will be
- * removed from the standard.
- * @note (Judging from the size and nameof the structure) Have I told you
- * the about the tradgedy of Darth Properties Table the wise? They expected
- * him to describe at least 64 properties and potentially have 4.3 billion
- * versions, but instead he only described one bit.
+ * @brief EFIProperties table is a structure that is deprecated and will
+ * be removed from the standard.
+ * @note (Judging from the size and nameof the structure) Have I told
+ * you the about the tradgedy of Darth Properties Table the wise? They
+ * expected him to describe at least 64 properties and potentially
+ * have 4.3 billion versions, but instead he only described one bit.
  */
 STRUCT_PROLOGUE ( EFIPropertiesTable )
     UINT32 Version;
@@ -610,7 +871,17 @@ STRUCT_PROLOGUE ( EFIVariableAuthentication3CertID )
     UINT8  Id [ 0 ];
 STRUCT_EPILOGUE ( EFIVariableAuthentication3CertID )
 
+STRUCT_PROLOGUE ( WinCertificate )
+    UINT32 dwLength;
+    UINT16 wRevision;
+    UINT16 wCertificateType;
+    UINT8  bCertificate [];
+STRUCT_EPILOGUE ( WinCertificate )
+
 STRUCT_PROLOGUE ( WinCertificateUEFIGUID )
+    WIN_CERTIFICATE Hdr;
+    EFI_GUID        CertType;
+    UINT8           CertData [];
 STRUCT_EPILOGUE ( WinCertificateUEFIGUID )
 
 STRUCT_PROLOGUE ( EFIVariableAuthentication )
@@ -661,4 +932,9 @@ ENUM_EPILOGUE ( EFIInterfaceType )
 ENUM_PROLOGUE ( EFILocateSearchType )
     AllHandles, ByRegisterNotify, ByProtocol
 ENUM_EPILOGUE ( EFILocateSearchType )
-#endif    //  ifndef SOURCE_LOADERS_EFI_H
+
+ENUM_PROLOGUE ( EFIResetType )
+    EfiResetCold, EfiResetWarm, EfiResetShutdown, EfiResetPlatformSpecific,
+ENUM_EPILOGUE ( EFIResetType )
+EFI_FILE_EPILOGUE
+#endif    //  ifndef KERNEL_LOADERS_EFI_H

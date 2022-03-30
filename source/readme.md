@@ -52,3 +52,19 @@ to whoever reads a crash-log that they should attempt to replicate it on a simil
 but not-`EVIL` system. It doesn't (and should **never**) reflect opinions on the
 architecture (I quite love 6502), but instead reflects a perceived probability
 of difficult-to-trace down bugs.
+
+
+## How some things might work
+This section is for describing how some systems within GOS might work. If you are
+a developer for a modern operating system, you can take these ideas for your
+own use. Even if you do not credit Garbage OS.
+
+1. Updates that require restarting.
+    - Establish time that the user is not using the PC.
+    - Set wakeup timer (on EFI systems) using a call to 
+    `EFI_SYSTEM_TABLE->BootServices->SetWakeupTimer`. According to the UEFI 
+    standard, the PC will wake up at that time or the next moment it has 
+    sufficent power. 
+    - Proceed with the update as normal, clearing the wakup timer.
+    <br> I do not know why Windows does not use this function for updates?
+    (Windows requests that your computer remain on before updates)

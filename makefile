@@ -22,13 +22,69 @@
 # 		+ The URL to clone GCC, G++, GAS from								   #
 ################################################################################
 
-# targets we support
-supported_archs := aarch64 arm i386 ia64 x86_64
-# GCC typically doesn't like bare metal targets, so we "target" linux
-# since GOS has to be written as a freestanding architecture, this is fine.
-#
-# On EFI targets, we have to use objcopy to transfer the contents of the 
-# ELF binary to a PE format. (i.e., turn gos.out into gos.exe but call 
-# it gos.efi instead).
-target := linux
+define add_source_dir
+	source_dirs += ./source/$(1)
+endef
 
+source_dirs = ./source
+
+arch_names = aarch64 x86_64 riscv64
+arch_defs = __A64__ __X64__ __R64__
+
+$(eval $(call add_source_dir,kernel))
+$(eval $(call add_source_dir,kernel/entry))
+$(eval $(call add_source_dir,kernel/loaders))
+$(eval $(call add_source_dir,kernel/loaders/efi))
+$(eval $(call add_source_dir,kernel/loaders/efi/internal))
+$(eval $(call add_source_dir,kernel/machine))
+
+asm_ext := S
+ppc_ext := i
+src_ext := c
+obj_ext := o
+
+src_files = $(foreach dir, $(source_dirs), $(wildcard $(dir)/*.$(src_ext)))
+asm_files = $(foreach dir, $(source_dirs), $(wildcard $(dir)/*.$(asm_ext)))
+ppc_files = $(foreach dir, $(source_dirs), $(wildcard $(dir)/*.$(ppc_ext)))
+obj_files = $(foreach dir, $(source_dirs), $(wildcard $(dir)/*.$(obj_ext)))
+
+include_dir := ./source
+
+CFLAGS = --std=gnu17 -Werror -Wall -Wextra -Wpedantic -ffreestanding -I $(include_dir)
+
+define arch_template
+
+asm_$(1) := $(subst source,build/asm,$(src_files:%.$(src_ext)=%$(1).$(asm_ext))) 
+ppc_$(1) := $(subst source,build/ppc,$(src_files:%.$(src_ext)=%$(1).$(ppc_ext)))
+obj_$(1) := $(subst source,build/obj,$(src_files:%.$(src_ext)=%$(1).$(obj_ext)))
+
+$$(asm_$(1)) : $$(src_files) $$(asm_files)
+	mkdir -p $$(dir $$@)
+	$(1)-linux-gnu-gcc-10 $(CFLAGS) -D $(2) -S $$(subst build/asm,source,$$(patsubst %$(1).$(asm_ext),%.$(src_ext),$$@))  -o $$@
+
+$$(ppc_$(1)) : $$(src_files) $$(ppc_files)
+	mkdir -p $$(dir $$@)
+	$(1)-linux-gnu-gcc-10 $(CFLAGS) -D $(2) -E $$(subst build/ppc,source,$$(patsubst %$(1).$(ppc_ext),%.$(src_ext),$$@))  -o $$@
+
+$$(obj_$(1)) : $$(src_files) $$(asm_files) $$(ppc_files)
+	mkdir -p $$(dir $$@)
+	$(1)-linux-gnu-gcc-10 $(CFLAGS) -D $(2) -c $$(subst build/obj,source,$$(patsubst %$(1).$(obj_ext),%.$(src_ext),$$@))  -o $$@
+endef
+# the numbers for a word in the arch_names and arch_defines variables
+numbers = 1 2 3
+$(foreach n, $(numbers), $(eval $(call arch_template,$(word $(n),$(arch_names)),$(word $(n),$(arch_defs)))))
+
+assemble: $(foreach an, $(arch_names), $(asm_$(an)))
+preprocess: $(foreach an, $(arch_names), $(ppc_$(an)))
+compile: $(foreach an, $(arch_names), $(obj_$(an)))
+build: assemble preprocess compile
+	mkdir -p ./build/bin
+	
+
+all:
+	@echo $(source_dirs)
+	@echo $(src_files)
+	@echo $(asm_x86_64)
+
+install:
+	sudo apt install $(subst _,-,$(foreach an,$(arch_names), gcc-10-$(an)-linux-gnu))

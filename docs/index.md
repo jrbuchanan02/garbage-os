@@ -20,3 +20,10 @@ Feel free to contribute to the main repository and view the source code here: [h
 
 [^1]: As of the current version of Garbage OS, there is no real operating system. Once there is one, there will be a page dedicated to any and all security
 alerts.
+
+
+## Documentation Per file.
+<!-- I apologize for the messy table -->
+| File | Documentation |
+|:--: | :--:|
+| [src/kernel/entry/main.c](../src/kernel/entry/main.c) | [./src/kernel/entry/main.md](./src/kernel/entry/main.md) |

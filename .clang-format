@@ -139,7 +139,9 @@ StatementAttributeLikeMacros:
   - IN
   - OUT
   - OPTIONAL
-StatementMacros: []
+StatementMacros:
+  - EFI_FILE_PROLOGUE
+  - EFI_FILE_EPILOGUE
 TabWidth: 4
 TypenameMacros:
   - EFI_STRUCT

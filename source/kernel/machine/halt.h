@@ -9,8 +9,8 @@
  * above.
  *
  */
-#ifndef SOURCE_KERNEL_MACHINE_HALT_H
-#define SOURCE_KERNEL_MACHINE_HALT_H
+#ifndef KERNEL_MACHINE_HALT_H
+#define KERNEL_MACHINE_HALT_H
 
 /**
  * @brief Halts the processor and clears interrupts.
@@ -23,6 +23,6 @@
  * (while hacks around it probably exist) this function does not mess with the
  * interrupt table.
  */
-extern void halt();
+void halt();
 
-#endif // ifndef SOURCE_KERNEL_MACHINE_HALT_H
+#endif // ifndef KERNEL_MACHINE_HALT_H

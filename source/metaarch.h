@@ -9,8 +9,8 @@
  * above.
  *
  */
-#ifndef SOURCE_METAARCH_H
-#define SOURCE_METAARCH_H
+#ifndef METAARCH_H
+#define METAARCH_H
 
 // Same order as in UEFI standard:
 // IA32
@@ -196,4 +196,11 @@
 
 #endif // if defined(__IA32__)
 
-#endif // ifndef SOURCE_METAARCH_H
+#define EFI_FILE_PROLOGUE\
+    _Pragma("GCC diagnostic push") \
+    _Pragma("message \"Pushing diagnostic: \'-Wpedantic\' to include this file.\"") \
+    _Pragma("GCC diagnostic ignored \"-Wpedantic\"")
+#define EFI_FILE_EPILOGUE\
+    _Pragma("GCC diagnostic pop")
+
+#endif // ifndef METAARCH_H

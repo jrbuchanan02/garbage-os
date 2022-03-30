@@ -23,8 +23,11 @@
  * environment we are in. It's a void pointer since the magic type is not yet
  * defined.
  */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 void kmain ( void *const mmap, void *const magic )
 {
     //  halt the processor once done
     halt ( );
 }
+#pragma GCC diagnostic pop

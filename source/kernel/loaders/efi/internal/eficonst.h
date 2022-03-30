@@ -9,8 +9,8 @@
  * above.
  *
  */
-#ifndef SOURCE_KERNEL_LOADERS_EFI_INTERNAL_EFICONST_H
-#define SOURCE_KERNEL_LOADERS_EFI_INTERNAL_EFICONST_H
+#ifndef KERNEL_LOADERS_EFI_INTERNAL_EFICONST_H
+#define KERNEL_LOADERS_EFI_INTERNAL_EFICONST_H
 
 //  system table signature and the table revisions per version of the EFI
 //  standard.
@@ -268,4 +268,157 @@
 #define EFI_VARIABLE_AUTHENTICATION_3_TIMESTAMP_TYPE 1
 #define EFI_VARIABLE_AUTHENTICATION_3_NONCE_TYPE     2
 
-#endif    //  ifndef SOURCE_KERNEL_LOADERS_EFI_INTERNAL_EFICONST_H
+#define EFI_TIME_ADJUST_DAYLIGHT 0x01
+#define EFI_TIME_IN_DAYLIGHT     0x02
+
+#define EFI_UNSPECIFIED_TIMEZONE 0x07FF
+
+#define EFI_OPTIONAL_PTR 0x00000001
+
+#define CAPSULE_FLAGS_PERSIST_ACROSS_RESET  0x00010000
+#define CAPSULE_FLAGS_POPULATE_SYSTEM_TABLE 0x00020000
+#define CAPSULE_FLAGS_INITIATE_RESET        0x00040000
+
+#define EFI_MEMORY_RANGE_CAPSULE_GUID                                          \
+  {                                                                            \
+    0xde9f0ec, 0x88b6, 0x428f,                                                 \
+    {                                                                          \
+      0x97, 0x7a, 0x25, 0x8f, 0x1d, 0xe, 0x5e, 0x72                            \
+    }                                                                          \
+  }
+
+#define EFI_OS_INDICATIONS_BOOT_TO_FW_UI                   0x0000000000000001
+#define EFI_OS_INDICATIONS_TIMESTAMP_REVOCATION            0x0000000000000002
+#define EFI_OS_INDICATIONS_FILE_CAPSULE_DELIVERY_SUPPORTED 0x0000000000000004
+#define EFI_OS_INDICATIONS_FMP_CAPSULE_SUPPORTED           0x0000000000000008
+#define EFI_OS_INDICATIONS_CAPSULE_RESULT_VAR_SUPPORTED    0x0000000000000010
+#define EFI_OS_INDICATIONS_START_OS_RECOVERY               0x0000000000000020
+#define EFI_OS_INDICATIONS_START_PLATFORM_RECOVERY         0x0000000000000040
+#define EFI_OS_INDICATIONS_JSON_CONFIG_DATA_REFRESH        0x0000000000000080
+
+#define EFI_CAPSULE_REPORT_GUID                                                \
+  {                                                                            \
+    0x39b68c46, 0xf7fb, 0x441b,                                                \
+    {                                                                          \
+      0xb6, 0xec, 0x16, 0xb0, 0xf6, 0x98, 0x21, 0xf3                           \
+    }                                                                          \
+  }
+
+#define WIN_CERT_TYPE_PKCS_SIGNED_DATA 0x0002
+#define WIN_CERT_TYPE_EFI_PKCS115      0x0EF0
+#define WIN_CERT_TYPE_EFI_GUID         0x0EF1
+
+#define EFI_LOADED_IMAGE_PROTOCOL_GUID                                         \
+  {                                                                            \
+    0x5B1B31A1, 0x9562, 0x11d2,                                                \
+    {                                                                          \
+      0x8E, 0x3F, 0x00, 0xA0, 0xC9, 0x69, 0x72, 0x3B                           \
+    }                                                                          \
+  }
+
+#define EFI_LOADED_IMAGE_DEVICE_PATH_PROTOCOL_GUID                             \
+  {                                                                            \
+    0xbc62157e, 0x3e33, 0x4fec,                                                \
+    {                                                                          \
+      0x99, 0x20, 0x2d, 0x3b, 0x36, 0xd7, 0x50, 0xdf                           \
+    }                                                                          \
+  }
+
+#define EFI_DEVICE_PATH_PROTOCOL_GUID                                          \
+  {                                                                            \
+    0x09576e91, 0x6d3f, 0x11d2,                                                \
+    {                                                                          \
+      0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b                           \
+    }                                                                          \
+  }
+
+#define EFI_PNP_ID( ID )  ( UINT32 ) ( ( ( ID ) << 16 ) | 0x41D0 )
+#define EISA_PNP_ID( ID ) EFI_PNP_ID ( ID )
+
+#define EFI_PC_ANSI_GUID                                                       \
+  {                                                                            \
+    0xe0c14753, 0xf9be, 0x11d2,                                                \
+    {                                                                          \
+      0x9a, 0x0c, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d                           \
+    }                                                                          \
+  }
+#define EFI_VT_100_GUID                                                        \
+  {                                                                            \
+    0xdfa66065, 0xb419, 0x11d3,                                                \
+    {                                                                          \
+      0x9a, 0x2d, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d                           \
+    }                                                                          \
+  }
+#define EFI_VT_100_PLUS_GUID                                                   \
+  {                                                                            \
+    0x7baec70b, 0x57e0, 0x4c76,                                                \
+    {                                                                          \
+      0x8e, 0x87, 0x2f, 0x9e, 0x28, 0x08, 0x83, 0x43                           \
+    }                                                                          \
+  }
+#define EFI_VT_UTF8_GUID                                                       \
+  {                                                                            \
+    0xad15a0d6, 0x8bec, 0x4acf,                                                \
+    {                                                                          \
+      0xa0, 0x73, 0xd0, 0x1d, 0xe7, 0x7e, 0x2d, 0x88                           \
+    }                                                                          \
+  }
+#define DEVICE_PATH_MESSAGING_UART_FLOW_CONTROL                                \
+  {                                                                            \
+    0x37499a9d, 0x542f, 0x4c89,                                                \
+    {                                                                          \
+      0xa0, 0x26, 0x35, 0xda, 0x14, 0x20, 0x94, 0xe4                           \
+    }                                                                          \
+  }
+
+#define EFI_VIRTUAL_DISK_GUID                                                  \
+  {                                                                            \
+    0x77AB535A, 0x45FC, 0x624B,                                                \
+    {                                                                          \
+      0x55, 0x60, 0xF7, 0xB2, 0x81, 0xD1, 0xF9, 0x6E                           \
+    }                                                                          \
+  }
+#define EFI_VIRTUAL_CD_GUID                                                    \
+  {                                                                            \
+    0x3D5ABD30, 0x4175, 0x87CE,                                                \
+    {                                                                          \
+      0x6D, 0x64, 0xD2, 0xAD, 0xE5, 0x23, 0xC4, 0xBB                           \
+    }                                                                          \
+  }
+#define EFI_PERSISTENT_VIRTUAL_DISK_GUID                                       \
+  {                                                                            \
+    0x5CEA02C9, 0x4D07, 0x69D3,                                                \
+    {                                                                          \
+      0x26, 0x9F, 0x44, 0x96, 0xFB, 0xE0, 0x96, 0xF9                           \
+    }                                                                          \
+  }
+#define EFI_PERSISTENT_VIRTUAL_CD_GUID                                         \
+  {                                                                            \
+    0x08018188, 0x42CD, 0xBB48,                                                \
+    {                                                                          \
+      0x10, 0x0F, 0x53, 0x87, 0xD5, 0x3D, 0xED, 0x3D                           \
+    }                                                                          \
+  }
+#define EFI_DEVICE_PATH_UTILITIES_PROTOCOL_GUID                                \
+  {                                                                            \
+    0x379be4e, 0xd706, 0x437d,                                                 \
+    {                                                                          \
+      0xb0, 0x37, 0xed, 0xb8, 0x2f, 0xb7, 0x72, 0xa4                           \
+    }                                                                          \
+  }
+#define EFI_DEVICE_PATH_TO_TEXT_PROTOCOL_GUID                                  \
+  {                                                                            \
+    0x8b843e20, 0x8132, 0x4852,                                                \
+    {                                                                          \
+      0x90, 0xcc, 0x55, 0x1a, 0x4e, 0x4a, 0x7f, 0x1c                           \
+    }                                                                          \
+  }
+#define EFI_DEVICE_PATH_FROM_TEXT_PROTOCOL_GUID                                \
+  {                                                                            \
+    0x5c99a21, 0xc70f, 0x4ad2,                                                 \
+                                                                               \
+    {                                                                          \
+      0x8a, 0x5f, 0x35, 0xdf, 0x33, 0x43, 0xf5, 0x1e                           \
+    }                                                                          \
+  }
+#endif    //  ifndef KERNEL_LOADERS_EFI_INTERNAL_EFICONST_H
