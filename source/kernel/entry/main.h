@@ -12,6 +12,7 @@
 #ifndef KERNEL_ENTRY_MAIN_H
 #define KERNEL_ENTRY_MAIN_H
 
+
 void kmain(void *const mmap, void *const magic);
 
 #endif // ifndef KERNEL_ENTRY_MAIN_H

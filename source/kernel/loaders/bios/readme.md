@@ -1,4 +1,5 @@
 # Kernel/loaders/bios
+
 This directory contains the files necessary for loading in a BIOS-based bootloader.
 BIOS is old and deprecated. But I see value in supporting as many systems as 
 possible as part of the learning experience in GOS. BIOS stands for Basic
@@ -6,6 +7,7 @@ Input Output System and is fameous as the firmware on the orignal IBM-PC/AT and
 its clones.
 
 ## How does BIOS load an operating system?
+
 First, let's define a term: chipset-jutsu[^1]. Chipset-jutsu is any method that
 varies from system to system which we would not be expected to know how to do. 
 

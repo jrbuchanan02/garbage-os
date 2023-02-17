@@ -39,6 +39,38 @@ EFI_FILE_PROLOGUE
 #define ENUM_EPILOGUE(NAME) } NAME;
 // clang-format on
 
+
+ENUM_PROLOGUE ( EFITimerDelay )
+    TimerCancel,              //  cancel the event's timer
+            TimerPeriodic,    //  trigger event timer periodically
+            TImerRelative     //  trigger in TriggerTime * 100ns
+ENUM_EPILOGUE ( EFITimerDelay )
+
+ENUM_PROLOGUE ( EFIAllocateType )
+    AllocateAnyPages, AllocateMaxAddress, AllocateAddress, MaxAllocateType
+ENUM_EPILOGUE ( EFIAllocateType )
+
+ENUM_PROLOGUE ( EFIMemoryType )
+    EfiReservedMemoryType, EfiLoaderCode, EfiLoaderData, EfiBootServicesCode,
+            EfiBootServicesData, EfiRuntimeServicesCode, EfiRuntimeServicesData,
+            EfiConventionalMemory, EfiUnusableMemory, EfiACPIReclaimMemory,
+            EfiACPIMemoryNVS, EfiMemoryMappedIO, EfiMemoryMappedIOPortSpace,
+            EfiPalCode, EfiPersistentMemory, EfiUnacceptedMemoryType,
+            EfiMaxMemoryType
+ENUM_EPILOGUE ( EFIMemoryType )
+
+ENUM_PROLOGUE ( EFIInterfaceType )
+    EFI_NATIVE_INTERFACE
+ENUM_EPILOGUE ( EFIInterfaceType )
+
+ENUM_PROLOGUE ( EFILocateSearchType )
+    AllHandles, ByRegisterNotify, ByProtocol
+ENUM_EPILOGUE ( EFILocateSearchType )
+
+ENUM_PROLOGUE ( EFIResetType )
+    EfiResetCold, EfiResetWarm, EfiResetShutdown, EfiResetPlatformSpecific,
+ENUM_EPILOGUE ( EFIResetType )
+
 EFI_STRUCT ( EFIGuid, EFI_GUID )
 
 EFI_STRUCT ( EFITableHeader, EFI_TABLE_HEADER )
@@ -852,11 +884,11 @@ STRUCT_PROLOGUE ( EFIMemoryAttributesTable )
     EFI_MEMORY_DESCRIPTOR Entry [ 0 ];
 STRUCT_EPILOGUE ( EFIMemoryAttributesTable )
 
-STRUCT_PROLOGUE ( EFIDevicePathProtocol )
-    UINT8 Type;
-    UINT8 SubType;
-    UINT8 Length [ 2 ];
-STRUCT_EPILOGUE ( EFIDevicePathProtocol )
+//STRUCT_PROLOGUE ( EFIDevicePathProtocol )
+//    UINT8 Type;
+//    UINT8 SubType;
+//    UINT8 Length [ 2 ];
+//STRUCT_EPILOGUE ( EFIDevicePathProtocol )
 
 STRUCT_PROLOGUE ( EFIOpenProtocolInformationEntry )
     EFI_HANDLE AgendHandle;
@@ -906,35 +938,5 @@ STRUCT_PROLOGUE ( EFIVariableAuthentication3Nonce )
     UINT8  Nonce [ 0 ];
 STRUCT_EPILOGUE ( EFIVariableAuthentication3Nonce )
 
-ENUM_PROLOGUE ( EFITimerDelay )
-    TimerCancel,              //  cancel the event's timer
-            TimerPeriodic,    //  trigger event timer periodically
-            TImerRelative     //  trigger in TriggerTime * 100ns
-ENUM_EPILOGUE ( EFITimerDelay )
-
-ENUM_PROLOGUE ( EFIAllocateType )
-    AllocateAnyPages, AllocateMaxAddress, AllocateAddress, MaxAllocateType
-ENUM_EPILOGUE ( EFIAllocateType )
-
-ENUM_PROLOGUE ( EFIMemoryType )
-    EfiReservedMemoryType, EfiLoaderCode, EfiLoaderData, EfiBootServicesCode,
-            EfiBootServicesData, EfiRuntimeServicesCode, EfiRuntimeServicesData,
-            EfiConventionalMemory, EfiUnusableMemory, EfiACPIReclaimMemory,
-            EfiACPIMemoryNVS, EfiMemoryMappedIO, EfiMemoryMappedIOPortSpace,
-            EfiPalCode, EfiPersistentMemory, EfiUnacceptedMemoryType,
-            EfiMaxMemoryType
-ENUM_EPILOGUE ( EFIMemoryType )
-
-ENUM_PROLOGUE ( EFIInterfaceType )
-    EFI_NATIVE_INTERFACE
-ENUM_EPILOGUE ( EFIInterfaceType )
-
-ENUM_PROLOGUE ( EFILocateSearchType )
-    AllHandles, ByRegisterNotify, ByProtocol
-ENUM_EPILOGUE ( EFILocateSearchType )
-
-ENUM_PROLOGUE ( EFIResetType )
-    EfiResetCold, EfiResetWarm, EfiResetShutdown, EfiResetPlatformSpecific,
-ENUM_EPILOGUE ( EFIResetType )
 EFI_FILE_EPILOGUE
 #endif    //  ifndef KERNEL_LOADERS_EFI_H

@@ -12,6 +12,8 @@
 
 #include <kernel/machine/halt.h>
 
+#include <kernel/entry/main.h>
+
 /**
  * @brief Kernel Entry point. All architectures end up calling this function
  * after their respective loading and setup processes.
@@ -27,6 +29,13 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void kmain ( void *const mmap, void *const magic )
 {
+    // initialization
+
+    while(1)
+    {
+        // logic.
+    }
+
     //  halt the processor once done
     halt ( );
 }

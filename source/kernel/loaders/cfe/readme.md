@@ -1,4 +1,5 @@
 # kernel/loaders/cfe
+
 CFE stands for the Common Firmware Environment. It is (maintained? created?) by
 Broadcom. CFE allows running operating systems on the MIPS architecture.
 

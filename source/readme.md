@@ -1,60 +1,77 @@
 # src
+
 This folder contains notes and commentary on code within the source directory
 (not including subdirectories!)
 
 ## metaarch.h
+
 The file can be found [here](./metaarch.h)
 
-### On `EVIL` Architectures:
+### What do the various macros mean?
 
-GOS marks architectures as evil if they are infamous in the development community
-for being difficult in *two out of three* of the following ways:
+metaarch.h defines multiple macros based on the targeted architecture, these
+are:
 
-1. To write compilers for (as in, more difficulty than normally writing a compiler)
-2. Read the assembly listing; if the listing is even meant to be human readable
-3. Adapt C / C++ / other high level languages to run in.
+1. ARCH_BITS
+2. ADDR_BITS
+3. SIZE_BITS
+4. FLAT
+5. EVIL
+6. ENDIAN
 
-As such, here are the architectures that GOS defines as `EVIL`:
-1. IA-64, also known as Itanium.
-    - Itanium, which organizes all instructions into triplets each run at the 
-    same time, is notoriously difficult to write a compiler for. Even Itanium
-    debuggers are known to occaisionally have bugs which prevent their proper
-    execution. 
-    - Itanium code, relying on these compilers which had the unicorns of bugs, 
-    was not meant to be human readable. As a result, Itanium assembly has garnered
-     a reputation for itself as hard (if not impossible) to understand.
-2. i286, also known as 16-bit x86
-    - It is difficult to write compilers for as due to its age. The only two 
-    compilers that I know of which can target i286 are below. The end result of
-    this short list of an old host and ancient compiler is is that we may have 
-    to *write our own* (increasing the difficulty significantly).
-        + GCC on a Windows *3.1* host; yes, you need a DOS machine to target i286
-        + Possibly some very old versions of MSVC
-    - Because i286 uses a segmented memory model, it is even (falsely) beleived
-    that it is incompatible with the C programming language (this is false, since
-    C compilers exist for DOS). However, this also means that we cannot store a
-    pointer to just anywhere in RAM anywhere on the processor. Said pointer has
-    to be split between a segment register and another 16-bits. Meaning that 
-    `size_t` is either one sixteenth of our address space or `size_t` is 4096 
-    times the address space.
-3. 65c816
-    - C genuinely can barely target the 6502 processor (which is almost identical
-    to the 65c816) as I only have heard of
-    one compiler capable of targeting it. This compiler is not able to use 
-    local variables in functions.
-    - The stack is limited to 256 bytes in length. Our return addresses are 3 
-    bytes long meaning that we have only around 85 functions to nest.
+#### ARCH_BITS
 
-GOS will still work to support these `EVIL` architectures. `EVIL` generally means
-that the compiler has a theoretically higher chance of bugs and that debugging
-is more difficult. Perhaps leading to more debugging info dropped and hinting
-to whoever reads a crash-log that they should attempt to replicate it on a similar
-but not-`EVIL` system. It doesn't (and should **never**) reflect opinions on the
-architecture (I quite love 6502), but instead reflects a perceived probability
-of difficult-to-trace down bugs.
+ARCH_BITS refers to the amount of bits that the ALU processes at once. This
+macro is useful as it refers to the largest integer size usable without a
+performance loss.
 
+#### ADDR_BITS
+
+ADDR_BITS refers to the amount of bits the processor can use to access memory.
+ADDR_BITS can be (often) smaller and (rarely) larger than size_t. Multiple
+architectures may have the wrong value for ADDR_BITS. 
+
+#### SIZE_BITS
+
+SIZE_BITS refers to the smallest power of two integer that applications can use
+to address all memory available to them.
+
+#### FLAT
+
+FLAT is 1 if the architecture uses flat memory model, 0 otherwise.
+
+A flat memory model means that all addresses are equally accessible from some
+instruction. For example, in 65c816 the instruction `lda $1234` can load 256 
+different addresses based on context, that archetecture does *not* have a flat
+memory model while the 68000 instruction `move D0, (FF000000)` functions 
+identically to `move D0, (00000000)` on an original 68000, because one 
+instruction's address always refers to one instruction it has a flat memory
+model.
+
+#### EVIL
+
+EVIL is 1 if the architecture traditionally does not have C language support
+**or** if the architecture is not designed with human-readable assembly in mind.
+
+For example, even though x64 is an "orthogonal" instruction set that only
+performs integer division on RDX:RAX, it is not evil simply because its assembly
+remains human readable and the architecture has had C support for its entire 
+lifetime.
+
+However, 65c816 might not even have an available C compiler! Itanium assembly
+was not designed to be human readable! Thus, in a debugging sense, it's entirely
+possible that debugging the GOS kernel may mean much more effort in reading 
+assembly or mean debugging the *compiler* as well.
+
+Similarly, i286 is evil as GCC has never supported it.
+
+#### ENDIAN
+
+ENDIAN is 1 if the architecture is always or can be set to little endian without
+a performance loss.
 
 ## How some things might work
+
 This section is for describing how some systems within GOS might work. If you are
 a developer for a modern operating system, you can take these ideas for your
 own use. Even if you do not credit Garbage OS.
