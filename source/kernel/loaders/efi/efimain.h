@@ -12,6 +12,6 @@
 #ifndef KERNEL_LOADERS_EFI_EFIMAIN_H
 #define KERNEL_LOADERS_EFI_EFIMAIN_H
 
-void eprint(char const *const x);
+void efi_compat_putc(char);
 
 #endif // ifndef KERNEL_LOADERS_EFI_EFIMAIN_H

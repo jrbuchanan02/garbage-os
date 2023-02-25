@@ -10,9 +10,21 @@
  *
  */
 
+#include <kernel/entry/main.h>
 #include <kernel/machine/halt.h>
 
-#include <kernel/entry/main.h>
+#ifndef INIT_ENTRIES_FOR_SDT
+  #define INIT_ENTRIES_FOR_SDT( name )                                         \
+    if ( name )                                                                \
+    {                                                                          \
+      name##_entries = name->entries;                                          \
+      name##_exists  = 1;                                                      \
+      name##_entry_count =                                                     \
+              name->header.length - sizeof ( acpi_description_header );        \
+    }
+#endif    //  ifndef INIT_ENTRIES_FOR_SDT
+
+
 
 /**
  * @brief Kernel Entry point. All architectures end up calling this function
@@ -21,19 +33,18 @@
  * @param mmap the location of the memory map. It's currently a void pointer
  * because the memory map type is not yet defined
  *
- * @param magic the location of the magic number which tells us what specific
- * environment we are in. It's a void pointer since the magic type is not yet
- * defined.
+ * @param magic the location of the magic number which tells us what
+ * specific environment we are in. It's a void pointer since the magic type
+ * is not yet defined.
  */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-void kmain ( void *const mmap, void *const magic )
-{
-    // initialization
 
-    while(1)
+void kmain ( void *const mmap, kmain_magic *const magic )
+{
+    while ( 1 )
     {
-        // logic.
+        //  logic.
     }
 
     //  halt the processor once done

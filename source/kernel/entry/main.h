@@ -12,7 +12,27 @@
 #ifndef KERNEL_ENTRY_MAIN_H
 #define KERNEL_ENTRY_MAIN_H
 
+#include <common/hal/acpi.h>
 
-void kmain(void *const mmap, void *const magic);
+struct _kmain_magic;
 
-#endif // ifndef KERNEL_ENTRY_MAIN_H
+enum _known_loaders
+{
+    EFI,
+    BIOS,
+};
+
+
+typedef struct _kmain_magic kmain_magic;
+typedef enum _known_loaders known_loaders;
+
+void kmain ( void *const mmap, kmain_magic *const magic );
+
+struct _kmain_magic
+{
+    known_loaders loader;
+    acpi_rsdt    *rsdt;
+    acpi_xsdt    *xsdt;
+};
+
+#endif    //  ifndef KERNEL_ENTRY_MAIN_H

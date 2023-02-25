@@ -144,7 +144,5 @@ StatementMacros:
   - EFI_FILE_EPILOGUE
 TabWidth: 4
 TypenameMacros:
-  - EFI_STRUCT
-  - EFI_ENUM
-  - EFI_CALLBACK
+
 UseTab: Never

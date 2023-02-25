@@ -54,6 +54,7 @@ arch_snames = AA64   x64    RISCV64
 $(eval $(call add_source_dir,kernel))
 $(eval $(call add_source_dir,kernel/entry))
 $(eval $(call add_source_dir,kernel/loaders))
+$(eval $(call add_source_dir,kernel/loaders/common))
 $(eval $(call add_source_dir,kernel/loaders/efi))
 $(eval $(call add_source_dir,kernel/loaders/efi/internal))
 $(eval $(call add_source_dir,kernel/machine))
@@ -72,7 +73,7 @@ efi_results = $(output_dirs)/bin/efi_root
 
 include_dir := ./source
 
-CFLAGS = --std=gnu17 -Werror -Wall -Wextra -Wpedantic -ffreestanding -I $(include_dir)
+CFLAGS = --std=gnu17 -Werror -Wall -Wextra -Wpedantic -ffreestanding -mno-red-zone -I $(include_dir)
 LFLAGS = -nostdlib -Wl,-dll -shared -Wl,--subsystem,10 -e efi_main
 
 define arch_template
@@ -95,7 +96,7 @@ $$(obj_$(1)) : $$(src_files) $$(asm_files) $$(ppc_files)
 
 build_efi_$(1): $$(obj_$(1))
 	$(MKDIR) -p ./build/bin/efi_root/boot
-	$(gcc_$(1)) $(CFLAGS) $(LFLAGS) -D $(2) $$(obj_$(1)) -o ./build/bin/efi_root/boot$(firstword $(3)).efi
+	$(gcc_$(1)) $(CFLAGS) $(LFLAGS) -D $(2) $$(obj_$(1)) -o ./build/bin/efi_root/boot/boot$(firstword $(3)).efi
 
 endef
 
@@ -104,6 +105,19 @@ endef
 # to disable an architecture, simply remove its number.
 numbers = 2
 $(foreach n, $(numbers), $(eval $(call arch_template,$(word $(n),$(arch_names)),$(word $(n),$(arch_defs)), $(word $(n),$(arch_snames)))))
+
+make_disk:
+	rm -rf ./build/iso
+	$(MKDIR) -p ./build/iso
+	dd if=/dev/zero of=build/iso/fat.img bs=1k count=1440
+	mformat -i build/iso/fat.img -f 1440 ::
+	mmd -i build/iso/fat.img ::/EFI
+	mmd -i build/iso/fat.img ::/EFI/BOOT
+	mcopy -i build/iso/fat.img build/bin/efi_root/boot/bootx64.efi ::/EFI/BOOT
+	mkdir iso
+	cp build/iso/fat.img iso
+	xorriso -as mkisofs -R -f -e fat.img -no-emul-boot -o gos-efi.iso iso
+	rm -rf iso
 
 
 assemble: $(foreach an, $(arch_names), $(asm_$(an)))
