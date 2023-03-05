@@ -30,10 +30,11 @@ MKDIR = mkdir
 GMV = 11
 GCC_TARGET = w64-mingw32
 
-#compiler names.
-gcc_aarch64 = aarch64-$(GCC_TARGET)-gcc
-gcc_x86_64  = x86_64-$(GCC_TARGET)-gcc
-gcc_riscv64 = riscv64-$(GCC_TARGET)-gcc
+# function that declares a compiler name for an architecture
+# name.
+define declare_compiler
+	gcc_$(1) = $(1)-$(GCC_TARGET)-gcc
+endef
 
 #TODO: switch back to gnu-linux gcc and use fancy linking to make a portable
 #executable anyway.
@@ -58,6 +59,8 @@ $(eval $(call add_source_dir,kernel/loaders/common))
 $(eval $(call add_source_dir,kernel/loaders/efi))
 $(eval $(call add_source_dir,kernel/loaders/efi/internal))
 $(eval $(call add_source_dir,kernel/machine))
+
+$(foreach arch, $(arch_names), $(eval $(call declare_compiler,$(arch))))
 
 asm_ext := S
 ppc_ext := i
