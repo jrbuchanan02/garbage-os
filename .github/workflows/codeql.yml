@@ -65,7 +65,7 @@ jobs:
 
     - run: |
         echo "Run, Build Application using script"
-        sudo ./setup.sh
+        sudo sh ./setup.sh
         ./build.sh
 
     - name: Perform CodeQL Analysis
