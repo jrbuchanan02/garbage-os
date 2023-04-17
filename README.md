@@ -32,5 +32,7 @@ humanity from certain destruction.
 entities (eg, companies, governments)
 - this hypothetical does not change if any of the people in the example are 
 the same person (eg, the computer's owner installs Garbage OS)
-- all actions taken by Garbage OS, intended or not, apply to this hypothetical.
+- all actions taken by Garbage OS, intended by the developers or not, apply to 
+this hypothetical. Even if the people who are responsible for the computer's
+actions (according to these terms) do not know if the feature is intended.
 

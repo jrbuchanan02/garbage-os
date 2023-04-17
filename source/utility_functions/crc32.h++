@@ -5,8 +5,13 @@
  * @version 1
  * @date 2023-04-07
  *
- * @copyright Copyright (C) 2023. Intellectual property of the author(s) listed
- * above.
+ * @copyright This algorithm was originally published as public domain by Ross N. Williams in 1993 and was adapted for
+ * use in Garbage OS in 2023. You can find the original algorithm in A PAINLESS GUIDE TO CRC ERROR DETECTION ALGORITHMS,
+ * a copyrighted work by Ross N. Williams that has permission for anyone to make and distribute verbatim copies of.
+ * According to the document, the C modules that this code is based on are explicitly public domain. This file like all
+ * of Garbage OS, is Copyright (C) 2023 Joshua Buchanan and distributed freely under the LGPL license version 2.1. You
+ * are free to use and / or modify this code for your own use even if the code is not used in an open source project
+ * according to the license.
  *
  */
 
@@ -36,24 +41,23 @@ namespace crc {
         // really useful in the CRC and always returns 0.
         garbage_in_garbage_out,
     };
+    constexpr crc_parameters params [] = {
+            {0x04C1'1DB7, 0xFFFF'FFFF, 0xFFFF'FFFF, 32, 1, 1},
+            {0x0000'8005, 0x0000'0000, 0x0000'0000, 16, 1, 1},
+            {0x0000'8408, 0x0000'0000, 0x0000'0000, 16, 1, 1},
+            {0x0000'1021, 0x0000'FFFF, 0x0000'0000, 16, 1, 1},
+            {0x0000'0000, 0x0000'0000, 0x0000'0000, 32, 0, 0}
+    };
 
-    constexpr crc_parameters get_parameters( type const crc_type ) {
-        constexpr crc_parameters params [] = {
-                {0x04C1'1DB7, 0xFFFF'FFFF, 0xFFFF'FFFF, 32, 1, 1},
-                {0x0000'8005, 0x0000'0000, 0x0000'0000, 16, 1, 1},
-                {0x0000'8408, 0x0000'0000, 0x0000'0000, 16, 1, 1},
-                {0x0000'1021, 0x0000'FFFF, 0x0000'0000, 16, 1, 1},
-                {0x0000'0000, 0x0000'0000, 0x0000'0000, 32, 0, 0}
-        };
+    constexpr type types_to_params [] = {
+            type::ieee_802_3,
+            type::arc,
+            type::xmodem,
+            type::citt,
+            type::garbage_in_garbage_out,
+    };
 
-        constexpr type types_to_params [] = {
-                type::ieee_802_3,
-                type::arc,
-                type::xmodem,
-                type::citt,
-                type::garbage_in_garbage_out,
-        };
-
+    constexpr crc_parameters const &get_parameters( type const &crc_type ) noexcept {
         for ( std::size_t i = 0; i < sizeof( params ) / sizeof( params [ 0 ] ); i++ ) {
             if ( crc_type == types_to_params [ i ] ) { return params [ i ]; }
         }

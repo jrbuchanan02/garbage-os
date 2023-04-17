@@ -50,11 +50,17 @@ namespace takeover
          */
         device_access,
         /**
-         * @brief Memory either marked with a "DO NOT TOUCH", type the loader
-         * does not know, or not marked at all.
+         * @brief Memory we cannot use but can move around in the address space.
          *
          */
         unusable,
+        /**
+         * @brief Memory like unusable memory, but we are not allowed even to 
+         * move it around in the address space. Examples include regions marked
+         * as EFI Reserved or the BIOS EDBA. This memory must be identity mapped.
+         * 
+         */
+        unmappable,
     };
 
     struct memory_region

@@ -5,8 +5,8 @@
  * @version 1
  * @date 2023-04-11
  *
- * @copyright Copyright (C) 2023. Intellectual property of the author(s) listed
- * above.
+ * @copyright This file is part of Garbage OS. Garbage OS is Copyright (C) 2023 Joshua Buchanan and published under the
+ * LGPL license version 2.1. You are free to use this source code in your project, even if your code is not open source.
  *
  */
 
@@ -29,12 +29,12 @@ concept native_unsigned_or_uintby2 =
  * a native integer but it does not satisfy things like std::unsigned_integral.
  * @tparam word
  */
-template <std::unsigned_integral word> struct uintby2 {
-    word low_part                                             = 0;
-    word high_part                                            = 0;
+template <std::unsigned_integral word> struct __attribute__( ( packed ) ) uintby2 {
+    word low_part  = 0;
+    word high_part = 0;
 
-    constexpr static std::size_t bit_count                    = 8 * sizeof( word );
-    constexpr static word        highest_bit                  = word( 1 ) << ( bit_count - 1 );
+    constexpr static std::size_t bit_count   = 8 * sizeof( word );
+    constexpr static word        highest_bit = word( 1 ) << ( bit_count - 1 );
 
     constexpr uintby2( ) noexcept                             = default;
     constexpr ~uintby2( ) noexcept                            = default;
@@ -80,6 +80,10 @@ template <std::unsigned_integral word> struct uintby2 {
         return add( *this, uintby2 { x } );
     }
 
+    constexpr uintby2 operator+ ( int const &x ) const noexcept {
+        return *this + (unsigned) x;
+    }
+
     constexpr uintby2 operator- ( native_unsigned_or_uintby2 auto const &x ) const noexcept {
         return sub( *this, uintby2 { x } );
     }
@@ -115,6 +119,10 @@ template <std::unsigned_integral word> struct uintby2 {
             result.low_part <<= 1;
         }
         return result;
+    }
+
+    constexpr uintby2 operator<< ( int const &x ) const noexcept {
+        return *this << (unsigned) x;
     }
 
     constexpr uintby2 &operator<<= ( native_unsigned_or_uintby2 auto const &x ) noexcept {

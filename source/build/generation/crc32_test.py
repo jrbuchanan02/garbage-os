@@ -1,10 +1,20 @@
 """
-Generates an array of 256 CRC-32s for each polynomial test
+File: Generates an array of 256 CRC-32s for each polynomial test
+Author: Joshua Buchanan (joshuarobertbuchanan@gmail.com)
+Brief: uses a Python-3 library called Crc to generate tests for the utility
+functions test.
+Version: 1
+Date: 2023-04-XX
+Copyright: This file is part of Garbage OS. Garbage OS is Copyright (C) 2023 
+Joshua Buchanan and published under the LGPL license version 2.1. You are free
+to use this source code in your project even if your code is not open source.
+The Crc library is available on the Python Package Index (PYPI) as crc. The CRC
+algorithm is most likely public domain. 
 """
 import os
-from typing import ByteString, List
+from typing import List
 
-from crc import Calculator, Crc32, Configuration, Byte
+from crc import Calculator, Crc32, Configuration
 
 
 uefi_configuration = Configuration(width=32, 
@@ -14,15 +24,7 @@ uefi_configuration = Configuration(width=32,
                                    reverse_input=True, 
                                    reverse_output=True)
 uefi_crc32 = Calculator(uefi_configuration, True)
-ieee_crc32 = Calculator(Crc32.CRC32, True)
-
-def un_iterable(iterable_thing):
-    as_list = []
-    while True:
-        try:
-            as_list.append(next(iterable_thing))
-        except StopIteration:
-            return as_list
+ieee_crc32 = Calculator(Crc32.CRC32, True) # type: ignore
 
 values:List[str] = []
 uefi_crcs:List[int] = []

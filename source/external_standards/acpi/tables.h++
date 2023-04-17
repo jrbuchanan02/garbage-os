@@ -5,8 +5,10 @@
  * @version 1
  * @date 2023-04-09
  *
- * @copyright Copyright (C) 2023. Intellectual property of the author(s) listed
- * above.
+ * @copyright This file is part of Garbage OS. Garbage OS is Copyright (C) 2023
+ * Joshua Buchanan and published under the LGPL license version 2.1. You are 
+ * free to use this source code in your project even if your code is not open 
+ * source.
  *
  */
 #ifndef EXTERNAL_STANDARDS_ACPI_HPP

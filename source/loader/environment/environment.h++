@@ -16,10 +16,8 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace loader
-{
-    class environment
-    {
+namespace loader {
+    class environment {
     public:
     };
 }    //  namespace loader
