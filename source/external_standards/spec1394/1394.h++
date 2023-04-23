@@ -23,6 +23,11 @@
 #include <concepts>
 
 namespace spec1394 {
+    /**
+     * @brief A globally unique identifier.
+     * @note Currently, this is all that I know about the 1394 specification:
+     * that is has a GUID type and that said GUID is 8-bytes long.
+     */
     using guid = std::uint8_t[8];
 }
 

@@ -53,43 +53,182 @@ template <typename type>
 concept not_void = !std::same_as<type, void>;
 
 namespace efi {
+    /**
+     * @brief EFI defines its own boolean type. This type behaves identically to
+     * the native C++ type.
+     *
+     * @note Perhaps it exists in the standard because the source examples are
+     * given in C-style pseudo-code?
+     */
     using boolean = bool;
+    /**
+     * @brief Integer of native size. This was taken to mean std::intmax_t, the
+     * largest integer that the machine can natively use.
+     *
+     */
     using intn    = std::intmax_t;
+    /**
+     * @brief Unsigned integer of native size. This was taken to mean std::uinmax_t,
+     * the largest integer that the machine can natively use.
+     *
+     */
     using uintn   = std::uintmax_t;
+    /**
+     * @brief signed 8-bit integer.
+     *
+     */
     using int8    = std::int8_t;
+    /**
+     * @brief unsigned 8-bit integer.
+     *
+     */
     using uint8   = std::uint8_t;
+    /**
+     * @brief signed 16-bit integer.
+     *
+     */
     using int16   = std::int16_t;
+    /**
+     * @brief unsigned 8-bit integer.
+     *
+     */
     using uint16  = std::uint16_t;
+    /**
+     * @brief signed 32-bit integer.
+     *
+     */
     using int32   = std::int32_t;
+    /**
+     * @brief unsigned 32-bit integer.
+     *
+     */
     using uint32  = std::uint32_t;
 #if defined( _32_BITS )
+    /**
+     * @brief EFI defines some things as 64-bit numbers regardless of the machine's
+     * native size. I'll leave it as an exercise to the reader as to why we can't
+     * natively use 64-bit numbers on a machine that only supports up to a 32-bit
+     * number.
+     */
     using int64   = composite_uint64;
+    /**
+     * @brief EFI defines some things as 64-bit numbers regardless of the machine's
+     * native size. I'll leave it as an exercise to the reader as to why we can't
+     * natively use 64-bit numbers on a machine that only supports up to a 32-bit
+     * number.
+     */
     using uint64  = composite_uint64;
     // TODO: make version of composite_uint128 that invovles two composite_uint64s
     using int128  = composite_uint64 [ 2 ];
     using uint128 = composite_uint64 [ 2 ];
 #elif defined( _64_BITS )
+    /**
+     * @brief signed 64-bit integer.
+     */
     using int64   = std::int64_t;
+    /**
+     * @brief unsigned 64-bit integer.
+     *
+     */
     using uint64  = std::uint64_t;
+    /**
+     * @brief Anticipate the requirements to use a 128-bit integer on 64-bit
+     * systems. It may already be in the standard as EFI defines a 128-bit
+     * integer.
+     *
+     */
     using int128  = composite_uint128;
+    /**
+     * @brief Anticipate the requirements to use a 128-bit integer on 64-bit
+     * systems. It may already be in the standard as EFI defines a 128-bit
+     * integer.
+     *
+     */
     using uint128 = composite_uint128;
 #else
-    static_assert( sizeof( void * 0 ) >= 16,
-                   "Memory addresses are the wrong size. Did you mean to define _32_BITS or _64_BITS?" );
+    // ensure that 128-bit numbers exist before assuming a build for a 128-bit
+    // system.
+    static_assert( sizeof( void * ) >= 16, "Memory addresses are the wrong size. Did you mean to define _32_BITS or _64_BITS?" );
+    /**
+     * @brief signed 64-bit integer
+     *
+     */
     using int64   = std::int64_t;
+    /**
+     * @brief unsigned 64-bit integer.
+     *
+     */
     using uint64  = std::uint64_t;
+    /**
+     * @brief signed 128-bit integer, uses the GCC builtin type.
+     *
+     */
     using int128  = __int128_t;
+    /**
+     * @brief unsigned 128-bit integer, uses the GCC builtin type.
+     *
+     */
     using uint128 = __uint128_t;
 #endif    // if defined(_32_BITS
+    /**
+     * @brief UTF-8 character.
+     *
+     * @note not char8_t since C++20 cannot easily mix char8_t and char for
+     * whatever reason. If Garbage OS ever buils for C++ 23 or later, then this
+     * field should change to char8_t.
+     */
     using char8                  = unsigned char;
+    /**
+     * @brief UTF-16 character.
+     *
+     */
     using char16                 = char16_t;
+    /**
+     * @brief What happened during the function? Did it succeed? Did it issue
+     * a warning? Did it fail? If it failed, why might it have failed?
+     *
+     */
     using status                 = uintn;
+    /**
+     * @brief Handle = the everything is a file thingy.
+     *
+     */
     using handle                 = void *;
+    /**
+     * @brief An event. Probably represents some class somewhere in the firmware
+     * vendor's top-secret firmware repository. We at least know it probably
+     * points to something.
+     *
+     */
     using event                  = void *;
+    /**
+     * @brief A memory address, but it's for a disk and not RAM.
+     *
+     */
     using logical_block_address  = uint64;
+    /**
+     * @brief A logical block address, but Sony decided that CDs wanted to call
+     * it something else.
+     *
+     */
     using relative_block_address = uint64;
+    /**
+     * @brief How important things are.
+     *
+     */
     using task_priority_level    = uintn;
+    /**
+     * @brief Memory address that corresponds to the actual number the CPU sends
+     * out to the motherboard to get from DRAM, MMIO, etc.
+     *
+     */
     using physical_address       = uint64;
+    /**
+     * @brief Memory address that corresponds to what the software thinks the
+     * CPU sends out on the bus. Whenever you write a non-DOS application, you're
+     * using these.
+     *
+     */
     using virtual_address        = uint64;
 
     struct guid;
@@ -141,8 +280,24 @@ namespace efi {
     struct i2o_device_path;
 
     // struct aliases
+
+    /**
+     * @brief For some reason, it's the same format as an EFI GUID.
+     *
+     * @note coincidentally, Windows GUIDs for their Component Object Model part
+     * of the windows API also use GUIDs of the same format.
+     *
+     */
     using nvdimm_uuid = guid;
 
+    /**
+     * @brief Templated version of the runtime-like union for the ip_address.
+     * @note Exists because we want smaller IP addresses to sometimes actually
+     * be smaller.
+     *
+     * @tparam type an ip address. I check the implementation. if you understand
+     * the || operator then you can figure it out.
+     */
     template <typename type>
     concept specific_ip_address = std::same_as<type, ipv4_address> || std::same_as<type, ipv6_address>;
 
@@ -951,39 +1106,105 @@ namespace efi {
      */
     using free_pool                     = callback<status, void *>;
     /**
-     * @brief Something related to drivers and adding them to the system. Loaders
-     * don't install drivers.
+     * @brief Installs a protocol interface on a device handle
      *
      */
     using install_interface             = callback<status, handle *, guid *, interface_type, void *>;
     /**
-     * @brief Something related to drivers and removing them from the system. Loaders
-     * shouldn't need to remove drivers.
+     * @brief Removes a protocol interface from a device handle
      *
      */
     using uninstall_interface           = callback<status, handle, guid *, void *>;
     /**
-     * @brief Something related to reinstalling drivers in the system. Loaders don't
-     * need to reinstall drivers.
-     *
+     * @brief Reinstalls a protocol interface on a device handle.
      */
     using reinstall_interface           = callback<status, handle, guid *, void *, void *>;
+    /**
+     * @brief Registers an event to be signal when an interface is installed for a
+     * specific protocol
+     *
+     */
     using register_notify               = callback<status, guid *, event, void **>;
+    /**
+     * @brief Returns an array of handles for a specified protocol
+     *
+     */
     using locate_handle                 = callback<status, locate_search_type, guid *, void *, uintn *, handle *>;
+    /**
+     * @brief Checks if a handle supports a protocol.
+     *
+     */
     using handle_protocol               = callback<status, handle, guid *, void **>;
-    using locate_device_path            = callback<status, guid *, device_path **, handle *>;
+    /**
+     * @brief Locates all devices on a device path that support a specified protocol and returns the one that is
+     * "cloest to the path"
+     *
+     */
+    using locate_handle_on_device_path  = callback<status, guid *, device_path **, handle *>;
+    /**
+     * @brief Adds elements to the list of things using the protocol interface specified
+     *
+     */
     using open_protocol                 = callback<status, handle, guid *, void **, handle, handle, uint32>;
+    /**
+     * @brief Removes elements from the list of things using the protocol interface specified.
+     *
+     */
     using close_protocol                = callback<status, handle, guid *, handle, handle>;
+    /**
+     * @brief Gets the list of things that have opened a specified protocol
+     *
+     */
     using open_protocol_information     = callback<status, handle, guid *, open_protocol_information_entry **, uintn *>;
+    /**
+     * @brief Connects the best set of drivers to a controller.
+     *
+     */
     using connect_controller            = callback<status, handle, handle *, device_path *, bool>;
+    /**
+     * @brief Informs a set of drivers to stop talking to a controller.
+     *
+     */
     using disconnect_controller         = callback<status, handle, handle, handle>;
+    /**
+     * @brief Gets a buffer of how mnay protocols are active on a specified handle.
+     *
+     */
     using protocols_per_handle          = callback<status, handle, guid ***, uintn *>;
-    using locate_handle_buffer          = callback<status, locate_search_type, guid *, void *, uintn *, handle **>;
+    /**
+     * @brief Gets a list of handles in a database that meet a specific set of criteria
+     *
+     */
+    using locate_handles_for_protocol   = callback<status, locate_search_type, guid *, void *, uintn *, handle **>;
+    /**
+     * @brief Finds the first handle in a database that supports the requested protocol
+     *
+     */
     using locate_protocol               = callback<status, guid *, void *, void **>;
+    /**
+     * @brief Installs (potentially) more than one interface to a handle
+     *
+     */
     using install_multiple_interfaces   = callback<status, handle *, std::va_list>;
+    /**
+     * @brief Uninstalls (poetnatially) more than oen interface to a handle
+     *
+     */
     using uninstall_multiple_interfaces = callback<status, handle, std::va_list>;
+    /**
+     * @brief Loads an image from a path. If the loader ever calls this function,
+     * it will set the boolean parameter to false.
+     */
     using load_image                    = callback<status, bool, handle, device_path *, void *, uintn, handle *>;
+    /**
+     * @brief Starts an image. Presumably it remains present in RAM once it returns?
+     *
+     */
     using start_image                   = callback<status, handle, uintn *, char16 **>;
+    /**
+     * @brief Unloads an image. Gets rid of the thing in memry. It also releases all of its allocatred resources.
+     *
+     */
     using unload_image                  = callback<status, handle>;
     /**
      * @brief We need to give control back to the firmware.
@@ -1219,15 +1440,45 @@ namespace efi {
     }    // namespace memory_attributes
 
     /**
-     * @brief Attributes involving open protocols.
+     * @brief Attributes involving open protocols. These are the attributes in
+     * the open_protocol function.
      *
      */
     namespace open_protocol_attributes {
+        /**
+         * @brief If this bit is set, then calling OpenProtocol is the same as calling HandleProtocol
+         *
+         */
         constexpr uint32 by_handle_protocol  = 1 << 0;
+        /**
+         * @brief If this bit is set, then we are assumed to be a driver looking for the protocol interface to a
+         * specific handle.
+         *
+         */
         constexpr uint32 get_protocol        = 1 << 1;
+        /**
+         * @brief If this bit is set, then we are assumed to be looking if a protocol interface exists on a handle.
+         *
+         */
         constexpr uint32 test_protocol       = 1 << 2;
-        constexpr uint32 by_child_controlelr = 1 << 3;
+        /**
+         * @brief If this bit is set, we are assumed to be a bus driver (no, wires not the four-wheeled vehicle) and we
+         * are showing the firmware that we are using the handle. I'm not sure if showign is actually the correct word
+         * here, but it's the one that the EFI standard uses.
+         *
+         */
+        constexpr uint32 by_child_controller = 1 << 3;
+        /**
+         * @brief If this bit is set, we are a driver looking to gain access to a protocol interface. If this is set
+         * along iwth the exclusive bit, then we want exclusive access and the firmware calls disconnect_controller on
+         * anyone using the thing.
+         *
+         */
         constexpr uint32 by_driver           = 1 << 4;
+        /**
+         * @brief If the exclusive bit is set, then we will try to kick out everyone else using the protocol interface.
+         *
+         */
         constexpr uint32 exclusive           = 1 << 5;
     }    // namespace open_protocol_attributes
 
@@ -1249,7 +1500,7 @@ namespace efi {
         }
 
         /**
-         * @brief latest revision as of 2023
+         * @brief latest revision as of April 2023
          *
          */
         constexpr uint32 version_2_10 = version_number( 2, 100 );
@@ -1468,49 +1719,49 @@ namespace efi {
          * work. Regardless, unless we delete the structures in runtime services,
          * these functions are guaranteed safe to call at all times if the table
          * is valid.
-         * 
+         *
          */
         efi::runtime_services    *runtime_services;
         /**
          * @brief The boot services. Functions that are actually quite helpful
          * and make EFI's boot environment almost like an operating system itself.
-         * 
+         *
          * @note It's not uncommon amongst hobbyist OS developement to remain in
          * Boot Services indefinitely! However, we don't want that since the system
          * is not designed to remain in boot services for long periods of time.
-         * 
+         *
          */
         efi::boot_services       *boot_services;
         /**
          * @brief How many entries .. er .. configuration tables there are in the
          * configuration table. Damn, Software Engineers are good at consistent
          * naming.
-         * 
+         *
          */
         efi::uintn                configuration_entry_count;
         /**
          * @brief The "array" of configuration tables. In the most confusing way
          * possible, EFI guarantees that we can at least access the first table
          * even if there are no entries.
-         * 
-         * @note EFI says "it is guaranteed that at least the first table is 
+         *
+         * @note EFI says "it is guaranteed that at least the first table is
          * addressible".
-         * 
+         *
          * @note being able to access the first table is important on x86-based
          * systems since the modes that EFI loads from require memory protections...
          * and both the firmware and the loader can violate these memory protections.
-         * 
+         *
          */
         efi::configuration_table *configuration;
     };
 
     /**
-     * @brief A big table of functions that are active until something calls 
+     * @brief A big table of functions that are active until something calls
      * exit_boot_services.
-     * 
-     * @note In a mildly-ironic way, exit_boot_serviecs is one of the functions 
+     *
+     * @note In a mildly-ironic way, exit_boot_serviecs is one of the functions
      * that is only active during boot_services.
-     * 
+     *
      */
     struct EFI_CLASS boot_services : public table_header {
         /**
@@ -1520,62 +1771,633 @@ namespace efi {
          * @warning Strange things will happen if we don't return to the old one
          * @warning EFI explicitly says the firmware can do whatever it wants if
          * we try to lower the tpl using this function.
-         * 
+         *
          */
-        efi::raise_tpl                   raise_tpl;
+        efi::raise_tpl                    raise_tpl;
         /**
          * @brief Restores the TPL to what it was before calling raise_tpl.
          * @param tpl the old tpl that we want to return to.
          * @warning EFI explicitly says that strange things can happen if we don't
          * return to the correct TPL.
          */
-        efi::restore_tpl                 restore_tpl;
-        efi::allocate_pages              page_malloc;
-        efi::free_pages                  page_free;
-        efi::get_memory_map              get_memory_map;
-        efi::allocate_pool               pool_malloc;
-        efi::free_pool                   pool_free;
-        efi::create_event                create_event;
-        efi::set_timer                   set_timer;
-        efi::wait_for_event              wait_for_event_in_list;
-        efi::signal_event                signal_event;
-        efi::close_event                 close_event;
-        efi::check_event                 check_event;
-        efi::install_interface           install_interface;
-        efi::reinstall_interface         reinstall_interface;
-        efi::uninstall_interface         uninstall_interface;
-        efi::handle_protocol             handle_protocol;
-        void                            *reserved_function;
-        efi::register_notify             register_protocol_to_event;
-        efi::locate_handle               locate_handle;
-        efi::locate_device_path          locate_device_path;
-        efi::install_configuration_table install_configuration_table;
-        efi::load_image                  load_image;
-        efi::start_image                 start_image;
-        efi::exit                        exit;
-        efi::unload_image                unload_image;
-        efi::exit_boot_services          exit_boot_services;
-        efi::get_next_monotonic_count    get_monotonic_count;
-        efi::stall                       stall;
-        efi::set_watchdog_timer          set_watchdog_timer;
+        efi::restore_tpl                  restore_tpl;
+        /**
+         * @brief Allocates pages for use by whoever calls the function.
+         * @param allocate_type the type of allocation to perform, that is, what does the
+         * firmware make of the address passed in.
+         * @param memory_type what type of memory to allocate
+         * @param uintn the amount of pages to allocate.
+         * @param memory a pointer to a physical address that the location of the
+         * allocated buffer (if the function succeeds). Depending on the allocate_type,
+         * the firmware may or may not put a different location here than where
+         * we ask for the allocation.
+         * @return success - allocation happens successfully
+         * @return out_of_resources - there is not enough free, contiguous RAM
+         * to do the allocation (really bad if we ask for any pages)
+         * @return invalid_parameter - type is out of bounds, memory_type is
+         * reserved for non-OS use, memory_type is peristent or unaccepted, the
+         * pointer to the memory location is zero,
+         * @return not_found if "the requested pages could not be found".
+         * @note EFI defines a page to be 4096 bytes. So, this function can only
+         * allocate chunks of 4096 bytes and these must be aligned on a multiple
+         * of 4096 bytes.
+         */
+        efi::allocate_pages               page_malloc;
+        /**
+         * @brief frees pages allocated with allocate_pages.
+         * @param memory the start of the page buffer
+         * @param pages how many contiguous pages to free
+         * @return success if the pages were freed
+         * @return not_found if the pages were not allocated with a call to
+         * allocate_pages
+         * @return invalid_parameter if memory is not a multiple of the page size
+         * or if "pages is invalid".
+         */
+        efi::free_pages                   page_free;
+        /**
+         * @brief Get ahold of the memory map.
+         * @param memory_map_size the size of the buffer we give to the firmware
+         * to put the memory map into. If the buffer is too small, it gets set
+         * to the minimum size required.
+         * @param memory_map the start of the memory map buffer.
+         * @param mak_key a special magic number that changes on each allocation.
+         * We need the most recent one to exit boot services.
+         * @param descriptor_size the size of each memory descriptor. The firmware
+         * tells us this size, not the other way around.
+         * @param descriptor_version the vrsion of the version number associated
+         * with the memory descriptor. Currently 1 but future versions are implied
+         * backward-compatible.
+         * @return success - we were given the memory map
+         * @return buffer_too_small - the buffer was not the correct size to fit
+         * the memory map but we were told how large it needs to be
+         * @return invalid_parameter if the pointer to the size is null or if the
+         * buffer is supposed to be the right size but we tell the firmware to
+         * put the map at address 0 (i.e., nullptr).
+         */
+        efi::get_memory_map               get_memory_map;
+        /**
+         * @brief Allocates a memory pool.
+         * @param memory_type the type of memory to allocate
+         * @param uintn the amount of bytes to allocate
+         * @param void **the memory address of the start of the buffer we want
+         * to allocate.
+         * @return success - all bytes were allocated
+         * @return out_of_resources - could not allocate the memmory
+         * @return invalid_parameter: memory_type was out of range, buffer is
+         * nullptr, or we told the firmware to allocate persistent_memory.
+         */
+        efi::allocate_pool                pool_malloc;
+        /**
+         * @brief Undoes a call to allocate pool
+         * @param void * the start of the buffer that was allocated.
+         * @return success - I'll let you guess what it means.
+         * @return invalid_paramter - We can't return the buffer because it either
+         * isn't allowed to be returned, or was not taken using pool_malloc.
+         */
+        efi::free_pool                    pool_free;
+        /**
+         * @brief Creates an event.
+         * @param type the type of event.
+         * @param notify_tpl how important the notifications are, higher is better
+         * but we cannot use all the values.
+         * @param notify_function the function that the event calls, optional
+         * @param notify_context the context that the notify function uses.
+         * @param event the resulting event.
+         */
+        efi::create_event                 create_event;
+        /**
+         * @brief Sets a timer that will signal an event.
+         * @param event the event to signal when the timer expires.
+         * @param type how to interpret the timer delay
+         * @param trigger_time a duration in 100 ns units. So, a value of 10 means
+         * one microsecond.
+         * @return success the event will signal at the requested time, or, if
+         * we requested the timer to be canceled, the timer has been canceled.
+         * @return invalid_parameter event or type are invalid.
+         */
+        efi::set_timer                    set_timer;
+        /**
+         * @brief Waits for any of the events in a provided list to be signaled
+         * and indicates which event in the list was signaled.
+         * @param number_of_events how many events are in the provided list
+         * @param events the list of events
+         * @param index which event allowed us to continue running first.
+         * @return success we waited for those events successfully.
+         * @return invalid_parameter the number of events was zero or the event
+         * that satisfied the condition was an event that needed to be signaled
+         * @return unsupported we are not running at the application level.
+         */
+        efi::wait_for_event               wait_for_event_in_list;
+        /**
+         * @brief Signals an event.
+         * @param event the event to signal.
+         * @return success the event was signaled.
+         * @warning it actually seems that the standard does not define what
+         * happens when the event is invalid. Issue?
+         */
+        efi::signal_event                 signal_event;
+        /**
+         * @brief Closes an event.
+         * @param event the event to close
+         * @return success the event was closed
+         * @warning it actually seems that the standard does not define what
+         * happens when the event is invalid. Issue?
+         */
+        efi::close_event                  close_event;
+        /**
+         * @brief Checks if an event has been signaled. If the function has a
+         * notification function, can be signaled, and is not yet signaled, then
+         * check_event signals the function.
+         * @param event the event to check
+         * @return success - the event is signaled.
+         * @return not_ready - the event has no notification function and has not
+         * been signaled.
+         * @return invalid_parameter - the event is of type notify_signal.
+         */
+        efi::check_event                  check_event;
+        /**
+         * @brief Installs an interface. If the handle to install the interface
+         * on does not exist, it is created.
+         * @deprecated use install_protocol_interfaces instead when available.
+         * @param handle the handle to install to
+         * @param protocol the GUID corresponding to the protocol.
+         * @param interface_type the execution environment type of the request.
+         * @param interface the actual protocol interface to install.
+         * @return success the interface was installed.
+         * @return out_of_resources the space for the new handle could not be
+         * allocated.
+         * @return invalid_parameter handle or protocol are nullptr, or, interface_type
+         * is not native, or, protocol has already been installed on the handle.
+         */
+        efi::install_interface            install_interface;
+        /**
+         * @brief reinstalls an interface
+         * @param handle the handle to reinstall the interface on
+         * @param protocol the GUID corresponding to the protocol
+         * @param old_interface the interfcae to remove, nullptr if the protocol
+         * has no interface associated with it.
+         * @param new_interface the interface to install, nullptr if the protocol
+         * has no interface associated with it.
+         * @return success - the interface was reinstalled
+         * @return not_found - old_interface is not attached to handle.
+         * @return access_denied - someone else is currently using old_interface
+         * @return invalid_parameter - if handle or protocol are nullptr.
+         */
+        efi::reinstall_interface          reinstall_interface;
+        /**
+         * @brief uninstalls an interface
+         * @param handle the handle t uninstall the interface from
+         * @param protocol the GUID corresponding to the protocol
+         * @param interface the interface to remove, nullptr if the protocol has
+         * no interface associated with it.
+         * @return success - the interface was removed.
+         * @return not_found - the interface was "not found" (likely this means
+         * that the pointer does not refer to an interface, or, the handle is
+         * not connected to interface)
+         * @return access_denied - someone else is currently using interface
+         * @return invalid_parameter - handle or protocol are nullptr
+         */
+        efi::uninstall_interface          uninstall_interface;
+        /**
+         * @brief Asks a handle if it supports a protocol.
+         * @param handle the handle to ask
+         * @param protocol the protocol that we want handle to support
+         * @param interface the address of the pointer to the interface. This
+         * pointer is set to nullptr if the handle has no interface assocaited with the
+         * protocol.
+         * @return success - the handle supports the protocol and the interface
+         * to use was returned through interface.
+         * @return unsupported - the handle does not support the protocol.
+         * @return invalid_parameter - any of our arguments are nullptr.
+         */
+        efi::handle_protocol              handle_protocol;
+        /**
+         * @brief $5 on this function still being reserved in 10 years.
+         * @note I'll see you in 2033.
+         */
+        void                             *reserved_function;
+        /**
+         * @brief registers an event to be signaled whenever an interface is
+         * installed on a particular protocol.
+         * @param protocol the protocol we're interested in
+         * @param event how we get notfied.
+         * @param registration a special magic number that we need to retrieve the
+         * handles that have been added to the interface when the interface is
+         * installed.
+         * @return success - the event has been registered.
+         * @return out_of_resources - the space for the notification event could
+         * not be allocated. That is, the firmware could not allocate things to
+         * actually respond to the event.
+         * @return invalid_parameter - any of our inputs are nullptr.
+         */
+        efi::register_notify              register_protocol_to_event;
+        /**
+         * @brief Returns an array of handles that support the protocol we ask
+         * about.
+         * @param search_type how we want the firmware to find the handles.
+         * @param protocol an optional pointer to the GUID that we want to use
+         * to search by. Required if searching by protocol.
+         * @param search_key an optional parameter to the registration thing we
+         * got when we called register_protocol_to_event some time earlier.
+         * Required if searching by by_register_notify.
+         * @param buffer_size the size of bytes in the buffer, This value gets
+         * set to the amount of bytes that were writen (or needed, if the buffer
+         * is too small).
+         * @param buffer an array of handles that match the criteria.
+         * @return success - we got the device handles we were looking for
+         * @return not_found - literally nothing matches the criteria we specified
+         * @return buffer_too_small - not enough space in the buffer we provided.
+         * @return invalid_parameter - search_type is out of bounds, search_key is nullptr
+         * for the by_register_notify mode, protocol is nullptr for the by_protocol mode,
+         * buffer_size is nullptr and any amount of handles exist, or the buffer is
+         * allegedly the correct size and the buffer is nullptr.
+         */
+        efi::locate_handle                locate_handle;
+        /**
+         * @brief Locates a handle on the device path that supports the protocol
+         * @param protocol the protocol the handle must support.
+         * @param device_path the device path, get's modified to refer to where
+         * the handle is.
+         * @param handle the device.
+         * @return success - the firmware found the handle and gave it to us.
+         * @return not_found - there is no handle matching these criteria
+         * @return invalid_parameter - protocol or device_path are nullptr or
+         * device was null when a match exists.
+         */
+        efi::locate_handle_on_device_path locate_handle_on_device_path;
+        /**
+         * @brief Adds, updates, or removes the configuration table associated
+         * with the specified GUID.
+         * @param guid the guid of the table we wish to update.
+         * @param table the new value, the decicsion to add, update, or remove
+         * is made based on whether the entry is in the table and whether this
+         * value is nullptr or not.
+         * @note If there is no entry associated with guid, and table is not nullptr,
+         * then the table is added.
+         * @note if there is an entry associated with guid, and table is not nullptr,
+         * then the table is updated.
+         * @note if there is no entry associated with guid, and table is nullptr,
+         * that's an error.
+         * @note if there is an entry associated with guid, and table is nullptr,
+         * then the table is removed.
+         * @return success - the table was added, updated, or removed (see the notes)
+         * @return invalid_parameter - guid is nullptr
+         * @return not_found - table was nullptr and there is no entry associated
+         * with guid.
+         * @return out_of_resources - the firmware could not add new entries to
+         * the table.
+         */
+        efi::install_configuration_table  install_configuration_table;
+        /**
+         * @brief Loads an image into memory from a device path.
+         * @param boot_policy whether this function call comes from the boot manager
+         * trying to load a boot option. WE ALWAYS SET THIS TO FALSE.
+         * @param handle the image of the thing trying to load the image. Needed
+         * by an internally used loaded_iamge_protocol.
+         * @param device_path the file path to load the image from.
+         * @param source_buffer where to put the image.
+         * @param source_size the size of the source buffer in bytes
+         * @param image_handle the handle to the loaded image.
+         * @note this function operates in one of two distinct ways:
+         * @note 1. if source buffer is specified, then this function is considered to be
+         * an operation to copy memory from one address to another. Additionally, when
+         * source buffer is specified, the device path is optional but strongly
+         * recommended since the firmware is allowed to use this path to make
+         * certain security decisions.
+         * @note 2. if source bufer is not specified, then this function is considered
+         * to be an operation that loads the image from a file and into memory. If
+         * there is a simple_file_system associated with the path, then the firmware
+         * will attempt to use that, otherwise, it will attempt to use either a
+         * load_file protocol (if boot_policy is true) or a load_file2 and then a
+         * load_file (if boot_policy is false).
+         * @return success - the image was loaded into memory
+         * @return not_found we didn't specify where to find the image (i.e., both
+         * source_buffer and device_path are nullptr)
+         * @return invalid_parameter - image_handle or parent_image_handle is nullptr,
+         * or one of the other parameters is otherwise invalid.
+         * @return unsupported - we were told that the firmware does not support
+         * the image type
+         * @return out_of_resources - the firmware ran out of resources when
+         * loading the file.
+         * @return load_error - something was corrupt or otherwise went wrong in
+         * the loading process.
+         * @return device_error - the device we loaded from gave a read error.
+         * @return access_denied - the firmware does not allow the image to be
+         * loaded.
+         * @return security_violation - the image was loaded, but the firmware
+         * says we are not allowed to run the image.
+         */
+        efi::load_image                   load_image;
+        /**
+         * @brief Starts an image.
+         * @param image_handle the image to start
+         * @param exit_data_size how much information the image gave once it
+         * returned control back to us.
+         * @param exit_data an optional buffer to allow the image to give us
+         * exit data.
+         * @return invalid_parameter - the image handle has either already run once
+         * before or the handle is invalid.
+         * @return security_violation - the firmware said that the image is not allowed
+         * to be started.
+         * @return anything else - whatever the image returns. What if it happens
+         * to return security violation or invalid parameter?
+         */
+        efi::start_image                  start_image;
+        /**
+         * @brief Exits the current program.
+         * @param image_handle the handle to our image.
+         * @param status our status code
+         * @param exit_data_size how much exit data we're giving
+         * @param exit_data an optional string that may be followed up by additional
+         * binary data after the null terminator. This data is only valid if we
+         * allcoate it with a call to allocate_pool and status != success.
+         * @return success - if the image was someone else, this works like
+         * unload_image.
+         * @return invalid_parameter the image_handle is invalid
+         * @return *nothing* - we successfully exited.
+         * @note Yes. this function can error out, in theory. but if we specify
+         * only our own handle, then it's REALLY bad if we fail to exit properly.
+         */
+        efi::exit                         exit;
+        /**
+         * @brief unloads an image from RAM
+         *
+         */
+        efi::unload_image                 unload_image;
+        /**
+         * @brief Exits boot services. This is the only way to assume control of
+         * the system.
+         * @param imgae_handle the handle to the image taking control of the
+         * system. That is, us.
+         * @param map_key the magic number that identifies the most recent memory
+         * map.
+         * @return success - boot services have been teriminated
+         * @return invalid_parameter map_key is wrong.
+         *
+         * Definitely don't do this.
+         * @code {.c++}
+         * boot_services->set_watchdog_timer(0, 0x1'0000, 0, nullptr);
+         * for(efi::uintn key = 0; boot_services->exit_boot_services(image_handle, map_key) != 0; key++) { }
+         * @endcode
+         *
+         */
+        efi::exit_boot_services           exit_boot_services;
+        /**
+         * @brief Gets the next monotonic count from the firmware.
+         * @param count pointer to the place to put the monotonic count.
+         * @return success - monotonic count was given.
+         * @return device_error - "the device is not functioning properly", well
+         * yeah, we understood that part when you said "device error"
+         * @return invalid_parameter - count is nullptr
+         */
+        efi::get_next_monotonic_count     get_monotonic_count;
+        /**
+         * @brief Puts the processor in a spin loop until the specified amount
+         * of microseconds passes.
+         * @param microseconds how long to wait.
+         * @return success - this function is apparently required to work.
+         */
+        efi::stall                        stall;
+        /**
+         * @brief Sets, modifies, or cancels the watchdog timer.
+         * @param timeout how many seconds until the watchdog timer expires. A
+         * value of zero cancels the timer.
+         * @param watchdog_code the code to log when the timer expires. The
+         * firmware reserves `0x0000` through `0xFFFF`
+         * @param data_size the size of watchdog_data in bytes
+         * @param watchdog_data the data to log if the timer expires.
+         * @return success - the timeout has been set / the timer has been
+         * canceled, depending on the value of timeout.
+         * @return invalid_parameter - we gave an invalid watchdog_code.
+         * @return unsupported - the system lacks a watchdog timer.
+         * @return device_error the watchdog timer could not be programmed due
+         * to a hardware error.
+         *
+         * @details sample code that might attempt to set a 3-minute watchdog timer.
+         * @code {.C++}
+         * char16 error_message[] = u"This is the error message";
+         * status result = boot_service->set_watchdog_timer(180,
+         *                                                  0x1'0000,
+         *                                                  sizeof(error_message),
+         *                                                  error_message);
+         * switch (result) {
+         *  case statuses::success:
+         *      break;
+         *  case statuses::invalid_parameter:
+         *      write(u"Warning: could not set watchdog timer because the loader-reserved code 0x1'0000 is "
+         *            u"invalid. If Garbage OS takes more than 3 minutes from this point to show a logo, "
+         *            u"then the system has crashed and you can safely perform a reset.\r\n");
+         *      break;
+         *  case statuses::unsupported:
+         *      write(u"Warning: could not set the watchdog timer because your system says it does not "
+         *            u"have one. If Garbage OS takes more than 3 minutes from this point to show a logo, "
+         *            u"then the system has crashed and you can safely perform a reset.\r\n");
+         *      break;
+         *  case statuses::device_error:
+         *      write(u"Warning: could not set the watchdog timer because your system reported a hardware error "
+         *            u"while setting it. If Garbage OS takes more than 3 minutes from this point to show a logo, "
+         *            u"then the system has crashed and you can safely perform a reset.\r\n");
+         *      break;
+         *  default:
+         *      write(u"Warning: your system reported an error that Garbage OS did not expect when asked to "
+         *            u"set the watchdog timer. This means Garbage OS does not know what will happen if "
+         *            u"the loading process crashes. If Garbage OS takes more than 3 minutes from this point "
+         *            u"to show a logo, then the system has likely crashed and you can safely reset it.\r\n");
+         *      break;
+         * }
+         * @endcode
+         *
+         */
+        efi::set_watchdog_timer           set_watchdog_timer;
 
         // above functions are valid in all versions of the standard. If the
         // boot services are valid, then these functions are reasonably safe
         // to call no matter the revision number of the boot services, except
         // for the reserved field.
 
+        /**
+         * @brief Connects one or more drivers to a controller.
+         * @param controller_handle the controller to connect to
+         * @param driver_image_handle array of handles that support the
+         * driver_binding_protocol. Null terminated (recall, handle is an alias
+         * for void *)
+         * @param remaining_device_path the device path that specified a child
+         * of the controller to connect to. If nullptr, then handles of all the
+         * controller's children will be created.
+         * @param recursive whether or not this function is called recursively
+         * until reaching the end of the controller tree.
+         * @return success - the drivers were connected, or, the device path is
+         * at the very end and no drivers were connected. That is, all possible
+         * devices were connected to the controller.
+         * @return invalid_parameter - controller_handle is nullptr.
+         * @return not_found there are no driver_binding_protocol instances available or
+         * no drivers were connected to the controller handle and remaining_device_path
+         * was either not specified or not the end of a device path.
+         * @return security_violation you do not have permission to connect drivers
+         * to this controller or connect drivers on this device path. Whichever
+         * the firmware pegs us with.
+         */
         efi::connect_controller            connect_controller;
+        /**
+         * @brief Disconnects one or more drivers from a controller.
+         * @param controller_handle the controller to disconnect drivers from.
+         * @param driver_image_handle the driver to disconnect, if nullptr, then
+         * all drivers are disconnected.
+         * @param child_handle the child-handle of the controller to destroy. If nullptr, then all children are
+         * destroyed (quite morbid).
+         */
         efi::disconnect_controller         disconnect_controller;
+        /**
+         * @brief Opens a protocol if a handle supports the protocol.
+         * @param handle the handle to check support for.
+         * @param protocol the protocol to try to connect to the handle
+         * @param interface an optional pointer to the interface pointer.
+         * @param agent_hadnle the handle of the agent opeating the protocol
+         * interface.
+         * @param controller_handle if the agent opening the protocol follows the
+         * UEFI driver model, then this refers to the controller that requires
+         * the preotocol. Otherwise, this parameter is nullptr.
+         * @param attributes the mode under which we open the protocol.
+         *
+         * @return invalid_parameter - protcol is nullptr
+         * @return invalid_parameter - interface is nullptr and attributes is not
+         * test_protocol.
+         * @return invalid_parameter - handle is nullptr
+         * @return invalid_parameter - attributes is not a legal value
+         * @return invalid_parameter - attributes is by_child_controller, by_driver,
+         * exclusive, or by_driver | exclusive and controller_handle is nullptr.
+         * @return unsupported - handle does not support protocol
+         * @return access_denied - attributes is by_driver, exclusive, or by_driver | exclusive
+         * and anything else has the (handle?) open with the exclusive or by_driver | exclusive
+         * attribute.
+         * @return access_denied - attributes is by_driver or by_driver | exclusive and anything else has already
+         * opened the (handle?) with the same attributes and a different agent_handle
+         * @return access_denied - attributes is by_driver | exclusive or exclusive and after the boot_services
+         * called disconnect_controller there was still something that has the (handle?) open with the by_driver
+         * attribute.
+         * @return already_started - attributes is by_driver or by_driver | exclusive and someone else has opened
+         * a protocol with the same attributes and the same agent_handle.
+         */
         efi::open_protocol                 open_a_protocol;
+        /**
+         * @brief Closes a protocol on a handle that was previously opened with open_protocol.
+         * @param handle the handle to close
+         * @param protocol the protocol we want to close
+         * @param agent_handle the handle of the agent closing the protocol
+         * @param controller_handle the controller handle that requires the
+         * protocol. If the agent does not follow the UEFI driver model, this
+         * parameter is ignored and can be nullptr.
+         * @return success - the protocol was closed
+         * @return invalid_paramter - handle, agent_handle, or protocol are nullptr. Additionally, if controller_handle
+         * is "not nullptr and controller_handle is nullptr".
+         * @return not_found - the protocol was either not opened by that agent / controller combination or the handle
+         * does not support the protocol.
+         */
         efi::close_protocol                close_a_protocol;
+        /**
+         * @brief Retrieves a list of agents that currently have a protocol interface
+         * opened.
+         * @param handle the handle that agents have protocols open on.
+         * @param protocol the protocol we're interested in
+         * @param entry_buffer the pointer to the buffer that
+         * the firmware allocated to give us this all important infromation. It's
+         * not clear whether this buffer is allocated with allocate_pool or allocate_pages.
+         * @param entry_count the number of entries in the buffer.
+         * @return success - the information about the entries were given in the
+         * buffer and the number of entries given in entry_count.
+         * @return not_found - handle does not support protocol
+         * @return out_of_resources - the firmware could not allocate the buffer.
+         *
+         */
         efi::open_protocol_information     get_info_on_open_protocol;
-        efi::protocols_per_handle          protocols_that_work_with_handle;
-        efi::locate_handle_buffer          locate_handle_buffer;
+        /**
+         * @brief Retrieves the list of prtocols installed on a specific handle.
+         * @param handle the handle we're interested in
+         * @param protocol_buffer a pointer to a list of guid pointers that refer
+         * to the protocols installed on the handle.
+         * @param protocol_buffer_count the amount of entries in the buffer.
+         */
+        efi::protocols_per_handle          protocols_opened_on_handle;
+        /**
+         * @brief Returns an array of handles that support the specified protocol
+         * @param search_type how to look for the handle(s).
+         * @param provides the protocol to search by. Only required if searching
+         * by_protocol
+         * @param search_key the search key
+         * @param handle_count how many handles are in the buffer
+         * @param handle_buffer the buffer containing all the handles.
+         * @return success - the handles were successfully returned in the buffer.
+         * @return invalid_parameter - handle_count or handle_buffer are nullptr.
+         * @return not_found - no handles match the search.
+         * @return out_of_resources - the buffer could not be allocated.
+         * @remark the standard specifically says that this buffer is allocated with
+         * allocate_pool
+         */
+        efi::locate_handles_for_protocol   locate_handles_for_protocol;
+        /**
+         * @brief Finds an interface that matches the specified protocol.
+         * @param protocol - the protocol to match
+         * @param registration - the registration key returned from a call to
+         * register_protocol_notify. Ignored if nullptr.
+         * @param interface - the instance of the protocol. That is, some class
+         * that supports the protocol.
+         * @return success - the first matching protocol instance was returned in
+         * the interface.
+         * @return invalid_parameter - protocol or interface are nullptr.
+         * @return not_found there is no scuh protocol instance matching protocol
+         * and registration.
+         *
+         * @note this function sets interface to point to nullptr if there is no
+         * instance matching that protocol.
+         */
         efi::locate_protocol               find_protocol;
+        /**
+         * @brief Installs one or more protocol interfaces into the boot services
+         * environment
+         * @param handle the pointer to the handle to install the new interfaces
+         * on, nullptr if the handle needs to be allocated first.
+         * @param [va_args] a list containing pairs of protocols and interfaces. Terminated by a nullptr protocol.
+         * @return success - all the protocol interfaces were installed.
+         * @return already_started - a device_path_protocol was passed in that already exists in the handle database.
+         * @return invalid_parameter - a protocol is already iinstalled on handle or the pointer to the handle is
+         * nullptr.
+         */
         efi::install_multiple_interfaces   install_interfaces;
+        /**
+         * @brief Removes one or more protocol interfaces from the boot services environment.
+         * @param handle the handle to remove the protocols from.
+         * @param [va_args] a variable length list containing pairs of protocol guids and
+         * interface instances.
+         * @return success - all protocol interfaces were removed
+         * @return invalid_parameter - one of the interfaces was not previously
+         * installed on the handle.
+         */
         efi::uninstall_multiple_interfaces uninstall_interfaces;
+        /**
+         * @brief Calculates the CRC-32 of specified data.
+         * @param data the start of the data to calculate the CRC-32 on.
+         * @param data_size the amount of bytes in the data.
+         * @param crc32 - the CRC-32
+         * @return success - the 32-bit CRC was calculated and placed in *crc32
+         * @return invalid_parameter - any of these arguements are 0 / nullptr.
+         * @remark unfortunately, we have tl calculate 2 CRC-32's before we can
+         * be confident that this function is safe *facepalm*.
+         */
         efi::calculate_crc32               calculate_crc32;
+        /**
+         * @brief Copies memory from one location to another.
+         * @param destination the start of where to put the memory
+         * @param source the start of the memory to copy.
+         * @param length the number of bytes to copy.
+         * @note this function properly handles when source and destination overlap.
+         */
         efi::copy_memory                   memcpy;
+        /**
+         * @brief Sets a buffer to a specified value.
+         * @param buffer the start of memory to set
+         * @param size how many bytes to set in buffer
+         * @param value the value of buffer.
+         */
         efi::set_memory                    memset;
 
         // above functions are valid in all versions of the boot services from
@@ -1584,6 +2406,22 @@ namespace efi {
         // all of the above functions are reasonably safe to call even if the
         // revision is any amount greater than version_1_1.
 
+        /**
+         * @brief Creates an event in a group
+         * @param type the type of the event
+         * @param notify_tpl the task priority level when running the notify
+         * function.
+         * @param notify_function an optional callback to call when the event
+         * occurs.
+         * @param notify_context the context for the function.
+         * @param event_group the gorup that the event is in.
+         * @param event the newly-created event
+         * @return success - the event was created
+         * @return invalid_parameter event is null, type is an unsupported value, notify is null when the event can be
+         * signaled or notified, notify_tpl is unsupported.
+         * @return out_of_resources - the firmware could not allocate the event.
+         * @see efi::create_event
+         */
         efi::create_event_ex advanced_create_event;
 
         // advanced_create_event was added in revision 2.0 and is valid when the
@@ -1592,48 +2430,207 @@ namespace efi {
         // call.
     };
 
+    /**
+     * @brief The runtime services table.
+     * @note currently, this structure is incomplete. As for why, I direct you
+     * to the current line number.
+     */
     struct EFI_CLASS runtime_services : public table_header {
+        /**
+         * @brief Gets the current date / time along with the time-keeping abilities
+         * of the system's real time clock
+         * @param time - a pointer to an instance of efi::time
+         * @param capabilities - optional pointer to the time capabilities.
+         * @return success - the firmware gave us the time.
+         * @return invalid_parameter - time is nullptr
+         * @return device_error - the clock died.
+         * @return unsupported - this function no longer works after calling
+         * exit_boot services. The firmware told us that this function does
+         * not work.
+         */
         efi::get_time                get_time;
+        /**
+         * @brief Sets the current local time and date information.
+         * @param time the time.
+         * @note this function is why systems with dual boot between windows and
+         * ubuntu get their times messed up. Ubuntu changes the timezone to be in
+         * UTC, then Windows reads it as "we must be in UTC+0", meaning that someone
+         * like me, who lives in the central time zone, gets a windows that thinks
+         * it's six hours ahead.
+         * @return success - successfully set the time
+         * @return invalid_parameter - the time does not make sense (eg. February 31st)
+         * @return device_error - the clock died.
+         * @return unsupported - this function on longer works after calling
+         * exit_boot_services. The firmware told us that this function does not
+         * work.
+         */
         efi::set_time                set_time;
+        /**
+         * @brief Gets the current wakeup clock setting.
+         * @param enabled - whether the system wakeup clock is currently enabled
+         * @param pending - whether the alarm must be acknowledged, analogus to an
+         * alarm clock going off
+         * @param time the time that the alarm is set to go off at.
+         * @note time may be rounded to the nearest second. EFI defines the resolution
+         * of this clock to be one second.
+         * @return success - successfully got the alarm settings
+         * @return invalid_parameter - any of the arguments are nullptr.
+         * @return device_error - the clock died.
+         * @return unsupported - this function no longer works after calling exit_boot_services.
+         * The firmware told us that this function does not work.
+         */
         efi::get_wakeup_time         get_wakeup_time;
+        /**
+         * @brief Sets the system wakeup time.
+         * @note if this alarm goes off, the system wakes as soon as possible. if
+         * it is about to turn off or go to sleep, it immediately wakes up. if the
+         * system lacks the power to turn back on, the system turns on as soon as
+         * it gets the power to do so.
+         * @param enable whether to enable or disable the alarm.
+         * @param time the time to set the alarm. If enable is false, then this
+         * value is optional.
+         * @return success - whether the alarm was enabled / disabled.
+         * @return invalid_parameter - the time does not make sense (eg. 13 PM)
+         * @return device_error - the clock died.
+         * @return unsupported - this function no longer workds after calling
+         * exit_boot_services. THe firmware told us that this function does not
+         * work.
+         */
         efi::set_wakeup_time         set_wakeup_time;
+        /**
+         * @brief Applies our virtual memory map that we worked really hard on.
+         * @param memory_map_size the size of the memory map (bytes)
+         * @param descriptor_size the size of each entry in the map (bytes)
+         * @param descriptor_version the version of the descritpors. Currently
+         * only version 1 exists.
+         * @param virtual_map the map we worked really hard on.
+         * @return success - the map was applied
+         * @return unsupported - we haven't called exit_boot_services, the firmware
+         * has already done its virtual mapping, or the runtime services is telling
+         * us that it's kinda useless and really only works with variables and the
+         * clock.
+         * @return no_mapping we didn't accept all of the memory
+         * @return not_found we specified a virtual address for a physical address
+         * which does not exist.
+         */
         efi::set_virtual_address_map set_virtual_address_map;
+        /**
+         * @brief Concerts a pointer to its virtual address version.
+         * @param debug_disposition some debugging information that is currently
+         * defined to be `0x0000'0001`.
+         * @param address the memory address that needs to be fixed to its 
+         * virtual version.
+         * @return success - the pointer was successfully converted
+         * @return not_found the pointer that was to be converted is not in the
+         * virtual address map. EFI says that if we see this, then catastrophic
+         * program failure is immanent (much more mildly, however, as "this is 
+         * normally fatal").
+         * @return invalid_parameter address is nullptr or *address is nullptr and
+         * the debug_disposition is not optional_pointer.
+         * @return unsupported the firmware is kinda telling us that it doesn't
+         * do the whole runtime services thing. Like it gave the table, but the
+         * functions don't do anything.
+         */
         efi::convert_pointer         convert_pointer;
         // NOTE: this structure is incomplete and defines more functionality.
     };
 
+    /**
+     * @brief A globally unique identifier.
+     * 
+     */
     struct EFI_CLASS guid {
+        /**
+         * @brief The first four bytes.
+         * 
+         */
         uint32 data1;
+        /**
+         * @brief The fifth and sixth bytes.
+         * 
+         */
         uint16 data2;
+        /**
+         * @brief The seventh and eighth bytes.
+         * 
+         */
         uint16 data3;
+        /**
+         * @brief The remaining half of the 16-byte structure.
+         * 
+         */
         uint8  data4 [ 8 ];
     };
 
+    /**
+     * @brief The IP address that's still used today even though it actually does
+     * not have enough values for all devices which can access the internet. 
+     * Garbage OS will likely prefer using ipv6 addresses.
+     * 
+     */
     struct EFI_CLASS ipv4_address {
         uint8 bytes [ 4 ];
     };
 
+    /**
+     * @brief The CISCO-brand IP address that can access as many internet-capable
+     * devices as EFI can access files. In other words, if we run out of IPv6
+     * addresses, the firmware has bigger issues at hand.
+     * 
+     */
     struct EFI_CLASS ipv6_address {
         // placeholder until it becomes more clean
         uint8 bytes [ 16 ];
     };
 
+    /**
+     * @brief Magical union that's either an ipv4 or ipv6 address.
+     * @note not always used when we just "need an ip address" since this results
+     * in padding placed between ipv4 addresses.
+     */
     union __attribute__( ( aligned( 4 ) ) ) ip_address {
         ipv4_address ipv4;
         ipv6_address ipv6;
     };
 
+    /**
+     * @brief A media access control address. A MAC uniquely identifies the 
+     * hardware the device uses to connect to the internet. For example, your 
+     * phone has two MACs: one that it uses for the cellular network's antenna
+     * and one for the Wi-Fi antenna. 
+     * @remark Fun fact: the fifth generation of Pokémon games utilize the MAC
+     * address in their RNG function and as a result each individual DS / DSi / 
+     * 3DS has a unique RNG manipulation for each game!
+     */
     struct EFI_CLASS mac_address {
+        /**
+         * @brief EFI does not specify the format of a MAC address.
+         * 
+         */
         uint8_t bytes [ 32 ];
     };
 
+    /**
+     * @brief The event groups as defined by EFI.
+     * @see create_event_ex
+     */
     namespace event_groups {
+        /**
+         * @brief Tells EFI to call this event's notification function when the
+         * call to exit_boot_services is *happening*
+         * 
+         */
         constexpr guid exit_boot_services = {
                 0x27AB'F055,
                 0xB1B8,
                 0x4C26,
                 {0x80, 0x48, 0x74, 0x8F, 0x37, 0xBA, 0xA2, 0xDF}
         };
+        /**
+         * @brief Tells EFI to call this event's notification function when the
+         * exiting of boot_services is about to happen.
+         * 
+         */
         constexpr guid before_exit_boot_services = {
                 0x8BE8'E274,
                 0x3970,
@@ -1641,6 +2638,11 @@ namespace efi {
                 {0x80, 0xC5, 0x1A, 0xB9, 0x50, 0x2F, 0x3B, 0xFC}
         };
 
+        /**
+         * @brief Tells EFI to call this event's notification function when a 
+         * virtual address changes.
+         * 
+         */
         constexpr guid virtual_address_change = {
                 0x13FA'7698,
                 0xC831,
@@ -1648,6 +2650,11 @@ namespace efi {
                 {0x87, 0xEA, 0x8F, 0x43, 0xFC, 0xC2, 0x51, 0x96}
         };
 
+        /**
+         * @brief Tells EFI to call this event's notification function when the 
+         * system is ready to boot, presumably after POSTing.
+         * 
+         */
         constexpr guid ready_to_boot = {
                 0x7CE8'8FB3,
                 0x4BD7,
@@ -1655,6 +2662,11 @@ namespace efi {
                 {0x87, 0xA8, 0xA8, 0xD8, 0xDE, 0xE5, 0x0D, 0x2B}
         };
 
+        /**
+         * @brief Tells EFI to call this event's notification function after the
+         * system is ready to boot. 
+         * 
+         */
         constexpr guid after_ready_to_boot = {
                 0x3A2A'00AD,
                 0x98B9,
@@ -1662,6 +2674,11 @@ namespace efi {
                 {0xA4, 0x78, 0x70, 0x27, 0x77, 0xF1, 0xC1, 0x0B}
         };
 
+        /**
+         * @brief Tells EFI to call this event's notification function when the
+         * system is reset.
+         * 
+         */
         constexpr guid reset_system = {
                 0x62DA'6A56,
                 0x13FB,
@@ -1670,79 +2687,231 @@ namespace efi {
         };
     }    // namespace event_groups
 
+    /**
+     * @brief GUIDs that define a specific protocol. Compatibility with a protocol
+     * is defined by the protocol having the correct GUID. That is, having the
+     * protocol we expect means having the features we expect.
+     * 
+     */
     namespace protocol_guids {
+        /**
+         * @brief Identifies a device path protocol.
+         * 
+         */
         constexpr guid device_path = {
                 0x095'76E9,
                 0x6D3F,
                 0x11D2,
                 {0x8E, 0x39, 0x00, 0xA0, 0xC9, 0x69, 0x72, 0x3B}
         };
-    }
 
+        /**
+         * @brief Identifies an HII package list protocol.
+         * 
+         */
+        constexpr guid hii_package_list = {
+                0x6A1E'E763,
+                0xD46A,
+                0x43B4,
+                {0xAA, 0xBE, 0xEF, 0x1D, 0xE2, 0xAB, 0x56, 0xFC},
+        };
+    }    // namespace protocol_guids
+
+    /**
+     * @brief Fields common to all device paths.
+     * 
+     */
     struct EFI_CLASS device_path {
+        /**
+         * @brief Which part of the device path is this?
+         * 
+         */
         device_path_type    type;
+        /**
+         * @brief What type of this part of the device path is this?
+         * 
+         */
         device_path_subtype subtype;
+        /**
+         * @brief How many bytes long is this node in the path?
+         * 
+         */
         uint16              length;
     };
 
+    /**
+     * @brief Dummy structure to enlist the compiler in making sure that we don't
+     * stuff something that isn't a hardware_device_path where we can only put a
+     * hardware_device_path.
+     * 
+     */
     struct EFI_CLASS hardware_device_path : public device_path { };
 
+    /**
+     * @brief Dummy structure to enlist the compiler in making sure that we don't
+     * stuff something that isn't an acpi_device_path where we can only put an
+     * acpi_device_path
+     * 
+     */
     struct EFI_CLASS acpi_device_path : public device_path { };
 
+    /**
+     * @brief Dummy structure to enlist the compiler in making sure that we don't
+     * stuff something that isn't a messaging_device_path where we can only put
+     * a messaging_device_path.
+     * 
+     */
     struct EFI_CLASS messaging_device_path : public device_path { };
 
+    /**
+     * @brief Dummy structure to enlist the compiler in making sure that we don't
+     * stuff something that isn't a media_device_path where we can only put a 
+     * media_device_path
+     * 
+     */
     struct EFI_CLASS media_device_path : public device_path { };
 
+    /**
+     * @brief A BIOS Boot Specification device path. There is only one type of
+     * device path with this subtype. Like BIOS, it's quickly becoming gone.
+     * 
+     */
     struct EFI_CLASS bios_boot_specification_device_path : public device_path {
+        /**
+         * @brief What BIOS calls this boot device.
+         * 
+         */
         uint16 device_type;
+        /**
+         * @brief Whatever BIOS says is going on with this device.
+         * 
+         */
         uint16 status_flag;
+        /**
+         * @brief The description of the device.
+         * 
+         */
         FLEXIBLE_ARRAY( char8, desccription )
     };
 
+    /**
+     * @brief Fields common to PCI device paths and PCCARD device paths.
+     * 
+     */
     struct EFI_CLASS card_device_path : public hardware_device_path {
         uint8 function;
     };
 
+    /**
+     * @brief A device path that refers to a specific function and device 
+     * combination on the PCI bus. Take for example, the Graphics card or the
+     * M.2 drive, or the network card.
+     * 
+     */
     struct EFI_CLASS pci_device_path : public card_device_path {
         uint8 device;
     };
 
+    /**
+     * @brief A specific PCCARD which is connected to the device.
+     * 
+     */
     struct EFI_CLASS pccard_device_path : public card_device_path { };
 
+    /**
+     * @brief An MMIO device. 
+     * 
+     */
     struct EFI_CLASS memory_mapped_device_path : public hardware_device_path {
+        /**
+         * @brief Not sure what will happen if we see a type that we can't write
+         * to...
+         * 
+         */
         efi::memory_type memory_type;
         efi::uint64      start_address;
         efi::uint64      end_address;
     };
 
-    struct EFI_CLASS vendor_device_path : public hardware_device_path {
+    /**
+     * @brief Vendor-defined hardware device path.
+     * @note we're just supposed to look at the GUID and immediatly know what the
+     * data means.
+     */
+    struct EFI_CLASS vendor_defined_hardware_device_path : public hardware_device_path {
         guid vendor_guid;
         FLEXIBLE_ARRAY( uint8, vendor_data )
     };
 
+    /**
+     * @brief A controller device path with no additional context as to what the
+     * controller is, but it has a number.
+     * 
+     */
     struct EFI_CLASS controller_device_path : public hardware_device_path {
         uint32 controller_number;
     };
 
+    /**
+     * @brief A hardware device path indicating that we need to go through the
+     * baseboard management controller.
+     * 
+     */
     struct EFI_CLASS baseboard_management_controller_device_path : public hardware_device_path {
         uint8  bmc_interface;
         uint64 base_address;
     };
 
+    /**
+     * @brief Fields common to the ACPI short device path and the ACPI extended
+     * device path.
+     * 
+     */
     struct EFI_CLASS generic_acpi_device_path : public acpi_device_path {
+        /**
+         * @brief The _HID field
+         * 
+         */
         uint32 hardware_id;
+        /**
+         * @brief The _UID field
+         * 
+         */
         uint32 unique_id;
     };
 
+    /**
+     * @brief An ACPI device, here the system specifies a bit less information than
+     * the acpi_extended_device_path.
+     * 
+     */
     struct EFI_CLASS acpi_short_device_path : public generic_acpi_device_path { };
 
+    /**
+     * @brief An ACPI device path with every possible bell and whistle.
+     * 
+     */
     struct EFI_CLASS apci_extended_device_path : public generic_acpi_device_path {
+        /**
+         * @brief The _CID field.
+         * 
+         */
         uint32 compatible_id;
-        // note: these are three null-terminated strings. However, since they
-        // ALL have variable langth, we cannot store them as separate variables.
+        /**
+         * @brief The Hardware ID, Unique ID, and PNP Compatible ID which are all
+         * null-terminated strings and embedded in this structure. Since there is
+         * no way to tell the compiler where the unique ID and compatible ID are, 
+         * just trust that they're delimited by nul.
+         * 
+         */
         FLEXIBLE_ARRAY( char, id_strings )
     };
 
+    /**
+     * @brief A list of addresses that mean something in the context of the ACPI
+     * standard.
+     * 
+     */
     struct EFI_CLASS acpi_address_device_path : public acpi_device_path {
         FLEXIBLE_ARRAY( uint32, addresses )
     };

@@ -13,6 +13,13 @@
 #define SOURCE_UTILITY_FUNCTIONS_FLEXIBLE_ARRAY_HPP
 
 #ifndef FLEXIBLE_ARRAY
+/**
+ * @brief Macro that allows GCC to accept an array of unspecified size when set
+ * to error out on pedantic errors. We sometimes legitimately need variably sized
+ * arrays at this level and the most effective way to allow GCC to accept this 
+ * fact is to ignore warnings specifically for these declarations.
+ * 
+ */
 #  define FLEXIBLE_ARRAY( TYPE, VARIABLE )                                                                             \
       _Pragma( "GCC diagnostic push" ) _Pragma( "GCC diagnostic ignored \"-Wpedantic\"" ) TYPE VARIABLE [];            \
       _Pragma( "GCC diagnostic pop" )
