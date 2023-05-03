@@ -53,7 +53,7 @@ time = 0;
  */
 zero_field = 0;
 /* bitflags that mean the following:
- * 0x0002 -> this file was linked without erro (LD will not output if it fails)
+ * 0x0002 -> this file was linked without errors (LD will not output if it fails)
  * 0x0020 -> can handle addresses beyond 2 GiB
  * 0x0200 -> "no debug info"
  * 0x0400 -> if on removable media, bring into ram / swap
@@ -84,6 +84,33 @@ data_segment_characteristics = 0x00000040 | 0x40000000 | 0x80000000;
  * 0x80000000 -> this section can be written to.
  */
 bss_segment_characteristics = 0x00000080 | 0x400000000 | 0x80000000;
+
+page_size = 4K;
+section_alignment = page_size;
+file_alignment = page_size / 4;
+file_load_position = 0x0000000000000000;
+
+/*
+ * For some strange reason, this number needs to be subtracted from the image
+ * size and header size after aligning them. 
+ */
+mysterious_magic_number = 88;
+
+image_major_version = 0;
+image_minor_version = 1;
+
+/*
+ * Note: link.exe sets these fields to indicate a EFI version of 1.0. Perhaps it's
+ * something that my MSVS install automatically indicates, perhaps it's important
+ * to set the version to 1.0 to ensure that all EFI systems correctly recognize
+ * the image as bootable. We'll find out real quick if it needs to be 1.0 or can
+ * be 2.10.
+ *
+ * It's 2.10 since that's the version of EFI that Garbage OS knows all the 
+ * features of.
+ */
+efi_major_revision = 2;
+efi_minor_revision = 10;
 
 SECTIONS {
     . = 0;
@@ -217,21 +244,38 @@ SECTIONS {
          * Garbage OS looks at its memory map upside-down, so we actually request
          * to be placed at the bottom.
          */
-        QUAD(0x0)
-        LONG(0x1000)
-        LONG(0x1000)
-        SHORT(0)
-        SHORT(0)
-        SHORT(0)
-        SHORT(1)
-        SHORT(2)
-        SHORT(10)
-        LONG(0)
+        QUAD(file_load_position)
+        LONG(section_alignment) /* our section alignment */
+        LONG(file_alignment) /* our file alignment */
+        SHORT(0) /* minimum required OS, zero since we are the OS */
+        SHORT(0) /* minimum required OS, zero since we are the OS */
+        SHORT(image_major_version) /* image major version */
+        SHORT(image_major_version) /* image minor version */
+        SHORT(efi_major_revision) /* subsystem major version */
+        SHORT(efi_minor_revision) /* subsystem minor version */
+        LONG(zero_field) /* win32 version value, should always be zero*/
         image_size = file_end - file_start;
-        LONG(image_size)
+        /* 
+         * for some reason, subtracting 88 here appeases the GNU gods and outputs a page-aligned number. 
+         * I don't know why 88, I don't know how 88. We tell the linker that the end of the file is 
+         * aligned on the next page boundary, so file_end - file_start (currently 0) should always
+         * be a page-aligned number. 
+         *
+         * I've tried manually typing the equation, I've tried HARD CODING THE RIGHT NUMBER, 
+         * none of it seems to work and it's always off by 88.
+         *
+         * I DON'T KNOW WHY THIS WORKS --- HELP ME!!
+         */
+        image_size -= mysterious_magic_number;
+        LONG(image_size) /* image size -- this is a total size */
         header_sizes = SIZEOF(.required_header) + SIZEOF(.optional_header) + SIZEOF(.section_header);
-        to_round_up = 0x1000 - header_sizes & 0xFFF;
+        to_round_up = file_alignment - header_sizes & (file_alignment - 1);
         rounded_header_sizes = header_sizes + to_round_up;
+        /*
+         * Like with image_size, the above math that should be correct ends up adding 88... somewhere.
+         * I DON'T KNOW WHY THIS WORKS --- HELP ME!!
+         */
+        rounded_header_sizes -= mysterious_magic_number;
         LONG(rounded_header_sizes);
         LONG(0) /* checksum, may have to be filled in later somehow? */
         SHORT(10) /* EFI application*/
@@ -339,6 +383,7 @@ SECTIONS {
         *(*.bss);
     }
 
+    . = ALIGN(page_size);
     file_end = .;
 
     /DISCARD/ : 

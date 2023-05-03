@@ -128,8 +128,11 @@ loaders: x86_64_loader ia32_loader aarch64_loader
 
 run_crc32_test: build/test/utility_functions_test
 	@./$^
+
+# addtional file here is actual dummy output from link.exe for an x64 file targeting
+# efi.
 run_check_valid_pe32+_test: build/test/check_valid_pe32+ build/bin/BOOTX64.EFI build/bin/BOOTIA32.EFI build/bin/BOOTAA64.EFI
-	@./$(filter-out %.c++,$^) $(filter %.c++,$^)
+	@./$(filter-out %.c++,$^) $(filter %.c++,$^) build/bin/BOOTAUTH.EFI
 
 run_tests: run_crc32_test run_check_valid_pe32+_test
 
