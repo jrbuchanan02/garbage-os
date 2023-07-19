@@ -1,2 +1,5 @@
 #ignore anything in the build directory.
 build/*
+# Ignore the html outputs from the test coverage. Possibly include these later
+# in the readme as forms of tokens.
+docs/coverage/*

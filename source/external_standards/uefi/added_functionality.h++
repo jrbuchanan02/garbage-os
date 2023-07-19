@@ -26,36 +26,24 @@ namespace efi {
 
     /**
      * @brief Equality comparison operator for efi::guid
-     *
+     * @remark Could not convert this into the  source file.
      * @param lhs efi::guid
      * @param rhs efi::guid
      * @return whether lhs and rhs have equal contents.
      */
-    constexpr bool operator== ( guid const &lhs, guid const &rhs ) noexcept {
-        if ( lhs.data1 != rhs.data1 ) { return false; }
-        if ( lhs.data2 != rhs.data2 ) { return false; }
-        if ( lhs.data3 != rhs.data3 ) { return false; }
-        for ( std::size_t i = 0; i < 8; i++ ) {
-            if ( lhs.data4 [ i ] != rhs.data4 [ i ] ) { return false; }
-        }
-        return true;
-    }
+    constexpr bool operator== ( guid const &lhs, guid const &rhs ) noexcept;
 
     /**
      * @brief Calculates a CRC-32 checksum of a given table_header (or system-table, boot-services, or runtime-services)
      * and comapres it with the checksum field in the header to check if the table can be considered valid.
-     *
+     * @note this could theoretically be changed into a member function, however,
+     * doing so would make it very difficult to allow including the EFI header
+     * file as C code -- if that were ever desired.
      * @param table the table to check
      * @return true if the table has a valid checksum
      * @return false if the table does not have a valid checksum
      */
-    constexpr bool is_table_checksum_valid( table_header *const &table ) noexcept {
-        uint32 table_checksum  = table->crc;
-        table->crc             = 0;
-        uint32 actual_checksum = crc::crc( crc::type::ieee_802_3, table, table->size );
-        table->crc             = table_checksum;
-        return actual_checksum == table_checksum;
-    }
+    bool is_table_checksum_valid( table_header *const &table ) noexcept;
 }    // namespace efi
 
 #endif    // ifndef EXTERNAL_STANDARDS_UEFI_ADDED_FUNCTIONALITY_HPP
