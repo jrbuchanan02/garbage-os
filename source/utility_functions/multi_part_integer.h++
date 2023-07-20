@@ -16,6 +16,10 @@
 #include <concepts>
 #include <cstdint>
 
+#ifndef __cpp_concepts
+#error "Silly cmake."
+#endif
+
 template <std::unsigned_integral word> struct uintby2;
 
 template <typename type, typename... args>

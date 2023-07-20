@@ -11,5 +11,5 @@
  * free to use this source code in your project even if your code is not open 
  * source.
  */
-INCLUDE source/build/link/pe32p.ld
+INCLUDE ../source/build/link/pe32p.ld
 machine = 0x8664;

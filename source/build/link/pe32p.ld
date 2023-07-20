@@ -27,13 +27,13 @@ ENTRY(efi_main)
  * the linker thinks it's outputting a binary file, so it doesn't put in any 
  * headers that would interfere with the ones we're manually placing in the file
  */
-OUTPUT_FORMAT(binary)
+/* OUTPUT_FORMAT(binary) */ /* <-- aarch64 binary output is allegedly impossible.*/ 
 /*
  * Linker scripts can't encode character literals, so this file defines some for
  * us. Makes the script (more) human readable without the use of an ASCII / UTF-8
  * table.
  */
-INCLUDE source/build/link/ascii.ld
+INCLUDE ../source/build/link/ascii.ld
 /*
  * Amount of sections in the script, changing this number means more code since
  * we would manually have to edit the section header.
