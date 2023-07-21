@@ -15,8 +15,24 @@ add_compile_options(--std=c++20)
 include_directories(./source ./)
 
 # tests
-add_executable(utility_functions_test)
-add_executable(check_valid_pe32+_test)
+
+set(test_compile_options PRIVATE -fprofile-arcs 
+                         PRIVATE -ftest-coverage
+                         PRIVATE -g
+                         PRIVATE -arch=native)
+set(test_link_options PRIVATE --coverage
+                      PRIVATE -arch=native)
+
+function(test test_name sources)
+    add_executable(${test_name})
+    target_sources(${test_name} PRIVATE ${sources})
+    target_compile_options(${test_name} ${test_compile_options})
+    target_link_libraries(${test_name} gcov)
+    target_link_options(${test_name} ${test_link_options})
+endfunction()
+
+test(utility_functions_test test/utility_functions.c++)
+test(check_valid_pe32+_test test/check_valid_pe32+.c++)
 
 # UEFI binaries
 add_executable(BOOTIA32.EFI)
@@ -35,10 +51,6 @@ add_executable(BOOTAA64.EFI)
 
 # Adding sources to targets
 
-target_sources(utility_functions_test PRIVATE test/utility_functions.c++)
-
-target_sources(check_valid_pe32+_test PRIVATE test/check_valid_pe32+.c++)
-
 set(LOADER_SOURCES PRIVATE source/external_standards/uefi/added_functionality.c++
                    PRIVATE source/loader/environment/efi_main.c++
                    PRIVATE source/loader/setup/loader_main.c++)
@@ -48,23 +60,6 @@ target_sources(BOOTX64.EFI  ${LOADER_SOURCES})
 target_sources(BOOTAA64.EFI ${LOADER_SOURCES})
 
 # Adding more specialized compiler commands to targets.
-
-target_compile_options(utility_functions_test PRIVATE -fprofile-arcs 
-                                              PRIVATE -ftest-coverage 
-                                              PRIVATE -g
-                                              PRIVATE -arch=native)
-target_compile_options(check_valid_pe32+_test PRIVATE -fprofile-arcs 
-                                              PRIVATE -ftest-coverage 
-                                              PRIVATE -g
-                                              PRIVATE -arch=native)
-
-target_link_libraries(utility_functions_test gcov)
-target_link_libraries(check_valid_pe32+_test gcov)
-
-target_link_options(utility_functions_test PRIVATE --coverage
-                                           PRIVATE -arch=native)
-target_link_options(check_valid_pe32+_test PRIVATE --coverage
-                                           PRIVATE -arch=native)
 
 # *compiler* loader options
 set(LOADER_OPTIONS PRIVATE -ffreestanding 
@@ -96,25 +91,22 @@ target_compile_definitions(BOOTAA64.EFI PRIVATE _64_BITS
 
 # TODO: update these linker scripts to all match the correct architectures.
 #       until this is done, the check_valid_pe32+ test will fail.
-target_link_options(BOOTIA32.EFI PRIVATE -T ../source/build/link/pe32p_x64.ld
+target_link_options(BOOTIA32.EFI PRIVATE -T ../source/build/link/pe32p_ia32.ld
                                  PRIVATE -arch=ia32
                                  PRIVATE -e efi_main
                                  PRIVATE -Bsymbolic
-                                 PRIVATE -m32
-                                 PRIVATE -Wl,--oformat,binary)
+                                 PRIVATE -m32)
 target_link_options(BOOTIA32.EFI ${LOADER_OPTIONS})
-target_link_options(BOOTX64.EFI  PRIVATE -T ../source/build/link/pe32p_x64.ld
+target_link_options(BOOTX64.EFI  PRIVATE -T ../source/build/link/pe32p_8664.ld
                                  PRIVATE -arch=8664
                                  PRIVATE -e efi_main
                                  PRIVATE -Bsymbolic
-                                 PRIVATE -m64
-                                 PRIVATE -Wl,--oformat,binary)
+                                 PRIVATE -m64)
 target_link_options(BOOTX64.EFI ${LOADER_OPTIONS})
 # mysteriously fails!?
-target_link_options(BOOTAA64.EFI PRIVATE -T ../source/build/link/pe32p_x64.ld
+target_link_options(BOOTAA64.EFI PRIVATE # -T ../source/build/link/pe32p_aa64.ld
                                  PRIVATE -arch=aa64
                                  PRIVATE -e efi_main
-                                 PRIVATE -Bsymbolic
-                                 PRIVATE -Wl,--oformat,pei-aarch64-little)
+                                 PRIVATE -Bsymbolic)
 target_link_options(BOOTAA64.EFI ${LOADER_OPTIONS})
 

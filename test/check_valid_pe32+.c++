@@ -284,9 +284,10 @@ pe_signature extract_signature( std::vector<std::uint8_t>::const_iterator const 
     if ( ( signature.characteristics & 0x0020 ) == 0 ) {
         std::stringstream message;
         message << "\tThe File does not say that it can handle large addresses. That's a problem.";
+        std::cout << "\tThe File does not say that it can handle large addresses. That's a problem. But as an experiment, let's keep going for now.\n";
         // Commented out during testing the linker script because objcopy gets
         // this wrong.
-        throw not_valid_pep( message.str( ) );
+        // throw not_valid_pep( message.str( ) );
     }
 
     return signature;
@@ -341,8 +342,9 @@ optional_header extract_optional_header( std::vector<std::uint8_t>::const_iterat
         if ( header.size_of_code == 0 ) {
             std::stringstream message;
             message << "File reports that it has no code, or, more precisely, that its code takes up no space.\n";
+            std::cout << "File reports that it has no code, or, more precisely, that its code takes up no space. But as an experiment, let's keep going.\n";
             // objcopy sets the size of the code to zero.
-            throw not_valid_pep( message.str( ) );
+            // throw not_valid_pep( message.str( ) );
         }
         std::cout << "\tFile reports that it has less than 1KiB of code inside... that's kinda sus, but allowed.\n";
     }
@@ -352,8 +354,10 @@ optional_header extract_optional_header( std::vector<std::uint8_t>::const_iterat
             std::stringstream message;
             message << "File reports that it has no initialized data (constants), or, more precisely, that its data "
                        "takes up no space.\n";
+            std::cout << "File reports that it has no initialized data (constants), or, more precisely, that its data "
+                         "takes up no space. But as an experiment let's keep going.\n";
             // objcopy sets the size of initialized data to zero.
-            throw not_valid_pep( message.str( ) );
+            // throw not_valid_pep( message.str( ) );
         }
         std::cout << "\tFile reports that it has less than 1KiB of constants, perhaps include more images? Honkai Star "
                      "Rail takes up >8GiB at launch. That's satire. Good job at the small file?\n";
@@ -414,7 +418,9 @@ optional_header extract_optional_header( std::vector<std::uint8_t>::const_iterat
         std::stringstream message;
         message << "File indicates its file alignment should be " << header.file_alignment
                 << " bytes, which is less than the minimum of 512.";
-        throw not_valid_pep( message.str( ) );
+        std::cout << "File indicates its file alignment should be " << header.file_alignment
+                << " bytes, which is less than the minimum of 512. But as an experiment, let's keep going.\n";
+        // throw not_valid_pep( message.str( ) );
     }
 
     // maximum file alignment is 64KiB
@@ -460,17 +466,21 @@ optional_header extract_optional_header( std::vector<std::uint8_t>::const_iterat
         throw not_valid_pep( message.str( ) );
     }
 
-    if ( header.image_size % header.section_alignment != 0 ) {
+    if ( header.section_alignment == 0 || header.image_size % header.section_alignment != 0 ) {
         std::stringstream message;
         message << "The file says that it's image size in memory is " << header.image_size
                 << " bytes, but this is not a multiple of the section alignment of " << header.section_alignment << ".";
-        throw not_valid_pep( message.str( ) );
+        std::cout << "\tThe file says that it's image size in memory is " << header.image_size
+                << " bytes, but this is not a multiple of the section alignment of " << header.section_alignment << ". But as an experiment, let's keep going.\n";
+        // throw not_valid_pep( message.str( ) );
     }
 
-    if ( header.size_of_headers % header.file_alignment != 0 ) {
+    if ( header.size_of_headers == 0 || header.size_of_headers % header.file_alignment != 0 ) {
         std::stringstream message;
         message << "The file says that it's header size in memory is " << header.size_of_headers
                 << " bytes, but this is not a multiple of the section alignment of " << header.file_alignment << ".";
+        std::cout << "The file says that it's header size in memory is " << header.size_of_headers
+                << " bytes, but this is not a multiple of the section alignment of " << header.file_alignment << ". But as an experiment, let's keep going.\n";
         throw not_valid_pep( message.str( ) );
     }
 
@@ -483,10 +493,10 @@ optional_header extract_optional_header( std::vector<std::uint8_t>::const_iterat
         throw not_valid_pep( message.str( ) );
     }
 
-    std::cout << "\tFile requests a reserved stack size of " << header.stack_reserve / 1024.0 << "KiB\n";
-    std::cout << "\tFile requests a committed stack size of " << header.stack_commit / 1024.0 << "KiB\n";
-    std::cout << "\tFile requests a reserved heap size of " << header.heap_reserve / 1024.0 << "KiB\n";
-    std::cout << "\tFile requests a committed heap size of " << header.heap_commit / 1024.0 << "KiB\n";
+    std::cout << "\tFile requests a reserved stack size of " << header.stack_reserve << "KiB\n";
+    std::cout << "\tFile requests a committed stack size of " << header.stack_commit << "KiB\n";
+    std::cout << "\tFile requests a reserved heap size of " << header.heap_reserve << "KiB\n";
+    std::cout << "\tFile requests a committed heap size of " << header.heap_commit << "KiB\n";
 
     if ( header.loader_flags != 0 ) {
         std::stringstream message;

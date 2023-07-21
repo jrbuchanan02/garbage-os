@@ -27,7 +27,7 @@ ENTRY(efi_main)
  * the linker thinks it's outputting a binary file, so it doesn't put in any 
  * headers that would interfere with the ones we're manually placing in the file
  */
-/* OUTPUT_FORMAT(binary) */ /* <-- aarch64 binary output is allegedly impossible.*/ 
+OUTPUT_FORMAT(binary)
 /*
  * Linker scripts can't encode character literals, so this file defines some for
  * us. Makes the script (more) human readable without the use of an ASCII / UTF-8
@@ -56,11 +56,11 @@ zero_field = 0;
  * 0x0002 -> this file was linked without errors (LD will not output if it fails)
  * 0x0020 -> can handle addresses beyond 2 GiB
  * 0x0200 -> "no debug info"
- * 0x0400 -> if on removable media, bring into ram / swap
- * 0x0800 -> if from network, bring into ram / swap
+ * 0x0400 -> if on removable media, bring into swap (removed because swap may not exist?)
+ * 0x0800 -> if from network, bring into swap (removed because swap may not exist?)
  * 0x1000 -> not a user application (important since code assumes ring 0)
  */
-characteristics = 0x0002 | 0x0020 | 0x0200 | 0x0400 | 0x0800 | 0x1000;
+characteristics = 0x0002 | 0x0020 | 0x0200 | 0x1000;
 /*
  * bitflags that say this section is a code segment.
  * 0x00000020 -> this section contains code
