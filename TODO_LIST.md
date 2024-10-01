@@ -1,17 +1,26 @@
 # Todo List
 This file describes the roadmap for Garbage OS. 
 
-1. Get a build built [ ]
-    - Get the ability to target EFI-systems and know what the EFI types are [ ]
-        + Have own implementation of efi.h that allows targeting multiple 
-        architectures. [ ]
-    - Have the expansibility in this system to eventually target non-EFI 
-    systems [ ]
-    - Recursive build structure that allows a customizeable amount of the machine
-    to work on building Garbage OS [ ]
-    - Build System capable of dumping:
-        + Preprocessed Source Code [ ]
-        + Compiled Source Code [ ]
-        + Assembled Object Files [ ]
-        + Linked Binaries [ ]
-    
+## Externally Visible Features
+
+1. UEFI build
+    -  Successfully output valid EFI portable executable files for the following Instruction Set Architectures:
+        - [ ] x86-64
+        - [ ] x86-32
+        - [ ] aarch64
+        - [ ] aarch32
+        - [ ] RISC-V64ISv39
+        - [ ] RISC-V64ISv32
+    - Create valid bootable images for the following architectures, verifying the valid EFI files and bootable images
+      requirement:
+        - [ ] x86-64
+        - [ ] x86-32
+        - [ ] aarch64
+        - [ ] aarch32
+        - [ ] RISC-V64ISv39
+        - [ ] RISC-V32ISv32
+
+## Internally Visible Features
+
+1. Types
+    - [ ] Adopt the pointer types in types/pointers.h++
