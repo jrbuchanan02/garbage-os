@@ -1,32 +1,47 @@
 # Garbage OS
 Garbage OS is an open-source operating system that:
 1. Does not take itself seriously
-2. Features a centralized garbage-collection routine
-3. Attempts to roll-its-own everything
-4. Supports as many architectures as possible.
+2. Is intended to possibly educate on the functionality of Operating Systems
+3. Intends to support as many architectures as possible
 
-Garbage OS is published under the LGPL version 2.1. You can learn more about the
-license and your rights with Garbage OS [here](./LICENSE) or by reading the 
-LICENSE file (which that link points to).
-
-**DISCLAIMER**: The information I present as facts below this point in the 
-readme generally reflect what I have garnered from reading on the internet and
-from personal experimentation. As such, this information may not all be correct
-so do not cite this readme as a purely reputable source. If I am correct, 
-corroborate with one of the sources I may list or with a more reputable source.
-
-Garbage OS is currently in the alpha state. While previous builds have gotten to
-run on emulator, I did not document what I was doing at all and have forgotten 
-all that I did in the intervening year. So. The main purpose of this "reboot"
-(pun intended) is to begin documenting almost everything about Garbage OS and 
-its development (as you can see in the frequent README.md files). Here is a list
-(possibly comprehensive) of all README.md's in the repository:
+Garbage OS is distributed under the LGPL version 2.1 with the hopes that
+it will be useful. See the LICENSE file for more details.
 
 ## Roadmap
-Garbage OS does not have a strong roadmap since revelopment just (re)started. I
-am a busy college student. While that means I greatly appreciate the educational
-value that GOS provides, I also have to worry about classes whose grades 
-determine whether or not I graduate. I leave this roadmap here for both myself
-and the kind developers who wish to help Garbage OS on its journey.
 
-There is a file dedicated to the roadmap, [TODO_LIST](./TODO_LIST.md)
+1. [ ] Create a basic Kernel (version 0.x)
+    - [ ] Kernel version which spins the CPU indefinitely (0.0.x)
+    - [ ] Kernel version which features preemptive multitasking and nothing else (0.1.x)
+    - [ ] Kernel version with preemptive multitasking and memory protections but nothing else (0.2.x)
+    - [ ] Kernel version with preemptive multitasking, memory protections, and the ability to load drivers (0.3.x)
+
+## Why The Name Garbage OS?
+
+It's kind of unprofessional, right? Originally, I intended for Garbage OS to be
+written in the D programming language and feature an OS-wide garbage collection
+service. Later I realized just how complex a garbage collector would make the 
+operating system! However, the name "Garbage OS" kind of stuck: it's ironically
+funny to load a kernel named "garbage.bin" and have it run properly.
+
+## Ports
+
+| Instruction Set | Version Added | Status |
+| :-------------- | :-----------: | :----: |
+| i386            | 0.0.0         | in development |
+| x64             | 0.0.0         | in development |
+| RISC-V 32       | 0.0.0         | in development |
+| RISC-V 64       | 0.0.0         | in development |
+
+Support notes:
+
+i386: Garbage OS assumes its kernel receives control in protected mode with ring 0 privileges.
+
+x64: Garbage OS assumes its kernel receives control in long mode with ring 0 privileges.
+
+RISCV-32: Garbage OS requires the RV32I base instruction set, control status registers (Zicsr),
+and Sv32 (i.e., Supervisor mode, User mode, and 32-bit paging). Most RISC-V processors will run
+the RISC-V 32-bit version of the kernel.
+
+RISCV-64: Garbage OS requires the RV64I base instruction set, control status registers (Zicsr),
+and Sv39 (i.e., Supervisor mode, User mode, and 39-bit paging). Most 64-bit RISC-V processors
+will run the RISC-V 64-bit version of the kernel. 

@@ -11,3 +11,64 @@ does not take itself too seriously.
 1. Look under issues and find one that looks interesting to you
 2. Make a branch and clone
 3. Fix the issue and make a pull request
+
+## The Syle Guide
+
+Garbage OS intends to keep a specific style of code and thsu follows these rules.
+
+### Clarifications on the style guide
+
+**High Level Language**: Any programming language that does not individually list out
+instructions by name for a CPU. Examples of high level programming languages include
+C, C++, FORTRAN, Java, Python, and MATLAB.
+
+**Assembly Language**: A computer program written by individually listing instructions
+for a CPU to execute. Assembly Language programs are typically limited to one instruction
+set architecture.
+
+### The Actual Style Guide
+
+1. All code written in a High Level Language shall strictly conform to that High Level Language's
+   standards. For example, all C translation units used by Garbage OS shall satisfy the requirements
+   of a strictly conforming C program according to the corresponding revision of ISO 9899 (the ISO C 
+   standard). This style requirement shall not apply to compiler extensions necessary to export functions
+   in a shared library or to specify a specifc structure layout in a program, if such a layout is 
+   necessary to interact with an external library.
+   - This requirement means that C and C++ programs are prohibited from using inline assembly.
+   - This requirement means that C code used by Garbage OS must follow ISO C implementation limits,
+     even the less logical ones such as the 15-header-deep include file nesting depth limit and the
+     cryptic 31-character-but-sometimes-characters-count-for-six-or-ten-characters external identifier
+     length limit.
+   - This requirement does not apply to compiler specific features necessary to specify an ABI, export
+     a function, or pack structures.
+2. All functions in Garbage OS shall have a cyclomatic complexity of 5 or less. Switch statements only
+   count towards cyclomatic complexity if a fallthrough exists or if any case label contains a selection
+   statement.
+   - For the uninitiated, this means less than 5 independent paths through the program
+   - A quick and dirty way to calculate cyclomatic complexity for a C / C++ program is to count the instances
+     of the keywords `if`, `while`, `goto`, `catch` and `for` within a function. Since this requirement only occasionally
+     counts switch-statements, count all cases in a switch statement if any of the labels does not end in the
+     break keyword or if any of the labels contains `if`, `while`, `goto`, `for`, `do` `catch`, or `switch`.
+3. All functions in Garbage OS shall have a length below 301 logical source lines of code. Here, a logical source
+   line of code is the total of non-empty, non-comment statements within a function.
+   - This requirement means the longest function possible is still infinitely long but it can contain a total of 300 
+     statements or fewer.
+   - If the statements within the parenthetical block of a for-loop are nontrivial (i.e., not just initializing a variable,
+     a boolean condition, and a statement with a single side effect), then the nontrivial statements in that for-loop count as 
+     logical source lines of code.[^1]
+4. All statements in Garbage OS written in high-level languages, excluding function calls, are limited to two side-effects.
+
+
+[^1]: This paragraph means that both of the following implementations of strcpy have the length in logical source lines of code
+since, in the second implementation, the final statement of the for-loops parenthetical has more than one side-effect. The
+second implementation violates the style guide, however.
+```C
+char *strcpy(char *dst, char *src) {
+    for(size_t i = 0; src[i]; i++) dst[i] = src[i];
+}
+```
+```C
+char *strcpy(char *dst, char *src) {
+    for(char *dst_pos = dst; src; *dst_pos = *src, src++, dst_pos++);
+}
+```

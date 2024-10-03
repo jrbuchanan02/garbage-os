@@ -11,72 +11,48 @@
 #			build each and every file for Garbage OS!							#
 #################################################################################
 
-# require C++ 20, freestanding, no exceptions
-# emit all warnings
-# don't link
-# make source one of the include directories
-# turn on basic optimizations
-loader_flags = --std=c++20 -ffreestanding -fno-exceptions -Wall -Wextra -Wpedantic -c -I source -O1
+# TODO: change get_gcc and get_binutils to check if the repository already exists
 
-define loader_arch_source_template = 
-	@echo Building $@
-	@mkdir -p $(@D)
-	@$(1)-linux-gnu-g++ $(loader_flags) -o $@ $<
+# on recursive calls to make (i.e. building dependencies), make the average load this much.
+submake_load = -l 0.75
+
+create_dependencies_dir:
+	@mkdir -p dependencies
+
+# Build GCC version 14.2 from source, start by getting the repository
+get_gcc: create_dependencies_dir
+	@mkdir -p dependencies/gcc
+	git clone git://gcc.gnu.org/git/gcc.git dependencies/gcc
+	cd dependencies/gcc && git checkout releases/gcc-14
+# Build Binutils version 2.43 from source, start by getting the repository
+get_binutils: create_dependencies_dir
+	@mkdir -p dependencies/binutils
+	git clone git://sourceware.org/git/binutils-gdb.git dependencies/binutils
+	cd dependencies/binutils && git checkout binutils-2_43
+
+init: get_gcc get_binutils
+
+# WARNING: running this target requires that you re-run init!
+superclean:
+	rm -rf dependencies
+
+define build_arch_binutils = 
+	mkdir -p dependencies/binutils-build-$(1)
+	mkdir -p dependencies/binutils-$(1)
+	cd dependencies/binutils-build-$(1) && ../binutils/configure --target=$(1)-elf --prefix=$(abspath dependencies/binutils-$(1)) --with-sysroot --disable-nls --disable-werror
+	cd dependencies/binutils-build-$(1) && make $(submake_load) && make install $(submake_load)
 endef
 
-define loader_arch_elf_file_template = 
-	@echo Linking $@
-	@mkdir -p $(@D)
-	@$(1)-linux-gnu-ld -e efi_main -o $@ $^
+define build_arch_gcc = 
+	mkdir -p dependencies/gcc-build-$(1)
+	mkdir -p dependencies/gcc-$(1)
+	cd dependencies/gcc-build-$(1) && ../gcc/configure --target=$(1)-elf --prefix=$(abspath dependenices/gcc-$(1)) --disable-nls --enable-languages=c,c++ --without-headers
+	cd dependencies/gcc-build-$(1) && make all-gcc all-target-libgcc install-gcc install-target-libgcc $(submake_load)
 endef
 
-loader_sources = source/loader/efimain.c++ source/loader/efi/status.c++
+build_x86_64_binutils:
+	$(call build_arch_binutils,x86_64)
 
-loader_x86_64_boot_efi_elf_objects = $(loader_sources:source/%.c++=build/x86_64/%.o)
-loader_aarch64_boot_efi_elf_objects = $(loader_sources:source/%.c++=build/aarch64/%.o)
+build_x86_64_gcc: build_x86_64_binutils
+	$(call build_arch_gcc,x86_64)
 
-build/x86_64/loader/%.o: source/loader/%.c++
-	$(call loader_arch_source_template,x86_64)
-build/aarch64/loader/%.o: source/loader/%.c++
-	$(call loader_arch_source_template,aarch64)
-
-# build/x86_64/loader/efimain.o: source/loader/efimain.c++
-# 	$(loader_x86_64_source)
-
-# build/x86_64/loader/efi/status.o: source/loader/efi/status.c++
-# 	$(loader_x86_64_source)
-
-bin/x86_64/loader/BOOT.elf: $(loader_x86_64_boot_efi_elf_objects)
-	$(call loader_arch_elf_file_template,x86_64)
-
-bin/aarch64/loader/BOOT.elf: $(loader_aarch64_boot_efi_elf_objects)
-	$(call loader_arch_elf_file_template,aarch64)
-
-result/loader/x86_64/BOOT.EFI: bin/x86_64/loader/BOOT.elf
-	@echo Converting $< into $@
-	@mkdir -p $(@D)
-	@x86_64-linux-gnu-objcopy -O pei-x86-64 --subsystem 10 $< $@
-result/loader/aarch64/BOOT.EFI: bin/aarch64/loader/BOOT.elf
-	@echo Converting $< into $@
-	@mkdir -p $(@D)
-	@aarch64-linux-gnu-objcopy -O pei-aarch64-little --subsystem 10 $< $@
-
-loader: result/loader/x86_64/BOOT.EFI result/loader/aarch64/BOOT.EFI
-
-efi_disk: loader
-# make the iso workspace
-	mkdir -p result/x86_64/iso
-	mkdir -p result/aarch64/iso
-# make the boot folder in the ISO file
-	mkdir -p result/x86_64/iso/BOOT
-	mkdir -p result/aarch64/iso/BOOT
-# move the loader files into the boot directories
-	mv result/loader/x86_64/BOOT.EFI result/x86_64/iso/BOOT/BOOT.EFI
-	mv result/loader/aarch64/BOOT.EFI result/aarch64/iso/BOOT/BOOT.EFI
-# make the ISO images
-	xorriso -x -outdev GOS-x86_64.iso -map result/x86_64/iso /
-	xorriso -x -outdev GOS-aarch64.iso -map result/aarch64/iso / -boot_image "efi_boot_part=--efi-boot-image"
-clean:
-	rm -rf bin
-	rm -rf build
-	rm -rf result
