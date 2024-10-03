@@ -1,111 +1,74 @@
 # Contributing to Garbage OS
+Some rules to remember about how to contribute to Garbage OS:
+1. Write down what you're doing. GOS is primarily for people to learn about Operating Systems.
+2. Feel free to write humorous (but professional) comments within your code. GOS
+does not take itself too seriously.
+3. Only write it once. Share code whenever possible.
+4. Note the security implications of your code. 
+5. Limit the usage of global variables.
 
-## Code Format
+## I want to contribute. How do I do that?
+1. Look under issues and find one that looks interesting to you
+2. Make a branch and clone
+3. Fix the issue and make a pull request
 
-Garbage OS has a required code format. If you contribute to Garbage OS you are
-required to write code that follows this code format.
+## The Syle Guide
 
-1. there is a hard limit of 80 columns in a line.
-2. all names are `snake_case` with the exception of macros which are `SNAKE_CASE`
-(the macro names are capitalized.)
-3. all indents are spaces. Preprocessed items (`#include`, `#define`, etc.) are
-indented 2 spaces before the `#` if they reside within a `#if` block and are 
-otherwise flush with the beginning of the line. All other indents are 4 spaces
-per indent.
-4. descriptive names are required. Acronyms, with an exception, must be written
-out. The exception to the acronyms rule is if the acronym provides its own 
-context, such as `guid`, `uuid`, and `atm`.
-5. Multi-line `#define`s have right-aligned backslashes. The backslash occurs 
-at the column limit.
-6. Visiblity modifiers are indented with the record containing them (the p in 
-`public:` is in the same column in the c in `class` that the `public` sits in.)
-7. All enums are enum-class.
-8. All structs are POD structs (they only contain variables, no methods).
-9. All templates use concepts unless there is no semantic restriction on what
-type can reside in the template. That is, the function `add(lhs, rhs)` must 
-use a concept to enforce that `lhs` and `rhs` can, in fact, support addition
-with one another and that the result will make sense. However, the template
-`using callback = result (*)(args...)` should not specify a concept unless the
-writer feels the need to specify that no member of `args` can be `void`.
-10. Unless defined by an external standard (eg, ACPI, EFI), all content coupling
-is banned. That is, you are not allowed to utilize a numeric offset into a data
-structure without some assurance that you have the correct numeric offset.[1]
-11. All warnings are errors.
-12. Other code formatting is followed automatically by the clang-format file,
-however, there is one exception. Clang-format will on occaision not cause a line
-break to preserve the assignment operator alignment. Assignment operators must
-be aligned if they are sequential (no blank lines or only single-line comments
-separating them). These separations can only be based on a logical distinction
-between the assignments.
+Garbage OS intends to keep a specific style of code and thsu follows these rules.
 
-## Code Style
+### Clarifications on the style guide
 
-Garbage OS requires the practice of defensive programming. Here's what that
-means:
+**High Level Language**: Any programming language that does not individually list out
+instructions by name for a CPU. Examples of high level programming languages include
+C, C++, FORTRAN, Java, Python, and MATLAB.
 
-1. All inputs to a code region, outputs from a code region, and inputs into 
-another code region are checked before calling the function. If the inputs are 
-invalid but trivially fixable, the inputs are fixed. If the inputs are invalid 
-and not trivially fixable, the code treats the invalid inputs as an error.
-2. All cases are considered possible code paths. For example:
-```C++
-if ( foo == true )
-{
-    //  do something
-} else if ( foo == false )
-{
-    //  do something else
-} else 
-{
-    //  error condition: the boolean variable was not true or false.
+**Assembly Language**: A computer program written by individually listing instructions
+for a CPU to execute. Assembly Language programs are typically limited to one instruction
+set architecture.
+
+### The Actual Style Guide
+
+1. All code written in a High Level Language shall strictly conform to that High Level Language's
+   standards. For example, all C translation units used by Garbage OS shall satisfy the requirements
+   of a strictly conforming C program according to the corresponding revision of ISO 9899 (the ISO C 
+   standard). This style requirement shall not apply to compiler extensions necessary to export functions
+   in a shared library or to specify a specifc structure layout in a program, if such a layout is 
+   necessary to interact with an external library.
+   - This requirement means that C and C++ programs are prohibited from using inline assembly.
+   - This requirement means that C code used by Garbage OS must follow ISO C implementation limits,
+     even the less logical ones such as the 15-header-deep include file nesting depth limit and the
+     cryptic 31-character-but-sometimes-characters-count-for-six-or-ten-characters external identifier
+     length limit.
+   - This requirement does not apply to compiler specific features necessary to specify an ABI, export
+     a function, or pack structures.
+2. All functions in Garbage OS shall have a cyclomatic complexity of 5 or less. Switch statements only
+   count towards cyclomatic complexity if a fallthrough exists or if any case label contains a selection
+   statement.
+   - For the uninitiated, this means less than 5 independent paths through the program
+   - A quick and dirty way to calculate cyclomatic complexity for a C / C++ program is to count the instances
+     of the keywords `if`, `while`, `goto`, `catch` and `for` within a function. Since this requirement only occasionally
+     counts switch-statements, count all cases in a switch statement if any of the labels does not end in the
+     break keyword or if any of the labels contains `if`, `while`, `goto`, `for`, `do` `catch`, or `switch`.
+3. All functions in Garbage OS shall have a length below 301 logical source lines of code. Here, a logical source
+   line of code is the total of non-empty, non-comment statements within a function.
+   - This requirement means the longest function possible is still infinitely long but it can contain a total of 300 
+     statements or fewer.
+   - If the statements within the parenthetical block of a for-loop are nontrivial (i.e., not just initializing a variable,
+     a boolean condition, and a statement with a single side effect), then the nontrivial statements in that for-loop count as 
+     logical source lines of code.[^1]
+4. All statements in Garbage OS written in high-level languages, excluding function calls, are limited to two side-effects.
+
+
+[^1]: This paragraph means that both of the following implementations of strcpy have the length in logical source lines of code
+since, in the second implementation, the final statement of the for-loops parenthetical has more than one side-effect. The
+second implementation violates the style guide, however.
+```C
+char *strcpy(char *dst, char *src) {
+    for(size_t i = 0; src[i]; i++) dst[i] = src[i];
 }
 ```
-It should be noted, however, that in the above example if we needed foo to 
-specifically be `true` or be `false`, then a simple `if-else` would do.
-
-## Error Handling
-
-Garbage OS expects errors, here's how the code handles these errors:
-
-1. In the loader environment: Loader errors automatically abort the loading 
-process, that is, they are considered to reflect a "dangerous" firmware or
-unsupported machine. On an abort, the loader outputs a detailed reason why the
-abort happened (if possible), waits for three seconds (if possible), and either
-requests control be given back to the firmware, resets the machine, or hangs the
-processor (in order of preference). 
-2. In the kernel environment: Once the loader hands control to the kernel, the
-kernel is expected to do it's best to load. However, if the kernel detects a 
-hardware failure (that does not immediately kill the kernel) or runs out of 
-memory while loading, it will halt the processor.
-3. In the API environment: API modules function more like conventional programs,
-if these modules error out, they simply unload. The kernel then determines 
-whether to ignore the error, restart the module, or panic. 
-4. In the unification layer: the unification layer is not allowed to visibly
-error out. It must handle and recover from all errors that present themselves.
-5. Application Layer: if an application errors out, it closes and Garbage OS 
-reclaims its allocated resources. This behavioris common to all modern operating
-systems.
-
-[1] content coupling refers to one part of a program interacting with another
-part through knowledge of the exact format of the other part. For example, if 
-I know that foo has the declaration:
-```C++
-class foo {
-    int x;
-    int y;
-public:
-    int get_x();
-    int get_y();
-};
+```C
+char *strcpy(char *dst, char *src) {
+    for(char *dst_pos = dst; src; *dst_pos = *src, src++, dst_pos++);
+}
 ```
-and I want to modify x and y anyway, I could write the line:
-```C++
-((int *)foo)[0] = a;
-((int *)foo)[1] = b;
-```
-and that would change the values of x and y to a and b. However, if I then make 
-**ANY** change to the contents of foo, I would have to rewrite the code that 
-modifies x and y. Moreover, if foo inherits from anything, the content-coupled
-code has to know the exact size of all the types that foo inherits from!
-In addition to creating less-readable code, content coupling automatically makes
-code maintentance harder. Hence, the ban on it.

@@ -1,38 +1,47 @@
 # Garbage OS
 Garbage OS is an open-source operating system that:
 1. Does not take itself seriously
-2. Intends to educate on the functionality of operating systems by providing a 
-readable and functioning example of one.
-3. Provides (or will provide) the ability to create a High Performance Computing
- Cluster (HPC Cluster) at the Operating System level.
+2. Is intended to possibly educate on the functionality of Operating Systems
+3. Intends to support as many architectures as possible
 
-Garbage OS is published under the LGPL version 2.1. Garbage OS is open source: 
-you are free to view, build, modify, and make projects from Garbage OS.
-Additionally, LGPL allows closed-source projects to rely on Garbage OS, in
-addition to open source projects.
+Garbage OS is distributed under the LGPL version 2.1 with the hopes that
+it will be useful. See the LICENSE file for more details.
 
-# Terms of Use
-As expressly stated in the copyright, Garbage OS comes as-is and with no warranty.
-Additionally, Garbage OS ships with the terms that all responsibility (good and 
-bad) that comes from whatever Garbage OS does (or commands the computer to do)
-is shared with (1) whomever installed Garbage OS on the system, (2) whomever
-owns the computer, (3) the person who is using the computer or made the decision
-to leave the computer unattended. Another way of thinking of these terms is that
-Garbage OS is "use at your own risk". 
+## Roadmap
 
-Let's give an example.
-Imagine that John Doe installed Garbage OS on Joe Schmoe's computer and Billy 
-Bob left the computer unattended to get coffee. If the unattended computer ate
-Sally's kitten, John Doe, Joe Schmoe and Billy Bob would all be responsible, 
-similarly, if the computer stopped an alien invasion set to destroy humanity, 
-John Doe, Joe Schmoe, and Billy Bob would have a genuine claim to saving 
-humanity from certain destruction.
+1. [ ] Create a basic Kernel (version 0.x)
+    - [ ] Kernel version which spins the CPU indefinitely (0.0.x)
+    - [ ] Kernel version which features preemptive multitasking and nothing else (0.1.x)
+    - [ ] Kernel version with preemptive multitasking and memory protections but nothing else (0.2.x)
+    - [ ] Kernel version with preemptive multitasking, memory protections, and the ability to load drivers (0.3.x)
 
-- this hypothetical does not change if any of the people in the example are 
-entities (eg, companies, governments)
-- this hypothetical does not change if any of the people in the example are 
-the same person (eg, the computer's owner installs Garbage OS)
-- all actions taken by Garbage OS, intended by the developers or not, apply to 
-this hypothetical. Even if the people who are responsible for the computer's
-actions (according to these terms) do not know if the feature is intended.
+## Why The Name Garbage OS?
 
+It's kind of unprofessional, right? Originally, I intended for Garbage OS to be
+written in the D programming language and feature an OS-wide garbage collection
+service. Later I realized just how complex a garbage collector would make the 
+operating system! However, the name "Garbage OS" kind of stuck: it's ironically
+funny to load a kernel named "garbage.bin" and have it run properly.
+
+## Ports
+
+| Instruction Set | Version Added | Status |
+| :-------------- | :-----------: | :----: |
+| i386            | 0.0.0         | in development |
+| x64             | 0.0.0         | in development |
+| RISC-V 32       | 0.0.0         | in development |
+| RISC-V 64       | 0.0.0         | in development |
+
+Support notes:
+
+i386: Garbage OS assumes its kernel receives control in protected mode with ring 0 privileges.
+
+x64: Garbage OS assumes its kernel receives control in long mode with ring 0 privileges.
+
+RISCV-32: Garbage OS requires the RV32I base instruction set, control status registers (Zicsr),
+and Sv32 (i.e., Supervisor mode, User mode, and 32-bit paging). Most RISC-V processors will run
+the RISC-V 32-bit version of the kernel.
+
+RISCV-64: Garbage OS requires the RV64I base instruction set, control status registers (Zicsr),
+and Sv39 (i.e., Supervisor mode, User mode, and 39-bit paging). Most 64-bit RISC-V processors
+will run the RISC-V 64-bit version of the kernel. 

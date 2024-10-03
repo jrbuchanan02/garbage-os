@@ -1,2 +1,1 @@
-#ignore anything in the build directory.
-build/*
+dependencies
