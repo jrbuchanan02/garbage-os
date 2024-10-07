@@ -1,4 +1,6 @@
-section .init
+
+.section .note.GNU-stack,"",@progbits
+.section .text
 .intel_syntax
 .intel_mnemonic
 .type halt,@function
