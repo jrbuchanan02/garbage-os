@@ -15,7 +15,8 @@
 
 # on recursive calls to make (i.e. building dependencies), make the average load this much.
 # feel free to change this value to a number of threads you are comfortable with using.
-submake_load = -j12
+
+submake_load = -j16
 
 create_dependencies_dir:
 	@mkdir -p dependencies
@@ -33,6 +34,22 @@ get_binutils: create_dependencies_dir
 
 init: get_gcc get_binutils
 
+clean:
+	rm -rf build
+
+# clear out the CXX, CXXFLAGS, ASM, and LD environment variables such that
+# if there is an issue with conditionally assigning the pattern-dependent
+# versions of these variables, then compilation will fail
+common_cxxflags = --std=c++20 -fno-exceptions -fno-rtti -ffreestanding -Wall -Wextra -Wpedantic -O1 -S -I source
+i386_cxx_flags = $(common_cxxflags) -m32 -mno-80387 -march=i386 -mtune=generic
+riscv32_cxx_flags = $(common_cxxflags) -mabi=ilp32 -march=rv32izicsr -mlittle-endian
+riscv64_cxx_flags = $(common_cxxflags) -mabi=lp64 -march=rv64izicsr -mlittle-endian
+x86_64_cxx_flags = $(common_cxxflags) -m64 -march=x86-64 -mtune=generic -mno-red-zone
+
+common_ld_flags = -e start -nostdlib
+
+architectures = i386 riscv32 riscv64
+
 # WARNING: running this target requires that you re-run init!
 superclean:
 	rm -rf dependencies
@@ -41,91 +58,58 @@ define build_arch_binutils =
 	@mkdir -p dependencies/binutils-build-$(1)
 	@mkdir -p dependencies/binutils-$(1)
 	@cd dependencies/binutils-build-$(1) && ../binutils/configure --target=$(1)-elf --prefix=$(abspath dependencies/binutils-$(1)) --with-sysroot --disable-nls --disable-werror
-	@cd dependencies/binutils-build-$(1) && make $(submake_load) && make install $(submake_load) && make distclean $(submake_load)
+	@cd dependencies/binutils-build-$(1) && make $(submake_load) && make install $(submake_load)
 endef
 
 define build_arch_gcc = 
 	@mkdir -p dependencies/gcc-build-$(1)
 	@mkdir -p dependencies/gcc-$(1)
-	@cd dependencies/gcc-build-$(1) && ../gcc/configure --target=$(1)-elf --prefix=$(abspath dependenices/gcc-$(1)) --disable-nls --enable-languages=c,c++ --without-headers
-	@cd dependencies/gcc-build-$(1) && make all-gcc all-target-libgcc install-gcc install-target-libgcc $(submake_load) && make distclean $(submake_load)
+	@cd dependencies/gcc-build-$(1) && ../gcc/configure --target=$(1)-linux-gnu --prefix=$(abspath dependencies/gcc-$(1)) --disable-nls --enable-languages=c,c++ --without-headers --disable-multilib
+	@cd dependencies/gcc-build-$(1) && make all-gcc $(submake_load) 
+	@cd dependencies/gcc-build-$(1) && make install-gcc $(submake_load)
 endef
 
-define build_arch_kernel_cxx_file = 
+build/asm/$(ARCH)/%.c++.S: source/%.c++
 	@mkdir -p $(@D)
-	@dependencies/gcc-$(1)/$(1)-elf/bin/g++ --std=c++20 -c -ffreestanding -Wall -Wextra -Wpedantic -o $@ $^
-endef
-
-define build_arch_kernel_asm_file = 
+	@dependencies/gcc-$(ARCH)/bin/$(ARCH)-linux-gnu-g++ $($(ARCH)_cxx_flags) -o $@ $^
+build/asm/$(ARCH)/%.asm.S: source/$(ARCH)/%.S
 	@mkdir -p $(@D)
-	@dependencies/binutils-$(1)/$(1)-elf/bin/as -c $^ -o $@
-endef
+	@cp $^ $@
 
-define kernel_objects = 
-	@build/obj/$(1)/kernel/kernel.o build/obj/$(1)/kernel/asm/$(1)/entry.o build/obj/$(1)kernel/asm/$(1)/halt.o
-endef
-
-define link_arch_kernel = 
+build/obj/$(ARCH)/%.o: build/asm/$(ARCH)/%.S
 	@mkdir -p $(@D)
-	@dependencies/binutils-$(1)/$(1)-elf-bin/ld -e start -nostdlib -T source/kernel/linker-script/$(1)-script.lds -l dependencies/binutils-$(1)/lib/libgcc -o $@ $^
-endef
+	@dependencies/binutils-$(ARCH)/bin/$(ARCH)-elf-as -o $@ $^
 
-# TODO: merge nearly identical targets which only differ according to their architecture.
-build/bin/i386/garbage.bin: $(call kernel_objects,i386)
-	$(call link_arch_kernel,i386)
+build/bin/$(ARCH)/garbage.bin: build/obj/$(ARCH)/kernel/kmain.c++.o build/obj/$(ARCH)/kernel/entry.asm.o build/obj/$(ARCH)/kernel/halt.asm.o
+	@mkdir -p $(@D)
+	@dependencies/binutils-$(ARCH)/bin/$(ARCH)-elf-ld $(common_ld_flags) -T source/$(ARCH)/garbage.bin.lds -o $@ $^
 
-build/obj/i386/kernel/asm/i386/%.o: source/kernel/asm/i386/%.S
-	$(call build_arch_kernel_asm_file,i386)
+build_arch_kernel: build/bin/$(ARCH)/garbage.bin
 
-build/obj/i386/kernel/%.o: source/kernel/%.c++
-	$(call build_arch_kernel_cxx_file,i386)
+build_kernels:
+# the @echo "" ensures that the line does not end in an &&, which is illegal for the shell
+	$(foreach arch,$(architectures),$(MAKE) $(MAKEFLAGS) -e ARCH=$(arch) build_arch_kernel &&) echo ""
 
-build/bin/riscv32/garbage.bin: $(call kernel_objects,riscv32)
-	$(call link_arch_kernel,riscv32)
+.PHONY: build_i386_binutils build_i386_gcc build_riscv32_binutils build_riscv32_gcc build_riscv64_binutils build_riscv64_gcc build_x86_64_binutils build_x86_64_gcc
 
-build/obj/riscv32/kernel/asm/riscv32/%.o: source/kernel/asm/riscv32/%.S
-	$(call build_arch_kernel_asm_file,riscv32)
-
-build/obj/riscv32/kernel/%.o: source/kernel/%.c++
-	$(call build_arch_kernel_cxx_file,riscv32)
-
-build/bin/riscv64/garbage.bin: $(call kernel_objects,riscv64)
-	$(call link_arch_kernel,riscv64)
-
-build/obj/riscv64/kernel/asm/riscv64/%.o: source/kernel/asm/riscv64/%.S
-	$(call build_arch_kernel_asm_file,riscv64)
-
-build/obj/riscv64/kernel/%.o: source/kernel/%.c++
-	$(call build_arch_kernel_cxx_file,riscv64)
-
-build/bin/x86_64/garbage.bin: $(call kernel_objects,x86_64)
-	$(call link_arch_kernel,x86_64)
-
-build/obj/x86_64/kernel/asm/x86_64/%.o: source/kernel/asm/x86_64/%.S
-	$(call build_arch_kernel_asm_file,x86_64)
-
-build/obj/x86_64/kernel/%.o: source/kernel/%.c++
-	$(call build_arch_kernel_cxx_file,x86_64)
-
-build_i386_binutils:
-	$(call build_arch_binutils,i386)
-build_i386_gcc: build_i386_binutils
-	$(call build_i386_gcc,i386)
-
-build_riscv32_binutils:
-	$(call build_arch_binutils,riscv32)
-build_riscv32_gcc: build_riscv32_binutils
-	$(call build_arch_gcc,riscv32)
-
-build_riscv64_binutils:
-	$(call build_arch_binutils,riscv64)
-build_riscv64_gcc: build_riscv64_binutils
-	$(call build_arch_gcc,riscv64)
-
-build_x86_64_binutils:
-	$(call build_arch_binutils,x86_64)
-build_x86_64_gcc: build_x86_64_binutils
-	$(call build_arch_gcc,x86_64)
+# use this target to build the toolchain since you probably want to build
+# multithreaded toolchains and there (probably) will be issues if you have GCC and/or
+# binutils building at the same time
+build_toolchains:
+	$(MAKE) build_i386_binutils
+	$(MAKE) build_riscv32_binutils
+	$(MAKE) build_riscv64_binutils
+	$(MAKE) build_x86_64_binutils
+	$(MAKE) build_i386_gcc
+	$(MAKE) build_riscv32_gcc
+	$(MAKE) build_riscv64_gcc
+	$(MAKE) build_x86_64_gcc
+# use this target to build the compilers
+build_compilers:
+	$(MAKE) build_i386_gcc
+	$(MAKE) build_riscv32_gcc
+	$(MAKE) build_riscv64_gcc
+	$(MAKE) build_x86_64_gcc
 
 # use this target to build the toolchain since you probably want to build
 # multithreaded toolchains and there (probably) will be issues if you have GCC and/or
