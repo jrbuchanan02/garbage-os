@@ -15,6 +15,7 @@
 
 # on recursive calls to make (i.e. building dependencies), make the average load this much.
 # feel free to change this value to a number of threads you are comfortable with using.
+
 submake_load = -j16
 
 create_dependencies_dir:
@@ -110,3 +111,23 @@ build_compilers:
 	$(MAKE) build_riscv64_gcc
 	$(MAKE) build_x86_64_gcc
 
+# use this target to build the toolchain since you probably want to build
+# multithreaded toolchains and there (probably) will be issues if you have GCC and/or
+# binutils building at the same time
+build_toolchains:
+	$(MAKE) build_i386_gcc
+	$(MAKE) build_riscv32_gcc
+	$(MAKE) build_riscv64_gcc
+	$(MAKE) build_x86_64_gcc
+
+# target that builds the kernel
+build_kernel: build/bin/i386/garbage.bin build/bin/riscv32/garbage.bin build/bin/riscv64/garbage.bin build/bin/x86_64/garbage.bin
+
+test_i386_kernel: build/bin/i386/garbage.bin
+	qemu-system-i386 -cpu x86 486 -kernel build/bin/i386/garbage.bin
+test_riscv32_kernel: build/bin/riscv32/garbage.bin
+	qemu-system-riscv32 -cpu rv32 -kernel build/bin/riscv32/garbage.bin
+test_riscv64_kernel: build/bin/riscv64/garbage.bin
+	qemu-system-riscv64 -cpu rv64 -kernel build/bin/riscv64/garbage.bin
+test_x86_64_kernel: build/bin/x86_64/garbage.bin
+	qemu-system-x86_64 -cpu x86_64 -kernel build/bin/x86_64/garbage.bin
