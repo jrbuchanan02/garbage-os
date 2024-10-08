@@ -44,7 +44,9 @@ Support notes:
 
 i386: Garbage OS assumes its kernel receives control in protected mode with ring 0 privileges.
 
-x64: Garbage OS assumes its kernel receives control in long mode with ring 0 privileges.
+~~x64: Garbage OS assumes its kernel receives control in long mode with ring 0 privileges.~~
+x64: Garbage OS will assume its kernel receives control in 32-bit protected mode with ring 0 privileges
+then proceed to initialize 64-bit mode accordingly.
 
 RISCV-32: Garbage OS requires the RV32I base instruction set, control status registers (Zicsr),
 and Sv32 (i.e., Supervisor mode, User mode, and 32-bit paging). Most RISC-V processors will run
@@ -78,6 +80,9 @@ and on the path to build properly:
 7. MPC (libmpc)
 8. MPFR (libmpfr)
 9. Texinfo
+
+At some later point, Garbage OS may build native copies from source for each of GCC's dependencies, reducing the
+build-prerequisites to simply git, make, and a C/C++ compiler.
 
 To initialize the internal repositories, cloning GCC and binutils, run `make init`. Be warned: GCC and binutils are
 very large repositories, `make init` will take some time. You can run `make init` on multiple threads, however, since

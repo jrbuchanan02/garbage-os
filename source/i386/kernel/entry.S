@@ -34,7 +34,10 @@ start:
     /*I think this is correct, esi should be less than edx*/
     cmp %edx, %esi
     jna 1b
+    call get_this_thread_id
+    push %eax
     call kmain
+    pop %eax
     jmp halt
     .cfi_endproc
 .end

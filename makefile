@@ -15,7 +15,6 @@
 
 # on recursive calls to make (i.e. building dependencies), make the average load this much.
 # feel free to change this value to a number of threads you are comfortable with using.
-
 submake_load = -j16
 
 create_dependencies_dir:
@@ -50,6 +49,8 @@ common_ld_flags = -e start -nostdlib
 
 architectures = i386 riscv32 riscv64
 
+kernel_objects = kernel/kmain.c++.o kernel/entry.asm.o kernel/halt.asm.o kernel/cpu_class.asm.o
+
 # WARNING: running this target requires that you re-run init!
 superclean:
 	rm -rf dependencies
@@ -69,26 +70,36 @@ define build_arch_gcc =
 	@cd dependencies/gcc-build-$(1) && make install-gcc $(submake_load)
 endef
 
+define recurse_for_arch_kernel = 
+	@$(MAKE) $(MAKEFLAGS) --no-print-directory -Oline $(submake_load) -e ARCH=$(1) build_arch_kernel
+	
+endef
+
 build/asm/$(ARCH)/%.c++.S: source/%.c++
 	@mkdir -p $(@D)
 	@dependencies/gcc-$(ARCH)/bin/$(ARCH)-linux-gnu-g++ $($(ARCH)_cxx_flags) -o $@ $^
+	@echo Compiled $^ for $(ARCH)
 build/asm/$(ARCH)/%.asm.S: source/$(ARCH)/%.S
 	@mkdir -p $(@D)
 	@cp $^ $@
 
+# Note: make inserts an rm command for each assembly source,
+# make actually correctly recognizes these sources as temporary
+# but they sometimes might be useful.
 build/obj/$(ARCH)/%.o: build/asm/$(ARCH)/%.S
 	@mkdir -p $(@D)
 	@dependencies/binutils-$(ARCH)/bin/$(ARCH)-elf-as -o $@ $^
+	@echo Assembled $^ for $(ARCH)
 
-build/bin/$(ARCH)/garbage.bin: build/obj/$(ARCH)/kernel/kmain.c++.o build/obj/$(ARCH)/kernel/entry.asm.o build/obj/$(ARCH)/kernel/halt.asm.o
+build/bin/$(ARCH)/garbage.bin: source/$(ARCH)/garbage.bin.lds $(kernel_objects:%=build/obj/$(ARCH)/%)
 	@mkdir -p $(@D)
-	@dependencies/binutils-$(ARCH)/bin/$(ARCH)-elf-ld $(common_ld_flags) -T source/$(ARCH)/garbage.bin.lds -o $@ $^
+	@dependencies/binutils-$(ARCH)/bin/$(ARCH)-elf-ld $(common_ld_flags) -T $(filter %.lds,$^) -o $@ $(filter-out %.lds,$^)
 
 build_arch_kernel: build/bin/$(ARCH)/garbage.bin
 
 build_kernels:
 # the @echo "" ensures that the line does not end in an &&, which is illegal for the shell
-	$(foreach arch,$(architectures),$(MAKE) $(MAKEFLAGS) -e ARCH=$(arch) build_arch_kernel &&) echo ""
+	$(foreach arch,$(architectures),$(call recurse_for_arch_kernel,$(arch)))
 
 .PHONY: build_i386_binutils build_i386_gcc build_riscv32_binutils build_riscv32_gcc build_riscv64_binutils build_riscv64_gcc build_x86_64_binutils build_x86_64_gcc
 
@@ -111,23 +122,11 @@ build_compilers:
 	$(MAKE) build_riscv64_gcc
 	$(MAKE) build_x86_64_gcc
 
-# use this target to build the toolchain since you probably want to build
-# multithreaded toolchains and there (probably) will be issues if you have GCC and/or
-# binutils building at the same time
-build_toolchains:
-	$(MAKE) build_i386_gcc
-	$(MAKE) build_riscv32_gcc
-	$(MAKE) build_riscv64_gcc
-	$(MAKE) build_x86_64_gcc
-
-# target that builds the kernel
-build_kernel: build/bin/i386/garbage.bin build/bin/riscv32/garbage.bin build/bin/riscv64/garbage.bin build/bin/x86_64/garbage.bin
-
-test_i386_kernel: build/bin/i386/garbage.bin
-	qemu-system-i386 -cpu x86 486 -kernel build/bin/i386/garbage.bin
-test_riscv32_kernel: build/bin/riscv32/garbage.bin
+test_i386_kernel:
+	qemu-system-i386 -kernel build/bin/i386/garbage.bin
+test_riscv32_kernel:
 	qemu-system-riscv32 -cpu rv32 -kernel build/bin/riscv32/garbage.bin
-test_riscv64_kernel: build/bin/riscv64/garbage.bin
+test_riscv64_kernel:
 	qemu-system-riscv64 -cpu rv64 -kernel build/bin/riscv64/garbage.bin
-test_x86_64_kernel: build/bin/x86_64/garbage.bin
+test_x86_64_kernel:
 	qemu-system-x86_64 -cpu x86_64 -kernel build/bin/x86_64/garbage.bin

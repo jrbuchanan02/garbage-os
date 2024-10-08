@@ -20,11 +20,12 @@ Garbage OS intends to keep a specific style of code and thsu follows these rules
 
 **High Level Language**: Any programming language that does not individually list out
 instructions by name for a CPU. Examples of high level programming languages include
-C, C++, FORTRAN, Java, Python, and MATLAB.
+C, C++, FORTRAN, Java, Python, and MATLAB. Garbage OS primarily utilizes C++.
 
 **Assembly Language**: A computer program written by individually listing instructions
 for a CPU to execute. Assembly Language programs are typically limited to one instruction
-set architecture.
+set architecture. Garbage OS currently utilizes x86 and RISC-V assembly but plans to 
+include and support other instruction sets (namely ARM).
 
 ### The Actual Style Guide
 
@@ -49,6 +50,10 @@ set architecture.
      of the keywords `if`, `while`, `goto`, `catch` and `for` within a function. Since this requirement only occasionally
      counts switch-statements, count all cases in a switch statement if any of the labels does not end in the
      break keyword or if any of the labels contains `if`, `while`, `goto`, `for`, `do` `catch`, or `switch`.
+   - Assembly languages count conditional branch instructions, dependent sequences of conditional instructions, and
+     options for indirect branches for their paths.[^2] If an assembly language code implements a jump-table or similar
+     and fails to perform a bounds check, then the cyclomatic complexity for that indirect jump includes all theoretical
+     targets for the jump. e.g., blindly executing `call [rax]` has a cyclomatic complexity of 2 to the power of 64.
 3. All functions in Garbage OS shall have a length below 301 logical source lines of code. Here, a logical source
    line of code is the total of non-empty, non-comment statements within a function.
    - This requirement means the longest function possible is still infinitely long but it can contain a total of 300 
@@ -57,6 +62,9 @@ set architecture.
      a boolean condition, and a statement with a single side effect), then the nontrivial statements in that for-loop count as 
      logical source lines of code.[^1]
 4. All statements in Garbage OS written in high-level languages, excluding function calls, are limited to two side-effects.
+   - Here, a side effect includes an assignment within an expression. `i = j++` has two side effects.
+5. High level language code shall not see instruction-set specific differences - those differences shall be handled by assembly
+   code.
 
 
 [^1]: This paragraph means that both of the following implementations of strcpy have the length in logical source lines of code
@@ -71,4 +79,23 @@ char *strcpy(char *dst, char *src) {
 char *strcpy(char *dst, char *src) {
     for(char *dst_pos = dst; src; *dst_pos = *src, src++, dst_pos++);
 }
+```
+
+[^2]: For example, the following two implementations of a maximum function in x86 assembly have a cyclomatic complexity of 2.:
+```ASM
+max:
+  mov eax, ecx
+  cmp eax, edx
+  jae .skip
+  mov eax, edx
+.skip:
+  ret
+```
+and
+```ASM
+max:
+  mov eax, ecx
+  cmp eax, edx
+  cmovb eax, edx
+  ret
 ```

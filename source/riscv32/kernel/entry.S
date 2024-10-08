@@ -11,6 +11,8 @@ start:
     la gp, global_pointer
 .option pop
     csrw satp, zero
+    /*make exceptions halt the processor, for now*/
+    csrw stvec, t0
     la sp, stack_top
     la t0, bss_start
     la t1, bss_end
@@ -21,6 +23,7 @@ zero_bss:
     bltu t0, t1, zero_bss
     la t0, kmain
     csrw sepc, t0
+    call get_this_thread_id
     call kmain
     tail halt
     .cfi_endproc
