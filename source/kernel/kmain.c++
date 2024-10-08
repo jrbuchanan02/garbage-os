@@ -2,5 +2,5 @@
 #include <kernel/asm.h++>
 
 extern "C" [[noreturn]] void kmain(void) {
-    halt();
+    while(true) halt();
 }
